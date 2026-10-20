@@ -37,7 +37,7 @@ public sealed class EmptyAutoConfigurationTest
     }
 
     [Fact]
-    public void Loads_without_any_Steeltoe_references_using_WebApplicationBuilder()
+    public async Task Loads_without_any_Steeltoe_references_using_WebApplicationBuilder()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
@@ -45,11 +45,12 @@ public sealed class EmptyAutoConfigurationTest
 
         action.Should().NotThrow();
 
-        using WebApplication host = builder.Build();
+        await using HostWrapper hostWrapper = HostWrapper.Wrap(builder.Build());
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public void Loads_without_any_Steeltoe_references_using_HostApplicationBuilder()
+    public async Task Loads_without_any_Steeltoe_references_using_HostApplicationBuilder()
     {
         HostApplicationBuilder builder = TestHostApplicationBuilderFactory.Create();
 
@@ -57,11 +58,12 @@ public sealed class EmptyAutoConfigurationTest
 
         action.Should().NotThrow();
 
-        using IHost host = builder.Build();
+        await using HostWrapper hostWrapper = HostWrapper.Wrap(builder.Build());
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public void Loads_without_any_Steeltoe_references_using_WebHostBuilder()
+    public async Task Loads_without_any_Steeltoe_references_using_WebHostBuilder()
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
 
@@ -69,11 +71,12 @@ public sealed class EmptyAutoConfigurationTest
 
         action.Should().NotThrow();
 
-        using IWebHost host = builder.Build();
+        await using HostWrapper hostWrapper = HostWrapper.Wrap(builder.Build());
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public void Loads_without_any_Steeltoe_references_using_HostBuilder()
+    public async Task Loads_without_any_Steeltoe_references_using_HostBuilder()
     {
         HostBuilder builder = TestHostBuilderFactory.Create();
 
@@ -81,6 +84,7 @@ public sealed class EmptyAutoConfigurationTest
 
         action.Should().NotThrow();
 
-        using IHost host = builder.Build();
+        await using HostWrapper hostWrapper = HostWrapper.Wrap(builder.Build());
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
     }
 }

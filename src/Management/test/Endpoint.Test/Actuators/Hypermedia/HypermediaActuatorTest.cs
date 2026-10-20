@@ -4,7 +4,6 @@
 
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -131,7 +130,7 @@ public sealed class HypermediaActuatorTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddHypermediaActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -175,7 +174,7 @@ public sealed class HypermediaActuatorTest
         builder.Services.AddHypermediaActuator();
         builder.Services.AddInfoActuator();
         builder.Services.AddLoggersActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -221,7 +220,7 @@ public sealed class HypermediaActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHypermediaActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -242,7 +241,7 @@ public sealed class HypermediaActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHypermediaActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -272,7 +271,7 @@ public sealed class HypermediaActuatorTest
         builder.Services.AddServicesActuator();
         builder.Services.AddHealthActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -318,7 +317,7 @@ public sealed class HypermediaActuatorTest
         builder.Services.AddHypermediaActuator();
         builder.Services.AddInfoActuator();
         builder.Services.AddLoggersActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -343,7 +342,7 @@ public sealed class HypermediaActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHypermediaActuator();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -377,12 +376,13 @@ public sealed class HypermediaActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddHypermediaActuator(false);
         builder.Services.AddInfoActuator(false);
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.UsePathBase("/some/prefix");
-        host.UseRouting();
-        host.UseActuatorEndpoints();
+        app.UsePathBase("/some/prefix");
+        app.UseRouting();
+        app.UseActuatorEndpoints();
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
@@ -419,7 +419,7 @@ public sealed class HypermediaActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddHypermediaActuator();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -470,7 +470,7 @@ public sealed class HypermediaActuatorTest
         builder.Services.AddHypermediaActuator();
         builder.Services.AddInfoActuator();
         builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();

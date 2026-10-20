@@ -358,12 +358,11 @@ public sealed class PlaceholderConfigurationTest : IDisposable
 
         AssertTypesInSourceTree(builder.Sources, placeholderCount);
 
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var services = new ServiceCollection();
         services.AddSingleton<ILoggerFactory>(_loggerFactory);
         services.AddLogging();
-        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.Configure<TestOptions>(configurationRoot.GetSection("TestRoot"));
         services.AddSingleton<IConfigureOptions<TestOptions>, ConfigureTestOptions>();
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);

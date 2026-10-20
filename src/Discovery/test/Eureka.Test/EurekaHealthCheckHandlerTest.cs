@@ -144,9 +144,11 @@ public sealed class EurekaHealthCheckHandlerTest
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NoContent);
         handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond("application/json", "{}");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+
+        await app.StartAsync(TestContext.Current.CancellationToken);
 
         app.Services.GetServices<IDiscoveryClient>().Should().ContainSingle();
 

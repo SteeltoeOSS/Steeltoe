@@ -560,7 +560,12 @@ public sealed class DynamicConsoleLoggerProviderTest : IDisposable
             loggingBuilder.AddDynamicConsole();
         });
 
-        return services.BuildServiceProvider(true);
+        ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        // Nothing else resolves IConfiguration, so resolve it here to make the container own (and dispose) the configuration root.
+        _ = serviceProvider.GetRequiredService<IConfiguration>();
+
+        return serviceProvider;
     }
 
     private static IDynamicLoggerProvider GetDynamicLoggerProvider(ServiceProvider serviceProvider)

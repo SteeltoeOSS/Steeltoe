@@ -23,7 +23,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
     [Fact]
     public async Task AspNetDefaultPort_NoManagementPortConfigured_BothAccessibleOnSamePort()
     {
-        await using WebApplication app = await CreateAppAsync([]);
+        await using HostWrapper app = await CreateAppAsync([]);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -51,7 +51,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:Port"] = AspNetDefaultPort
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -81,7 +81,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:Port"] = managementPort
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -123,7 +123,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:Port"] = managementPort
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -179,7 +179,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:Port"] = managementPort
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         using HttpClient httpClient = CreateHttpClient();
 
@@ -210,7 +210,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:SslEnabled"] = "true"
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -253,7 +253,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["urls"] = $"http://localhost:{appHttpPort};https://*:{appHttpsPort}"
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -293,7 +293,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:Port"] = appHttpPort
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -334,7 +334,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:Port"] = managementPort
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -387,7 +387,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:SslEnabled"] = "true"
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -435,7 +435,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         using var httpScope = new EnvironmentVariableScope("HTTP_PORTS", appHttpPort);
         using var httpsScope = new EnvironmentVariableScope("HTTPS_PORTS", appHttpsPort);
 
-        await using WebApplication app = await CreateAppAsync([]);
+        await using HostWrapper app = await CreateAppAsync([]);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -477,7 +477,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:Port"] = appHttpPort
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -520,7 +520,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:Port"] = managementPort
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -575,7 +575,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:SslEnabled"] = "true"
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -620,7 +620,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         const string appHttpPort = "6000";
         const string appHttpsPort = "7000";
 
-        await using WebApplication app = await CreateAppAsync([], app =>
+        await using HostWrapper app = await CreateAppAsync([], app =>
         {
             app.Urls.Add($"http://localhost:{appHttpPort}");
             app.Urls.Add($"https://*:{appHttpsPort}");
@@ -663,7 +663,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:Port"] = appHttpPort
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings, app =>
+        await using HostWrapper app = await CreateAppAsync(appSettings, app =>
         {
             app.Urls.Add($"http://localhost:{appHttpPort}");
             app.Urls.Add($"https://*:{appHttpsPort}");
@@ -707,7 +707,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:Port"] = managementPort
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings, app =>
+        await using HostWrapper app = await CreateAppAsync(appSettings, app =>
         {
             app.Urls.Add($"http://localhost:{appHttpPort}");
             app.Urls.Add($"https://*:{appHttpsPort}");
@@ -763,7 +763,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:SslEnabled"] = "true"
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings, app =>
+        await using HostWrapper app = await CreateAppAsync(appSettings, app =>
         {
             app.Urls.Add($"http://localhost:{appHttpPort}");
             app.Urls.Add($"https://*:{appHttpsPort}");
@@ -814,7 +814,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["urls"] = "http://127.0.0.1:0;https://*:0"
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -857,7 +857,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:Port"] = managementPort
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -912,7 +912,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
             ["Management:Endpoints:SslEnabled"] = "true"
         };
 
-        await using WebApplication app = await CreateAppAsync(appSettings);
+        await using HostWrapper app = await CreateAppAsync(appSettings);
 
         IFeatureCollection serverFeatures = app.Services.GetRequiredService<IServer>().Features;
         ICollection<string> addresses = serverFeatures.GetRequiredFeature<IServerAddressesFeature>().Addresses;
@@ -955,7 +955,7 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         actuatorResponse3.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
-    private static async Task<WebApplication> CreateAppAsync(Dictionary<string, string?> appSettings, Action<WebApplication>? configureApp = null)
+    private static async Task<HostWrapper> CreateAppAsync(Dictionary<string, string?> appSettings, Action<WebApplication>? configureApp = null)
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
@@ -965,9 +965,11 @@ public sealed class ManagementEndpointServedOnDifferentPortTest
         configureApp?.Invoke(app);
 
         app.MapGet("/", () => "Hello World!");
-        await app.StartAsync(TestContext.Current.CancellationToken);
 
-        return app;
+        HostWrapper host = HostWrapper.Wrap(app);
+        await host.StartAsync(TestContext.Current.CancellationToken);
+
+        return host;
     }
 
     private static HttpClient CreateHttpClient()

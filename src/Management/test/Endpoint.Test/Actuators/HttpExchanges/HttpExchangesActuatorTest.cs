@@ -5,7 +5,6 @@
 using System.Net;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -233,7 +232,7 @@ public sealed class HttpExchangesActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddSingleton<IHttpExchangeRecorder>(new FakeHttpExchangeRecorder([httpExchange]));
         builder.Services.AddHttpExchangesActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -284,7 +283,7 @@ public sealed class HttpExchangesActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddSingleton<IHttpExchangeRecorder>(new FakeHttpExchangeRecorder([httpExchange]));
         builder.Services.AddHttpExchangesActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -351,7 +350,7 @@ public sealed class HttpExchangesActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddSingleton<IHttpExchangeRecorder>(new FakeHttpExchangeRecorder(httpExchanges));
         builder.Services.AddHttpExchangesActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -453,7 +452,7 @@ public sealed class HttpExchangesActuatorTest
         builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddSingleton<IHttpExchangeRecorder>(new FakeHttpExchangeRecorder(httpExchanges));
         builder.Services.AddHttpExchangesActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();

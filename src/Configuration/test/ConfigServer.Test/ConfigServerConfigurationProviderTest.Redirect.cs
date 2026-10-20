@@ -23,7 +23,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         WebApplicationBuilder serverBuilder = WebApplication.CreateBuilder();
         serverBuilder.Logging.ClearProviders();
-        await using WebApplication server = serverBuilder.Build();
+        WebApplication server = serverBuilder.Build();
         server.Urls.Add("http://127.0.0.1:0");
 
         server.MapGet("/myName/Staging",
@@ -39,7 +39,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
             });
         });
 
-        await server.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper serverHost = HostWrapper.Wrap(server);
+        await serverHost.StartAsync(TestContext.Current.CancellationToken);
         int port = server.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.Select(a => new Uri(a).Port).First();
 
         var options = new ConfigServerClientOptions
@@ -71,7 +72,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         WebApplicationBuilder serverBuilder = WebApplication.CreateBuilder();
         serverBuilder.Logging.ClearProviders();
-        await using WebApplication server = serverBuilder.Build();
+        WebApplication server = serverBuilder.Build();
         server.Urls.Add("http://127.0.0.1:0");
 
         server.MapPost("/token",
@@ -83,7 +84,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
             return Results.Ok();
         });
 
-        await server.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper serverHost = HostWrapper.Wrap(server);
+        await serverHost.StartAsync(TestContext.Current.CancellationToken);
         int port = server.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.Select(a => new Uri(a).Port).First();
 
         var options = new ConfigServerClientOptions
@@ -117,7 +119,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         WebApplicationBuilder serverBuilder = WebApplication.CreateBuilder();
         serverBuilder.Logging.ClearProviders();
-        await using WebApplication server = serverBuilder.Build();
+        WebApplication server = serverBuilder.Build();
         server.Urls.Add("http://127.0.0.1:0");
 
         server.MapPost("/vault/v1/auth/token/renew-self",
@@ -129,7 +131,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
             return Results.Ok();
         });
 
-        await server.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper serverHost = HostWrapper.Wrap(server);
+        await serverHost.StartAsync(TestContext.Current.CancellationToken);
         int port = server.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.Select(a => new Uri(a).Port).First();
 
         var options = new ConfigServerClientOptions
@@ -160,7 +163,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         WebApplicationBuilder serverBuilder = WebApplication.CreateBuilder();
         serverBuilder.Logging.ClearProviders();
-        await using WebApplication server = serverBuilder.Build();
+        WebApplication server = serverBuilder.Build();
         server.Urls.Add("http://127.0.0.1:0");
 
         server.MapPost("/token",
@@ -172,7 +175,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
             return Results.Ok();
         });
 
-        await server.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper serverHost = HostWrapper.Wrap(server);
+        await serverHost.StartAsync(TestContext.Current.CancellationToken);
         int port = server.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!.Addresses.Select(a => new Uri(a).Port).First();
 
         var options = new ConfigServerClientOptions

@@ -4,7 +4,6 @@
 
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -138,7 +137,7 @@ public sealed class DbMigrationsActuatorTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddSingleton<IDatabaseMigrationScanner, FakeDatabaseMigrationScanner>();
         builder.Services.AddDbMigrationsActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -169,7 +168,7 @@ public sealed class DbMigrationsActuatorTest
         builder.Services.AddDbContext<TestDbContext>();
         builder.Services.AddSingleton<IDatabaseMigrationScanner>(throwingScanner);
         builder.Services.AddDbMigrationsActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();

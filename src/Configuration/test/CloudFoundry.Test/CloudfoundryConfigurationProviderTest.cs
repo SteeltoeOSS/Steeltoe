@@ -280,17 +280,18 @@ public sealed class CloudFoundryConfigurationProviderTest
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseKestrel().UseUrls("http://127.0.0.1:0");
         builder.AddCloudFoundryConfiguration();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
         bool? forwardedHeadersWereEvaluated = null;
 
-        host.Map("/", context =>
+        app.Map("/", context =>
         {
             forwardedHeadersWereEvaluated = context.Request.IsHttps;
             return Task.CompletedTask;
         });
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
-        string address = host.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
+        string address = app.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
 
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("X-Forwarded-Proto", "https");
@@ -301,8 +302,6 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         forwardedHeadersWereEvaluated.Should()
             .Be(isRunningOnCloudFoundry, $"X-Forwarded-Proto should {(isRunningOnCloudFoundry ? string.Empty : "not ")}be evaluated");
-
-        await host.StopAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -313,17 +312,18 @@ public sealed class CloudFoundryConfigurationProviderTest
         builder.WebHost.UseKestrel().UseUrls("http://127.0.0.1:0");
         builder.AddCloudFoundryConfiguration();
         builder.Services.Configure<ForwardedHeadersOptions>(options => options.KnownProxies.Add(IPAddress.Parse("192.168.1.20")));
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
         bool? forwardedHeadersWereEvaluated = null;
 
-        host.Map("/", context =>
+        app.Map("/", context =>
         {
             forwardedHeadersWereEvaluated = context.Request.IsHttps;
             return Task.CompletedTask;
         });
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
-        string address = host.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
+        string address = app.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
 
         using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("X-Forwarded-Proto", "https");
@@ -333,8 +333,6 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         forwardedHeadersWereEvaluated.Should().BeFalse("X-Forwarded-Proto should not be evaluated for unknown proxies");
-
-        await host.StopAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]

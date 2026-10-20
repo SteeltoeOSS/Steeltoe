@@ -5,7 +5,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -221,7 +220,7 @@ public sealed class CloudFoundryActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
         builder.Services.AddCloudFoundryActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);
@@ -240,7 +239,7 @@ public sealed class CloudFoundryActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await host.StartAsync(TestContext.Current.CancellationToken);
@@ -260,10 +259,12 @@ public sealed class CloudFoundryActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Logging.AddProvider(loggerProvider);
         builder.Services.AddAllActuators(false);
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.UseRouting();
-        host.UseActuatorEndpoints();
+        app.UseRouting();
+        app.UseActuatorEndpoints();
+
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
@@ -290,7 +291,7 @@ public sealed class CloudFoundryActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
         builder.Services.AddCloudFoundryActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);
@@ -330,7 +331,7 @@ public sealed class CloudFoundryActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);
@@ -360,7 +361,7 @@ public sealed class CloudFoundryActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);
@@ -394,7 +395,7 @@ public sealed class CloudFoundryActuatorTest
         builder.Services.AddInfoActuator();
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);
@@ -440,14 +441,16 @@ public sealed class CloudFoundryActuatorTest
         builder.Services.AddCloudFoundryActuator(false);
         builder.Services.AddLoggersActuator(false);
 
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.UsePathBase("/some/prefix");
-        host.UseRouting();
-        host.UseCloudFoundrySecurity();
-        host.UseActuatorEndpoints();
+        app.UsePathBase("/some/prefix");
+        app.UseRouting();
+        app.UseCloudFoundrySecurity();
+        app.UseActuatorEndpoints();
 
-        host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
+        app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
+
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
@@ -487,7 +490,7 @@ public sealed class CloudFoundryActuatorTest
         builder.Configuration.AddCloudFoundry();
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);
@@ -542,7 +545,7 @@ public sealed class CloudFoundryActuatorTest
         builder.Services.AddCloudFoundryActuator();
         builder.Services.AddInfoActuator();
         builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);

@@ -43,7 +43,8 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         builder.Configuration.AddInMemoryCollection(EurekaSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         host.Services.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
         host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
@@ -71,7 +72,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         builder.Services.AddEurekaDiscoveryClient();
         builder.Services.ConfigureHttpClientDefaults(action => action.AddServiceDiscovery());
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         // ReSharper disable once AccessToDisposedClosure
         Task<EurekaDiscoveryClient> resolveTask = Task.Run(() => _ = host.Services.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().Single());
@@ -79,6 +80,8 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         Func<Task> action = async () => await resolveTask.WaitAsync(5.Seconds(), TestContext.Current.CancellationToken);
 
         await action.Should().NotThrowAsync();
+
+        await host.StartAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]

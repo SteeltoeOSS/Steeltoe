@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Steeltoe.Common.TestResources;
 
@@ -86,7 +85,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
         builder.AddConfigServer();
 
-        using IWebHost host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
@@ -169,7 +168,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
         builder.AddConfigServer();
 
-        using IWebHost host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
@@ -256,7 +255,7 @@ public sealed class ConfigServerConfigurationExtensionsIntegrationTest
         builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
         builder.AddConfigServer();
 
-        using IWebHost host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();

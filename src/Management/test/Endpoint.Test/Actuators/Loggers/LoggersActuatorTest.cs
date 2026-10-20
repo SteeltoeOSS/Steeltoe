@@ -5,7 +5,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -145,7 +144,7 @@ public sealed class LoggersActuatorTest
             }
             """);
 
-        using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         _ = loggerFactory.CreateLogger("Fake.Some");
         _ = loggerFactory.CreateLogger("Fake.Category.AtDebugLevel.Some");
 
@@ -206,9 +205,9 @@ public sealed class LoggersActuatorTest
         EnsureLoggingConfigurationIsBound(builder.Logging, builder.Configuration);
         builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
         builder.Services.AddLoggersActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
-        using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         _ = loggerFactory.CreateLogger("Fake.Some.Test");
         _ = loggerFactory.CreateLogger("Fake.Category.AtDebugLevel.Some");
 
@@ -356,9 +355,9 @@ public sealed class LoggersActuatorTest
         EnsureLoggingConfigurationIsBound(builder.Logging, builder.Configuration);
         builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
         builder.Services.AddLoggersActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
-        using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         _ = loggerFactory.CreateLogger("Fake.Some");
 
         await host.StartAsync(TestContext.Current.CancellationToken);
@@ -454,7 +453,7 @@ public sealed class LoggersActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -487,9 +486,9 @@ public sealed class LoggersActuatorTest
         EnsureLoggingConfigurationIsBound(builder.Logging, builder.Configuration);
         builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
         builder.Services.AddLoggersActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
-        using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         _ = loggerFactory.CreateLogger("Fake.Some");
 
         await host.StartAsync(TestContext.Current.CancellationToken);
@@ -541,7 +540,7 @@ public sealed class LoggersActuatorTest
         EnsureLoggingConfigurationIsBound(builder.Logging, builder.Configuration);
         builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
         builder.Services.AddLoggersActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
@@ -606,9 +605,9 @@ public sealed class LoggersActuatorTest
         EnsureLoggingConfigurationIsBound(builder.Logging, builder.Configuration);
         builder.Services.AddSingleton<ILoggerFactory, OnlyTrackFakeCategoryLoggerFactory>();
         builder.Services.AddLoggersActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
-        using var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
+        var loggerFactory = host.Services.GetRequiredService<ILoggerFactory>();
         _ = loggerFactory.CreateLogger("Fake.Some");
         _ = loggerFactory.CreateLogger("Fake.Category.AtDebugLevel.Some");
 

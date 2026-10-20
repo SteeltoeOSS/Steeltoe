@@ -47,9 +47,11 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
         builder.Services.AddSingleton(timeProvider);
         builder.Services.AddHttpExchangesActuator();
         builder.Services.PostConfigure<HttpExchangesEndpointOptions>(options => options.ResponseHeaders.Remove(HeaderNames.Date));
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapGet("/hello", () => "Hello World!");
+        app.MapGet("/hello", () => "Hello World!");
+
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         // ReSharper disable once ShortLivedHttpClient

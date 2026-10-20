@@ -7,7 +7,6 @@ using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -51,7 +50,7 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
 
         builder.Services.AddDataProtection().PersistKeysToRedis().SetApplicationName(appName);
 
-        await using WebApplication app = builder.Build();
+        WebApplication app = builder.Build();
 
         app.UseSession();
 
@@ -78,9 +77,10 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
             return Task.CompletedTask;
         });
 
-        await app.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(app);
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
-        using HttpClient httpClient = app.GetTestClient();
+        using HttpClient httpClient = host.GetTestClient();
         using HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("http://localhost/set-session"), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
