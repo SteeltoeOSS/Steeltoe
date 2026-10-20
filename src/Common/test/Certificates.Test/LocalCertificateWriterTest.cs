@@ -19,8 +19,8 @@ public sealed class LocalCertificateWriterTest
 
         certificateWriter.Write(orgId, spaceId);
 
-        var rootCertificate = X509Certificate2.CreateFromPem(File.ReadAllText(LocalCertificateWriter.RootCaCrtPath));
-        var intermediateCertificate = X509Certificate2.CreateFromPem(File.ReadAllText(LocalCertificateWriter.IntermediateCrtPath));
+        using var rootCertificate = X509Certificate2.CreateFromPem(File.ReadAllText(LocalCertificateWriter.RootCaCrtPath));
+        using var intermediateCertificate = X509Certificate2.CreateFromPem(File.ReadAllText(LocalCertificateWriter.IntermediateCrtPath));
 
         rsa.ImportFromPem(File.ReadAllText(Path.Combine(LocalCertificateWriter.AppBasePath, LocalCertificateWriter.CertificateDirectoryName,
             "SteeltoeAppInstanceKey.pem")));
@@ -28,7 +28,8 @@ public sealed class LocalCertificateWriterTest
         string instanceCertificatePath = Path.Combine(LocalCertificateWriter.AppBasePath, LocalCertificateWriter.CertificateDirectoryName,
             "SteeltoeAppInstanceCert.pem");
 
-        X509Certificate2 certificate = X509Certificate2.CreateFromPem(File.ReadAllText(instanceCertificatePath)).CopyWithPrivateKey(rsa);
+        using var publicCertificate = X509Certificate2.CreateFromPem(File.ReadAllText(instanceCertificatePath));
+        using X509Certificate2 certificate = publicCertificate.CopyWithPrivateKey(rsa);
         certificate.Subject.Should().Contain($"OU=space:{spaceId}");
         certificate.Subject.Should().Contain($"OU=organization:{orgId}");
 
