@@ -104,14 +104,19 @@ public sealed class ServiceBindingMapperTest
             ["test-source-key"] = "test-source-value"
         };
 
-        var mapper = new ServiceBindingMapper(source, string.Empty);
-        string? tempPath = mapper.MapFromToFile("test-source-key", "test-destination-key");
+        string? tempPath;
 
-        tempPath.Should().NotBeNull();
-        source.Should().ContainKey("test-destination-key").WhoseValue.Should().Be(tempPath);
-        File.ReadAllText(tempPath).Should().Be("test-source-value");
+        using (var tempFiles = new TempFileRegistry())
+        {
+            var mapper = new ServiceBindingMapper(source, string.Empty);
+            tempPath = mapper.MapFromToFile("test-source-key", "test-destination-key", tempFiles);
 
-        File.Delete(tempPath);
+            tempPath.Should().NotBeNull();
+            source.Should().ContainKey("test-destination-key").WhoseValue.Should().Be(tempPath);
+            File.ReadAllText(tempPath).Should().Be("test-source-value");
+        }
+
+        File.Exists(tempPath).Should().BeFalse();
     }
 
     [Fact]
@@ -119,7 +124,9 @@ public sealed class ServiceBindingMapperTest
     {
         var source = new Dictionary<string, string?>();
         var mapper = new ServiceBindingMapper(source, string.Empty);
-        string? tempPath = mapper.MapFromToFile("test-source-key", "test-destination-key");
+
+        using var tempFiles = new TempFileRegistry();
+        string? tempPath = mapper.MapFromToFile("test-source-key", "test-destination-key", tempFiles);
 
         tempPath.Should().BeNull();
         source.Should().ContainKey("test-destination-key").WhoseValue.Should().BeNull();

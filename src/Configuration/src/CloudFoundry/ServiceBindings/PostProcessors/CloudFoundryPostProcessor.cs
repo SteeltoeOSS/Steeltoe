@@ -12,7 +12,13 @@ namespace Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 internal abstract partial class CloudFoundryPostProcessor : IConfigurationPostProcessor, IDisposable
 {
     private const int RegexMatchTimeoutInMilliseconds = 1_000;
-    private readonly HashSet<string> _tempFilePaths = [];
+
+    /// <summary>
+    /// Gets the temporary files (such as certificates and keys) that are shared by all providers that use this post-processor, which is deliberately the
+    /// case for the temporary copies of the parent configuration. A file is created once per distinct content, instead of each time the configuration is
+    /// processed again (such as when it reloads), and files are deleted when the post-processor is disposed.
+    /// </summary>
+    protected TempFileRegistry TempFileRegistry { get; } = new();
 
     [GeneratedRegex("^vcap:services:[^:]+:[0-9]+:tags:[0-9]+", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture,
         RegexMatchTimeoutInMilliseconds)]
@@ -61,30 +67,9 @@ internal abstract partial class CloudFoundryPostProcessor : IConfigurationPostPr
         return keys;
     }
 
-    protected void TrackTempFiles(params IEnumerable<string?> paths)
-    {
-        foreach (string? path in paths)
-        {
-            if (path != null)
-            {
-                _tempFilePaths.Add(path);
-            }
-        }
-    }
-
     public virtual void Dispose()
     {
-        foreach (string path in _tempFilePaths)
-        {
-            try
-            {
-                File.Delete(path);
-            }
-            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or NotSupportedException or ArgumentException)
-            {
-                // Intentionally left empty.
-            }
-        }
+        TempFileRegistry.Dispose();
     }
 
     [Flags]

@@ -89,8 +89,10 @@ internal abstract class ConfigurationDictionaryMapper
         return null;
     }
 
-    public string? MapFromToFile(string fromKey, string toKey)
+    public string? MapFromToFile(string fromKey, string toKey, TempFileRegistry tempFileRegistry)
     {
+        ArgumentNullException.ThrowIfNull(tempFileRegistry);
+
         string? value = GetFromValue(fromKey);
 
         if (value == null)
@@ -99,35 +101,10 @@ internal abstract class ConfigurationDictionaryMapper
             return null;
         }
 
-        string tempPath = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
-
-        using (StreamWriter writer = CreateTempFile(tempPath))
-        {
-            writer.Write(value);
-        }
+        string tempPath = tempFileRegistry.GetOrCreate(value);
 
         SetToValue(toKey, tempPath);
         return tempPath;
-    }
-
-    private static StreamWriter CreateTempFile(string path)
-    {
-        if (OperatingSystem.IsWindows())
-        {
-            // Windows doesn't support setting umask.
-            return File.CreateText(path);
-        }
-
-        var options = new FileStreamOptions
-        {
-            Mode = FileMode.Create,
-            Access = FileAccess.Write,
-            Share = FileShare.Read,
-            UnixCreateMode = UnixFileMode.UserRead | UnixFileMode.UserWrite
-        };
-
-        var fileStream = new FileStream(path, options);
-        return new StreamWriter(fileStream);
     }
 
     public void SetToValue(string toKey, string? value)
