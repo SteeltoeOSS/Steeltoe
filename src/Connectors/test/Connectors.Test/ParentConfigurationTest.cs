@@ -153,10 +153,62 @@ public sealed class ParentConfigurationTest
         builder.ConfigureAppConfiguration(configurationBuilder =>
             configurationBuilder.ConfigurePostgreSql(options => options.SkipDefaultServiceBindings = true));
 
-        using IHost host = builder.Build();
+        using (builder.Build())
+        {
+            countingSource.Providers.Should().ContainSingle();
+            countingSource.Providers[0].DisposeCount.Should().Be(0);
+        }
 
-        countingSource.Providers.Should().ContainSingle();
-        countingSource.Providers[0].DisposeCount.Should().Be(0);
+        countingSource.Providers[0].DisposeCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void Does_not_dispose_chained_host_configuration_when_composite_source_wraps_it()
+    {
+        var countingSource = new DisposeCountingConfigurationSource();
+
+        HostBuilder builder = TestHostBuilderFactory.Create();
+        builder.ConfigureHostConfiguration(configurationBuilder => configurationBuilder.Add(countingSource));
+
+        // Same order as AddSteeltoe(): AddPlaceholderResolver() and AddDecryption() move all existing sources, including the chained
+        // host configuration, into a composite source that builds them.
+        builder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.ConfigurePostgreSql(options => options.SkipDefaultServiceBindings = true);
+            WrapInCompositeSource(configurationBuilder);
+        });
+
+        using (builder.Build())
+        {
+            countingSource.Providers.Should().ContainSingle();
+            countingSource.Providers[0].DisposeCount.Should().Be(0);
+        }
+
+        countingSource.Providers[0].DisposeCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void Restores_chained_host_configuration_ownership_after_building_parent_configuration()
+    {
+        var countingSource = new DisposeCountingConfigurationSource();
+
+        HostBuilder builder = TestHostBuilderFactory.Create();
+        builder.ConfigureHostConfiguration(configurationBuilder => configurationBuilder.Add(countingSource));
+
+        ChainedConfigurationSource[] chainedSources = [];
+
+        builder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.ConfigurePostgreSql(options => options.SkipDefaultServiceBindings = true);
+            WrapInCompositeSource(configurationBuilder);
+
+            chainedSources = [.. configurationBuilder.EnumerateSources<ChainedConfigurationSource>()];
+        });
+
+        using (builder.Build())
+        {
+            chainedSources.Should().ContainSingle().Which.ShouldDisposeConfiguration.Should().BeTrue();
+        }
     }
 
     [Fact]
@@ -168,16 +220,7 @@ public sealed class ParentConfigurationTest
         builder.Add(countingSource);
         builder.ConfigurePostgreSql(options => options.SkipDefaultServiceBindings = true);
 
-        // Does what AddPlaceholderResolver() and AddDecryption() do: move all existing sources into a composite source that builds them.
-        var compositeSource = new TestCompositeConfigurationSource();
-
-        foreach (IConfigurationSource source in builder.Sources)
-        {
-            compositeSource.Sources.Add(source);
-        }
-
-        builder.Sources.Clear();
-        builder.Sources.Add(compositeSource);
+        TestCompositeConfigurationSource compositeSource = WrapInCompositeSource(builder);
 
         using (builder.BuildAsRoot())
         {
@@ -189,6 +232,24 @@ public sealed class ParentConfigurationTest
         }
 
         countingSource.Providers.Should().OnlyContain(provider => provider.DisposeCount == 1);
+    }
+
+    /// <summary>
+    /// Does what AddPlaceholderResolver() and AddDecryption() do: moves all existing sources into a composite source that builds them.
+    /// </summary>
+    private static TestCompositeConfigurationSource WrapInCompositeSource(IConfigurationBuilder builder)
+    {
+        var compositeSource = new TestCompositeConfigurationSource();
+
+        foreach (IConfigurationSource source in builder.Sources)
+        {
+            compositeSource.Sources.Add(source);
+        }
+
+        builder.Sources.Clear();
+        builder.Sources.Add(compositeSource);
+
+        return compositeSource;
     }
 
     private sealed class DisposeCountingConfigurationSource : IConfigurationSource
