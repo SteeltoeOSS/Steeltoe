@@ -17,6 +17,7 @@ internal abstract class PostProcessorConfigurationSource
 {
     private const string ParentConfigurationBuilderKey = "Steeltoe:PostProcessor:IsParentConfiguration";
 
+    private static readonly object NestedConfigurationMarker = new();
     private static readonly LockPrimitive OwningSourcesLock = new();
 
     private readonly List<IConfigurationPostProcessor> _postProcessors = [];
@@ -53,15 +54,32 @@ internal abstract class PostProcessorConfigurationSource
     }
 
     /// <summary>
-    /// Determines whether the specified builder is used to build a temporary copy of the parent configuration for this type of source. Such a copy must not
-    /// contain this source, which could otherwise (when wrapped in a <see cref="ICompositeConfigurationSource" />) build its own parent configuration again,
-    /// endlessly.
+    /// Marks the specified builder as one that builds a nested configuration, using sources that are shared with the actual configuration (such as the
+    /// configuration that Config Server uses to determine how to connect). Providers created from it neither recapture the builder nor dispose the
+    /// post-processors that are shared with the providers of the actual configuration, and connection strings aren't post-processed in it.
     /// </summary>
+    public static void MarkAsNestedConfiguration(IConfigurationBuilder configurationBuilder)
+    {
+        ArgumentNullException.ThrowIfNull(configurationBuilder);
+
+        configurationBuilder.Properties[ParentConfigurationBuilderKey] = NestedConfigurationMarker;
+    }
+
+    /// <summary>
+    /// Determines whether this source must be skipped, because the specified builder is used to build a temporary copy of the parent configuration for this
+    /// type of source, or a nested configuration (see <see cref="MarkAsNestedConfiguration" />).
+    /// </summary>
+    /// <remarks>
+    /// If this source is not skipped in these cases, it rebuilds the parent configuration. That parent configuration contains the same source, so the same
+    /// steps repeat forever. This can happen in two situations. In the first, this source is wrapped in an <see cref="ICompositeConfigurationSource" />. In
+    /// the second, another source in the parent configuration (such as Config Server) builds a nested configuration from the same sources.
+    /// </remarks>
     protected bool IsBuildingOwnParentConfiguration(IConfigurationBuilder configurationBuilder)
     {
         ArgumentNullException.ThrowIfNull(configurationBuilder);
 
-        return configurationBuilder.Properties.TryGetValue(ParentConfigurationBuilderKey, out object? owner) && ReferenceEquals(owner, GetType());
+        return configurationBuilder.Properties.TryGetValue(ParentConfigurationBuilderKey, out object? owner) &&
+            (ReferenceEquals(owner, GetType()) || ReferenceEquals(owner, NestedConfigurationMarker));
     }
 
     /// <summary>
