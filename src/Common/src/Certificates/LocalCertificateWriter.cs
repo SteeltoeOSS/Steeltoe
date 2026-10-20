@@ -76,6 +76,10 @@ internal sealed class LocalCertificateWriter
 #endif
         }
 
+        // Certificates are disposed at the end of this method. On Windows and macOS, a certificate loaded from a file leaves private key material on disk
+        // when it isn't disposed before the process exits.
+        using X509Certificate2 caCertificateToDispose = caCertificate;
+
         File.WriteAllText(RootCaCrtPath, caCertificate.ExportCertificatePem());
 
         // Create the intermediate certificate if it doesn't already exist (can be shared by multiple applications)
@@ -95,11 +99,13 @@ internal sealed class LocalCertificateWriter
 #endif
         }
 
+        using X509Certificate2 intermediateCertificateToDispose = intermediateCertificate;
+
         File.WriteAllText(IntermediateCrtPath, intermediateCertificate.ExportCertificatePem());
 
         var subjectAlternativeNameBuilder = new SubjectAlternativeNameBuilder();
 
-        X509Certificate2 clientCertificate = CreateClientCertificate(subject, intermediateCertificate, subjectAlternativeNameBuilder);
+        using X509Certificate2 clientCertificate = CreateClientCertificate(subject, intermediateCertificate, subjectAlternativeNameBuilder);
 
         // Instance certificates are per-application and are written under the application directory.
         Directory.CreateDirectory(Path.Combine(AppBasePath, CertificateDirectoryName));
@@ -133,7 +139,10 @@ internal sealed class LocalCertificateWriter
         using var randomNumberGenerator = RandomNumberGenerator.Create();
         randomNumberGenerator.GetBytes(serialNumber);
 
-        return certificateRequest.Create(issuerCertificate, _timeProvider.GetUtcNow(), issuerCertificate.NotAfter, serialNumber).CopyWithPrivateKey(privateKey);
+        using X509Certificate2 signedCertificate =
+            certificateRequest.Create(issuerCertificate, _timeProvider.GetUtcNow(), issuerCertificate.NotAfter, serialNumber);
+
+        return signedCertificate.CopyWithPrivateKey(privateKey);
     }
 
     private X509Certificate2 CreateClientCertificate(string subjectName, X509Certificate2 issuerCertificate, SubjectAlternativeNameBuilder alternativeNames,
@@ -160,7 +169,7 @@ internal sealed class LocalCertificateWriter
         }
 
         DateTimeOffset utcNow = _timeProvider.GetUtcNow();
-        X509Certificate2 signedCertificate = request.Create(issuerCertificate, utcNow, notAfter ?? utcNow.AddDays(1), serialNumber);
+        using X509Certificate2 signedCertificate = request.Create(issuerCertificate, utcNow, notAfter ?? utcNow.AddDays(1), serialNumber);
         return signedCertificate.CopyWithPrivateKey(privateKey);
     }
 }
