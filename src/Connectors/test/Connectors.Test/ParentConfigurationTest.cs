@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration;
@@ -138,6 +139,21 @@ public sealed class ParentConfigurationTest
         }
 
         processor.DisposeCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void Connector_source_is_skipped_when_building_nested_configuration_of_another_source()
+    {
+        var connectorSource = new ConnectionStringPostProcessorConfigurationSource(false);
+
+        // Config Server builds its own configuration from the same sources, which would otherwise build the parent configuration (that contains Config
+        // Server) again for each connector, endlessly.
+        var builder = new ConfigurationBuilder();
+        PostProcessorConfigurationSource.MarkAsNestedConfiguration(builder);
+
+        IConfigurationProvider provider = connectorSource.Build(builder);
+
+        provider.Should().BeOfType<MemoryConfigurationProvider>();
     }
 
     [Fact]

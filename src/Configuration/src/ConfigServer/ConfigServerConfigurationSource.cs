@@ -100,6 +100,10 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
             configurationBuilder.Properties.Add(pair);
         }
 
+        // The sources are shared with the actual configuration. Without the marker, post-processor sources would recapture this incomplete builder as the
+        // parent configuration, dispose the shared post-processors when this nested configuration is disposed, and connectors would build it endlessly.
+        PostProcessorConfigurationSource.MarkAsNestedConfiguration(configurationBuilder);
+
         Configuration = configurationBuilder.Build();
         return new ConfigServerConfigurationProvider(this, _loggerFactory);
     }
