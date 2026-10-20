@@ -12,7 +12,6 @@ using Steeltoe.Common.Extensions;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Consul.Configuration;
-using Steeltoe.Discovery.Consul.Registry;
 
 namespace Steeltoe.Discovery.Consul;
 
@@ -94,16 +93,6 @@ public static class ConsulServiceCollectionExtensions
             return ConsulClientFactory.CreateClient(consulOptions.Value);
         });
 
-        services.AddSingleton<TtlScheduler>();
-        services.AddSingleton<ConsulServiceRegistry>();
-
-        services.AddSingleton(serviceProvider =>
-        {
-            var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
-            return ConsulRegistration.Create(optionsMonitor);
-        });
-
-        services.AddSingleton<ConsulServiceRegistrar>();
         services.TryAddEnumerable(ServiceDescriptor.Singleton<IDiscoveryClient, ConsulDiscoveryClient>());
         services.AddHostedService<DiscoveryClientHostedService>();
         services.AddSingleton<IHealthContributor, ConsulHealthContributor>();

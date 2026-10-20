@@ -11,7 +11,7 @@ using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Net;
 using Steeltoe.Discovery.Consul.Configuration;
 
-namespace Steeltoe.Discovery.Consul.Test.Discovery;
+namespace Steeltoe.Discovery.Consul.Test;
 
 public sealed class PostConfigureConsulDiscoveryOptionsTest
 {

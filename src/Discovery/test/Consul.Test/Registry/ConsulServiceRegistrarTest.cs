@@ -3,11 +3,13 @@
 // See the LICENSE file in the project root for more information.
 
 using Consul;
-using Microsoft.Extensions.Logging.Abstractions;
+using FluentAssertions.Specialized;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Steeltoe.Discovery.Consul.Test.Registry;
 
@@ -16,111 +18,422 @@ public sealed class ConsulServiceRegistrarTest
     private static readonly WriteResult DefaultWriteResult = new();
 
     [Fact]
-    public async Task Start_CallsRegistry()
+    public async Task WhenDisabled_NothingIsRegisteredOrDeregistered()
     {
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>());
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["consul:discovery:enabled"] = "false"
+        };
 
-        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClientAgentSubstitute(registration);
-        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
-        await using var registrar = new ConsulServiceRegistrar(registry, optionsMonitor, registration, NullLogger<ConsulServiceRegistrar>.Instance);
+        await using var scope = new TestRegistrarScope(appSettings);
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
 
-        await registrar.StartAsync(TestContext.Current.CancellationToken);
+        scope.Registrar.IsRunning.Should().BeFalse();
+        scope.Registrar.Heartbeat.Should().BeNull();
+        scope.OptionsMonitor.ListenerCount.Should().Be(0);
+        await scope.Agent.DidNotReceive().ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>());
 
-        registrar.IsRunning.Should().BeTrue();
-        await agent.Received(1).ServiceRegister(registration.InnerRegistration, Arg.Any<CancellationToken>());
+        await scope.Registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        await scope.Agent.DidNotReceive().ServiceDeregister(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        scope.LoggerProvider.GetAll().Should().BeEmpty();
     }
 
     [Fact]
-    public async Task Start_DoesNotCallRegistry()
+    public async Task WhenRegisterIsFalse_NothingIsRegisteredOrDeregistered()
     {
-        var optionsMonitor = TestOptionsMonitor.Create(new ConsulDiscoveryOptions
+        var appSettings = new Dictionary<string, string?>
         {
-            Register = false
+            ["consul:discovery:register"] = "false"
+        };
+
+        await using var scope = new TestRegistrarScope(appSettings);
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        scope.Registrar.IsRunning.Should().BeTrue();
+        scope.Registrar.Heartbeat.Should().BeNull();
+        scope.OptionsMonitor.ListenerCount.Should().Be(0);
+        await scope.Agent.DidNotReceive().ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>());
+
+        await scope.Registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        await scope.Agent.DidNotReceive().ServiceDeregister(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        scope.LoggerProvider.GetAll().Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Start_WithTtlCheck_RegistersAndStartsHeartbeat()
+    {
+        await using var scope = new TestRegistrarScope([]);
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        string instanceId = scope.Registrar.ServiceInstance.InstanceId;
+
+        await scope.Agent.Received(1)
+            .ServiceRegister(Arg.Is<AgentServiceRegistration>(payload => payload.ID == instanceId && payload.Check != null && payload.Check.TTL != null),
+                Arg.Any<CancellationToken>());
+
+        scope.Registrar.IsRunning.Should().BeTrue();
+        scope.Registrar.Heartbeat.Should().NotBeNull();
+        scope.Registrar.Heartbeat.CheckId.Should().Be($"service:{instanceId}");
+        scope.Registrar.Heartbeat.Interval.Should().Be(TimeSpan.FromSeconds(20));
+        scope.OptionsMonitor.ListenerCount.Should().Be(1);
+        scope.LoggerProvider.GetAll().Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Start_WithHttpCheck_RegistersWithoutHeartbeat()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["consul:discovery:port"] = "8080",
+            ["consul:discovery:heartbeat:enabled"] = "false"
+        };
+
+        await using var scope = new TestRegistrarScope(appSettings);
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        await scope.Agent.Received(1)
+            .ServiceRegister(Arg.Is<AgentServiceRegistration>(payload => payload.Check != null && payload.Check.HTTP != null && payload.Check.TTL == null),
+                Arg.Any<CancellationToken>());
+
+        scope.Registrar.Heartbeat.Should().BeNull();
+        scope.OptionsMonitor.ListenerCount.Should().Be(0);
+        scope.LoggerProvider.GetAll().Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Start_WithoutHealthCheck_RegistersWithoutCheckAndWithoutHeartbeat()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["consul:discovery:registerHealthCheck"] = "false"
+        };
+
+        await using var scope = new TestRegistrarScope(appSettings);
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        await scope.Agent.Received(1).ServiceRegister(Arg.Is<AgentServiceRegistration>(payload => payload.Check == null), Arg.Any<CancellationToken>());
+
+        scope.Registrar.Heartbeat.Should().BeNull();
+        scope.OptionsMonitor.ListenerCount.Should().Be(0);
+        scope.LoggerProvider.GetAll().Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task Start_WhenHttpCheckIsConfiguredButPortIsUnknown_RegistersWithoutCheckAndLogsWarning()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["consul:discovery:heartbeat:enabled"] = "false",
+            ["consul:discovery:useAspNetCoreUrls"] = "false"
+        };
+
+        await using var scope = new TestRegistrarScope(appSettings);
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        await scope.Agent.Received(1).ServiceRegister(Arg.Is<AgentServiceRegistration>(payload => payload.Check == null), Arg.Any<CancellationToken>());
+
+        IList<string> logMessages = scope.LoggerProvider.GetAll();
+        logMessages.Should().ContainSingle();
+        logMessages[0].Should().Be($"WARN {typeof(ConsulServiceRegistrar)}: Registering without an HTTP health check because the port of this app is unknown.");
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Start_WhenRegistrationFailsWithFailFast_ThrowsAndLeavesNothingBehind(bool isTimeout)
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["consul:discovery:failFast"] = "true"
+        };
+
+        Exception failure = CreateRegistrationFailure(isTimeout);
+
+        await using var scope = new TestRegistrarScope(appSettings);
+        scope.Agent.ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>()).Returns<Task<WriteResult>>(_ => throw failure);
+
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        ExceptionAssertions<Exception> assertion = await action.Should().ThrowAsync<Exception>();
+        assertion.Which.Should().BeSameAs(failure);
+
+        scope.Registrar.Heartbeat.Should().BeNull();
+        scope.OptionsMonitor.ListenerCount.Should().Be(0);
+
+        string serviceId = scope.Registrar.ServiceInstance.ServiceId;
+        IList<string> logMessages = scope.LoggerProvider.GetAll();
+        logMessages.Should().ContainSingle();
+        logMessages[0].Should().Be($"FAIL {typeof(ConsulServiceRegistrar)}: Error registering service {serviceId} with Consul.");
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Start_WhenRegistrationFailsWithoutFailFast_LeavesNothingBehindAndDoesNotDeregister(bool isTimeout)
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["consul:discovery:failFast"] = "false"
+        };
+
+        Exception failure = CreateRegistrationFailure(isTimeout);
+
+        await using var scope = new TestRegistrarScope(appSettings);
+        scope.Agent.ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>()).Returns<Task<WriteResult>>(_ => throw failure);
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        scope.Registrar.Heartbeat.Should().BeNull();
+        scope.OptionsMonitor.ListenerCount.Should().Be(0);
+
+        await scope.Registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        await scope.Agent.DidNotReceive().ServiceDeregister(Arg.Any<string>(), Arg.Any<CancellationToken>());
+
+        string serviceId = scope.Registrar.ServiceInstance.ServiceId;
+        IList<string> logMessages = scope.LoggerProvider.GetAll();
+        logMessages.Should().ContainSingle();
+        logMessages[0].Should().Be($"WARN {typeof(ConsulServiceRegistrar)}: FailFast is false. Error registering service {serviceId} with Consul.");
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Start_WithRetry_SucceedsOnLaterAttempt(bool isTimeout)
+    {
+        Exception failure = CreateRegistrationFailure(isTimeout);
+
+        await using var scope = new TestRegistrarScope(CreateRetrySettings());
+        int attempts = 0;
+
+        scope.Agent.ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>()).Returns(_ =>
+        {
+            attempts++;
+            return attempts < 3 ? throw failure : Task.FromResult(DefaultWriteResult);
         });
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>());
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
 
-        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClientAgentSubstitute(registration);
-        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
-        await using var registrar = new ConsulServiceRegistrar(registry, optionsMonitor, registration, NullLogger<ConsulServiceRegistrar>.Instance);
+        attempts.Should().Be(3);
+        scope.Registrar.Heartbeat.Should().NotBeNull();
 
-        await registrar.StartAsync(TestContext.Current.CancellationToken);
+        string serviceId = scope.Registrar.ServiceInstance.ServiceId;
+        IList<string> logMessages = scope.LoggerProvider.GetAll();
+        logMessages.Should().HaveCount(4);
+        logMessages[0].Should().Be($"FAIL {typeof(ConsulServiceRegistrar)}: Error registering service {serviceId} with Consul.");
+        logMessages[1].Should().Be($"FAIL {typeof(ConsulServiceRegistrar)}: Exception during 1 attempts of retryable action, will retry.");
+        logMessages[2].Should().Be($"FAIL {typeof(ConsulServiceRegistrar)}: Error registering service {serviceId} with Consul.");
+        logMessages[3].Should().Be($"FAIL {typeof(ConsulServiceRegistrar)}: Exception during 2 attempts of retryable action, will retry.");
+    }
 
-        registrar.IsRunning.Should().BeTrue();
-        await agent.DidNotReceive().ServiceRegister(registration.InnerRegistration, Arg.Any<CancellationToken>());
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Start_WithRetry_ThrowsAfterMaxAttempts(bool isTimeout)
+    {
+        Exception failure = CreateRegistrationFailure(isTimeout);
+
+        await using var scope = new TestRegistrarScope(CreateRetrySettings());
+        scope.Agent.ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>()).Returns<Task<WriteResult>>(_ => throw failure);
+
+        // ReSharper disable once AccessToDisposedClosure
+        Func<Task> action = async () => await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        ExceptionAssertions<Exception> assertion = await action.Should().ThrowAsync<Exception>();
+        assertion.Which.Should().BeSameAs(failure);
+
+        await scope.Agent.Received(3).ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>());
+        scope.Registrar.Heartbeat.Should().BeNull();
+
+        string serviceId = scope.Registrar.ServiceInstance.ServiceId;
+        IList<string> logMessages = scope.LoggerProvider.GetAll();
+        logMessages.Should().HaveCount(6);
+        logMessages[0].Should().Be($"FAIL {typeof(ConsulServiceRegistrar)}: Error registering service {serviceId} with Consul.");
+        logMessages[1].Should().Be($"FAIL {typeof(ConsulServiceRegistrar)}: Exception during 1 attempts of retryable action, will retry.");
+        logMessages[2].Should().Be($"FAIL {typeof(ConsulServiceRegistrar)}: Error registering service {serviceId} with Consul.");
+        logMessages[3].Should().Be($"FAIL {typeof(ConsulServiceRegistrar)}: Exception during 2 attempts of retryable action, will retry.");
+        logMessages[4].Should().Be($"FAIL {typeof(ConsulServiceRegistrar)}: Error registering service {serviceId} with Consul.");
+        logMessages[5].Should().Be($"FAIL {typeof(ConsulServiceRegistrar)}: Exception during 3 attempts of retryable action, done with retries.");
     }
 
     [Fact]
-    public async Task Start_DoesNotStart()
+    public async Task OptionsChange_WithAutoChangingInstanceId_UpdatesIntervalOfRunningHeartbeat()
     {
-        var optionsMonitor = TestOptionsMonitor.Create(new ConsulDiscoveryOptions
+        var initialSettings = new Dictionary<string, string?>
         {
-            Enabled = false
-        });
+            ["consul:discovery:heartbeat:ttlValue"] = "5"
+        };
 
-        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>());
+        await using var scope = new TestRegistrarScope(initialSettings);
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
 
-        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClientAgentSubstitute(registration);
-        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
-        await using var registrar = new ConsulServiceRegistrar(registry, optionsMonitor, registration, NullLogger<ConsulServiceRegistrar>.Instance);
+        PeriodicHeartbeat heartbeat = scope.Registrar.Heartbeat!;
+        TimeSpan beforeInterval = heartbeat.Interval;
 
-        await registrar.StartAsync(TestContext.Current.CancellationToken);
+        var changedSettings = new Dictionary<string, string?>
+        {
+            ["consul:discovery:heartbeat:ttlValue"] = "10"
+        };
 
-        registrar.IsRunning.Should().BeFalse();
-        await agent.DidNotReceive().ServiceRegister(registration.InnerRegistration, Arg.Any<CancellationToken>());
+        // PostConfigure generates a new instance ID for every options build when none is configured, which must be ignored.
+        ConsulDiscoveryOptions changedOptions = TestRegistrationFactory.CreateDiscoveryOptions(changedSettings);
+        changedOptions.InstanceId.Should().NotBe(scope.OptionsMonitor.CurrentValue.InstanceId);
+
+        scope.OptionsMonitor.Change(changedOptions);
+
+        scope.Registrar.Heartbeat.Should().BeSameAs(heartbeat);
+        heartbeat.Interval.Should().NotBe(beforeInterval);
+        scope.OptionsMonitor.ListenerCount.Should().Be(1);
     }
 
     [Fact]
-    public async Task Dispose_CallsRegistry()
+    public async Task Shutdown_ReleasesHeartbeatAndSubscription_AndDeregisters()
     {
-        var optionsMonitor = new TestOptionsMonitor<ConsulDiscoveryOptions>();
-        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>());
+        await using var scope = new TestRegistrarScope([]);
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
 
-        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClientAgentSubstitute(registration);
-        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
-        var registrar = new ConsulServiceRegistrar(registry, optionsMonitor, registration, NullLogger<ConsulServiceRegistrar>.Instance);
+        scope.OptionsMonitor.ListenerCount.Should().Be(1);
 
-        await using (registrar)
+        await scope.Registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        scope.Registrar.IsRunning.Should().BeFalse();
+        scope.Registrar.Heartbeat.Should().BeNull();
+        scope.OptionsMonitor.ListenerCount.Should().Be(0);
+        await scope.Agent.Received(1).ServiceDeregister(scope.Registrar.ServiceInstance.InstanceId, Arg.Any<CancellationToken>());
+        scope.LoggerProvider.GetAll().Should().BeEmpty();
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Shutdown_WhenDeregistrationFails_LogsErrorAndStillReleasesResources(bool isTimeout)
+    {
+        Exception failure = CreateRegistrationFailure(isTimeout);
+
+        await using var scope = new TestRegistrarScope([]);
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        scope.Agent.ServiceDeregister(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns<Task<WriteResult>>(_ => throw failure);
+
+        await scope.Registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        scope.Registrar.IsRunning.Should().BeFalse();
+        scope.Registrar.Heartbeat.Should().BeNull();
+        scope.OptionsMonitor.ListenerCount.Should().Be(0);
+
+        string serviceId = scope.Registrar.ServiceInstance.ServiceId;
+        IList<string> logMessages = scope.LoggerProvider.GetAll();
+        logMessages.Should().ContainSingle();
+        logMessages[0].Should().Be($"FAIL {typeof(ConsulServiceRegistrar)}: Error deregistering service {serviceId} with Consul.");
+    }
+
+    [Fact]
+    public async Task Shutdown_DoesNotDeregister_WhenDeregisterIsFalse()
+    {
+        var appSettings = new Dictionary<string, string?>
         {
-            await registrar.StartAsync(TestContext.Current.CancellationToken);
+            ["consul:discovery:deregister"] = "false"
+        };
+
+        await using var scope = new TestRegistrarScope(appSettings);
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+        await scope.Registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        scope.Registrar.Heartbeat.Should().BeNull();
+        await scope.Agent.DidNotReceive().ServiceDeregister(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Shutdown_Deregisters_EvenWhenOptionsChangedToNoLongerRegister()
+    {
+        await using var scope = new TestRegistrarScope([]);
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        var changedSettings = new Dictionary<string, string?>
+        {
+            ["consul:discovery:register"] = "false"
+        };
+
+        ConsulDiscoveryOptions changedOptions = TestRegistrationFactory.CreateDiscoveryOptions(changedSettings);
+        scope.OptionsMonitor.Change(changedOptions);
+        await scope.Registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        await scope.Agent.Received(1).ServiceDeregister(scope.Registrar.ServiceInstance.InstanceId, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Shutdown_DoesNotDeregisterButStillReleasesResources_WhenOptionsChangedToNotDeregister()
+    {
+        await using var scope = new TestRegistrarScope([]);
+        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+
+        var changedSettings = new Dictionary<string, string?>
+        {
+            ["consul:discovery:deregister"] = "false"
+        };
+
+        ConsulDiscoveryOptions changedOptions = TestRegistrationFactory.CreateDiscoveryOptions(changedSettings);
+        scope.OptionsMonitor.Change(changedOptions);
+
+        await scope.Registrar.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        scope.Registrar.IsRunning.Should().BeFalse();
+        scope.Registrar.Heartbeat.Should().BeNull();
+        scope.OptionsMonitor.ListenerCount.Should().Be(0);
+        await scope.Agent.DidNotReceive().ServiceDeregister(Arg.Any<string>(), Arg.Any<CancellationToken>());
+    }
+
+    private static Exception CreateRegistrationFailure(bool isTimeout)
+    {
+        return isTimeout
+            ? new TaskCanceledException("The request was canceled due to the configured HttpClient.Timeout of 100 seconds elapsing.", new TimeoutException())
+            : new HttpRequestException("Connection refused.");
+    }
+
+    private static Dictionary<string, string?> CreateRetrySettings()
+    {
+        return new Dictionary<string, string?>
+        {
+            ["consul:discovery:failFast"] = "true",
+            ["consul:discovery:retry:enabled"] = "true",
+            ["consul:discovery:retry:initialInterval"] = "1",
+            ["consul:discovery:retry:maxInterval"] = "1",
+            ["consul:discovery:retry:maxAttempts"] = "3"
+        };
+    }
+
+    private sealed class TestRegistrarScope : IAsyncDisposable
+    {
+        private readonly ILoggerFactory _loggerFactory;
+
+        public IAgentEndpoint Agent { get; }
+        public TestOptionsMonitor<ConsulDiscoveryOptions> OptionsMonitor { get; }
+        public CapturingLoggerProvider LoggerProvider { get; } = new();
+        public ConsulServiceRegistrar Registrar { get; }
+
+        public TestRegistrarScope(Dictionary<string, string?> appSettings)
+        {
+            Agent = Substitute.For<IAgentEndpoint>();
+            Agent.ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(DefaultWriteResult));
+            Agent.ServiceDeregister(Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(DefaultWriteResult));
+            Agent.PassTTL(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(Task.FromResult(DefaultWriteResult));
+
+            var client = Substitute.For<IConsulClient>();
+            client.Agent.Returns(Agent);
+
+            OptionsMonitor = TestRegistrationFactory.CreateOptionsMonitor(appSettings);
+
+            _loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Warning).AddProvider(LoggerProvider));
+
+            Registrar = new ConsulServiceRegistrar(client, OptionsMonitor, _loggerFactory);
         }
 
-        registrar.IsRunning.Should().BeFalse();
-        await agent.Received(1).ServiceDeregister(registration.InstanceId, Arg.Any<CancellationToken>());
-    }
-
-    [Fact]
-    public async Task Dispose_DoesNotCallRegistry()
-    {
-        var optionsMonitor = TestOptionsMonitor.Create(new ConsulDiscoveryOptions
+        public async ValueTask DisposeAsync()
         {
-            Deregister = false
-        });
-
-        ConsulRegistration registration = TestRegistrationFactory.Create(new Dictionary<string, string?>());
-
-        (IConsulClient client, IAgentEndpoint agent) = CreateConsulClientAgentSubstitute(registration);
-        await using var registry = new ConsulServiceRegistry(client, optionsMonitor, null, NullLogger<ConsulServiceRegistry>.Instance);
-        var registrar = new ConsulServiceRegistrar(registry, optionsMonitor, registration, NullLogger<ConsulServiceRegistrar>.Instance);
-
-        await using (registrar)
-        {
-            await registrar.StartAsync(TestContext.Current.CancellationToken);
+            await Registrar.DisposeAsync();
+            _loggerFactory.Dispose();
         }
-
-        await agent.DidNotReceive().ServiceDeregister(registration.InstanceId, Arg.Any<CancellationToken>());
-    }
-
-    private static (IConsulClient Client, IAgentEndpoint Agent) CreateConsulClientAgentSubstitute(ConsulRegistration registration)
-    {
-        var agent = Substitute.For<IAgentEndpoint>();
-        agent.ServiceRegister(registration.InnerRegistration, Arg.Any<CancellationToken>()).Returns(Task.FromResult(DefaultWriteResult));
-        agent.ServiceDeregister(registration.InstanceId, Arg.Any<CancellationToken>()).Returns(Task.FromResult(DefaultWriteResult));
-
-        var client = Substitute.For<IConsulClient>();
-        client.Agent.Returns(agent);
-
-        return (client, agent);
     }
 }

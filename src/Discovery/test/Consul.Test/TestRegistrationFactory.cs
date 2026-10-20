@@ -13,11 +13,11 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 using Steeltoe.Discovery.Consul.Registry;
 
-namespace Steeltoe.Discovery.Consul.Test.Registry;
+namespace Steeltoe.Discovery.Consul.Test;
 
 internal static class TestRegistrationFactory
 {
-    public static ConsulRegistration Create(IDictionary<string, string?> appSettings)
+    public static ConsulDiscoveryOptions CreateDiscoveryOptions(Dictionary<string, string?> appSettings)
     {
         IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
@@ -32,13 +32,33 @@ internal static class TestRegistrationFactory
         configurationRoot.GetSection("consul:discovery").Bind(options);
 
         var domainNameResolver = Substitute.For<IDomainNameResolver>();
+        domainNameResolver.ResolveHostName().Returns(_ => "localhost");
+
         var networkInterfaceProvider = Substitute.For<INetworkInterfaceProvider>();
         var inetUtils = new InetUtils(domainNameResolver, networkInterfaceProvider, new TestOptionsMonitor<InetOptions>(), NullLogger<InetUtils>.Instance);
 
         var configurer = new PostConfigureConsulDiscoveryOptions(configurationRoot, domainNameResolver, inetUtils, appInfo);
         configurer.PostConfigure(null, options);
 
-        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        return ConsulRegistration.Create(optionsMonitor);
+        return options;
+    }
+
+    public static TestOptionsMonitor<ConsulDiscoveryOptions> CreateOptionsMonitor(Dictionary<string, string?> appSettings)
+    {
+        ConsulDiscoveryOptions options = CreateDiscoveryOptions(appSettings);
+        return TestOptionsMonitor.Create(options);
+    }
+
+    public static ConsulServiceInstance CreateServiceInstance(Dictionary<string, string?> appSettings)
+    {
+        ConsulDiscoveryOptions options = CreateDiscoveryOptions(appSettings);
+        return ConsulServiceInstance.FromOptions(options);
+    }
+
+    public static ConsulServiceRegistration CreateRegistration(Dictionary<string, string?> appSettings)
+    {
+        ConsulDiscoveryOptions options = CreateDiscoveryOptions(appSettings);
+        ConsulServiceInstance serviceInstance = ConsulServiceInstance.FromOptions(options);
+        return new ConsulServiceRegistration(serviceInstance, options);
     }
 }

@@ -10,7 +10,7 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
 using HealthStatus = Steeltoe.Common.HealthChecks.HealthStatus;
 
-namespace Steeltoe.Discovery.Consul.Test.Discovery;
+namespace Steeltoe.Discovery.Consul.Test;
 
 public sealed class ConsulHealthContributorTest
 {
