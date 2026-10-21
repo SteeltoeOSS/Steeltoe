@@ -30,6 +30,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
         HostBuilder hostBuilder = GetHostBuilder();
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -82,6 +83,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
         HostBuilder clientHostBuilder = GetHostBuilder();
         await using HostWrapper clientHost = HostWrapper.Wrap(clientHostBuilder.Build());
         await clientHost.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificate = clientHost.Services.GetAppInstanceIdentityCertificate();
         var handlerFactory = clientHost.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
         SocketsHttpHandler socketsHandler = GetInnerHandler(handler).Should().BeOfType<SocketsHttpHandler>().Which;
@@ -98,7 +100,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string instanceCertificatePem = await File.ReadAllTextAsync("instance.crt", TestContext.Current.CancellationToken);
-        var expectedCertificate = X509Certificate2.CreateFromPem(instanceCertificatePem);
+        using var expectedCertificate = X509Certificate2.CreateFromPem(instanceCertificatePem);
         receivedCertificate.Should().NotBeNull();
         receivedCertificate.Thumbprint.Should().Be(expectedCertificate.Thumbprint);
     }
@@ -124,6 +126,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
 
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -159,6 +162,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
 
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -221,6 +225,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
 
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         Action action = () => handlerFactory.CreateHandler("test");
@@ -254,6 +259,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
 
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");

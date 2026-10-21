@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
@@ -133,7 +134,8 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
-        provider.ClientOptions.ClientCertificate.Certificate.Should().NotBeNull();
+        using X509Certificate2? clientCertificate = provider.ClientOptions.ClientCertificate.Certificate;
+        clientCertificate.Should().NotBeNull();
     }
 
     [Fact]
@@ -156,7 +158,8 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
-        provider.ClientOptions.ClientCertificate.Certificate.Should().NotBeNull();
+        using X509Certificate2? clientCertificate = provider.ClientOptions.ClientCertificate.Certificate;
+        clientCertificate.Should().NotBeNull();
     }
 
     [Fact]

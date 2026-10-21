@@ -280,8 +280,11 @@ public sealed class ConfigServerClientOptionsTest
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
-        provider.ClientOptions.ClientCertificate.Certificate.Should().NotBeNull();
-        optionsMonitor.CurrentValue.ClientCertificate.Certificate.Should().NotBeNull();
+        using X509Certificate2? initialProviderCertificate = provider.ClientOptions.ClientCertificate.Certificate;
+        using X509Certificate2? initialMonitorCertificate = optionsMonitor.CurrentValue.ClientCertificate.Certificate;
+
+        initialProviderCertificate.Should().NotBeNull();
+        initialMonitorCertificate.Should().NotBeNull();
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -304,10 +307,13 @@ public sealed class ConfigServerClientOptionsTest
 
         fileProvider.NotifyChanged();
 
+        using X509Certificate2? reloadedProviderCertificate = provider.ClientOptions.ClientCertificate.Certificate;
+        using X509Certificate2? reloadedMonitorCertificate = optionsMonitor.CurrentValue.ClientCertificate.Certificate;
+
         provider.ClientOptions.Timeout.Should().Be(15_000);
-        provider.ClientOptions.ClientCertificate.Certificate.Should().NotBeNull();
+        reloadedProviderCertificate.Should().NotBeNull();
         optionsMonitor.CurrentValue.Timeout.Should().Be(15_000);
-        optionsMonitor.CurrentValue.ClientCertificate.Certificate.Should().NotBeNull();
+        reloadedMonitorCertificate.Should().NotBeNull();
     }
 
     [Fact]

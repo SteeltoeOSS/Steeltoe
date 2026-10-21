@@ -108,6 +108,8 @@ public sealed class ConfigureCertificateOptionsTest
 
         configureOptions.Configure(certificateName, options);
 
+        using X509Certificate2? certificate = options.Certificate;
+
         options.Certificate.Should().NotBeNull();
         options.Certificate.HasPrivateKey.Should().BeTrue();
         options.IssuerChain.Should().HaveCount(1);
@@ -131,6 +133,8 @@ public sealed class ConfigureCertificateOptionsTest
 
         configureOptions.Configure(certificateName, options);
 
+        using X509Certificate2? certificate = options.Certificate;
+
         options.Certificate.Should().NotBeNull();
         options.Certificate.HasPrivateKey.Should().BeTrue();
         options.IssuerChain.Should().HaveCount(1);
@@ -142,6 +146,8 @@ public sealed class ConfigureCertificateOptionsTest
     [InlineData(CertificateName)]
     public async Task CertificateOptions_update_on_changed_contents(string certificateName)
     {
+        using var collector = new CertificateCollector();
+
         using var sandbox = new Sandbox();
         string firstCertificateContent = await File.ReadAllTextAsync("instance.crt", TestContext.Current.CancellationToken);
         string firstPrivateKeyContent = await File.ReadAllTextAsync("instance.key", TestContext.Current.CancellationToken);
@@ -166,7 +172,8 @@ public sealed class ConfigureCertificateOptionsTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
-        optionsMonitor.Get(certificateName).Certificate.Should().BeEquivalentTo(firstX509);
+        collector.Attach(optionsMonitor, certificateName);
+        collector.GetCurrent().Should().BeEquivalentTo(firstX509);
 
         await WaitUntilCertificateChangedToAsync(certificateName, secondX509, optionsMonitor, async () =>
         {
@@ -174,7 +181,7 @@ public sealed class ConfigureCertificateOptionsTest
             await File.WriteAllTextAsync(privateKeyFilePath, secondPrivateKeyContent, TestContext.Current.CancellationToken);
         });
 
-        optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
+        collector.GetCurrent().Should().Be(secondX509);
     }
 
     [Theory]
@@ -182,6 +189,8 @@ public sealed class ConfigureCertificateOptionsTest
     [InlineData(CertificateName)]
     public async Task CertificateOptions_update_on_changed_path(string certificateName)
     {
+        using var collector = new CertificateCollector();
+
         using var sandbox = new Sandbox();
         string firstCertificateContent = await File.ReadAllTextAsync("instance.crt", TestContext.Current.CancellationToken);
         string firstPrivateKeyContent = await File.ReadAllTextAsync("instance.key", TestContext.Current.CancellationToken);
@@ -206,7 +215,8 @@ public sealed class ConfigureCertificateOptionsTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CertificateOptions>>();
-        optionsMonitor.Get(certificateName).Certificate.Should().BeEquivalentTo(firstX509);
+        collector.Attach(optionsMonitor, certificateName);
+        collector.GetCurrent().Should().BeEquivalentTo(firstX509);
 
         await WaitUntilCertificateChangedToAsync(certificateName, secondX509, optionsMonitor, () =>
         {
@@ -216,7 +226,7 @@ public sealed class ConfigureCertificateOptionsTest
             return Task.CompletedTask;
         });
 
-        optionsMonitor.Get(certificateName).Certificate.Should().Be(secondX509);
+        collector.GetCurrent().Should().Be(secondX509);
     }
 
     private static string BuildAppSettingsJson(string certificateName, string certificatePath, string keyPath)
@@ -267,5 +277,68 @@ public sealed class ConfigureCertificateOptionsTest
         return string.IsNullOrEmpty(optionName)
             ? string.Join(ConfigurationPath.KeyDelimiter, CertificateOptions.ConfigurationKeyPrefix, propertyName)
             : string.Join(ConfigurationPath.KeyDelimiter, CertificateOptions.ConfigurationKeyPrefix, optionName, propertyName);
+    }
+
+    /// <summary>
+    /// Collects every certificate that the options monitor creates (including intermediate ones that tests never see, because a changed certificate path
+    /// triggers a reload for both the certificate and key file watchers) and disposes them, so that no private key material is left on disk.
+    /// </summary>
+    private sealed class CertificateCollector : IDisposable
+    {
+        private readonly HashSet<X509Certificate2> _certificatesToDispose = new(ReferenceEqualityComparer.Instance);
+        private IOptionsMonitor<CertificateOptions>? _optionsMonitor;
+        private string? _certificateName;
+        private IDisposable? _changeListener;
+
+        public void Attach(IOptionsMonitor<CertificateOptions> optionsMonitor, string certificateName)
+        {
+            _optionsMonitor = optionsMonitor;
+            _certificateName = certificateName;
+
+            GetCurrent();
+
+            _changeListener = optionsMonitor.OnChange((options, _) => Add(options.Certificate));
+        }
+
+        /// <summary>
+        /// Gets the current certificate from the options monitor, which may create a new one when the options were invalidated in the meantime.
+        /// </summary>
+        public X509Certificate2? GetCurrent()
+        {
+            if (_optionsMonitor != null)
+            {
+                X509Certificate2? certificate = _optionsMonitor.Get(_certificateName).Certificate;
+                Add(certificate);
+                return certificate;
+            }
+
+            return null;
+        }
+
+        private void Add(X509Certificate2? certificate)
+        {
+            if (certificate != null)
+            {
+                lock (_certificatesToDispose)
+                {
+                    _certificatesToDispose.Add(certificate);
+                }
+            }
+        }
+
+        public void Dispose()
+        {
+            _changeListener?.Dispose();
+
+            lock (_certificatesToDispose)
+            {
+                foreach (X509Certificate2 certificate in _certificatesToDispose)
+                {
+                    certificate.Dispose();
+                }
+
+                _certificatesToDispose.Clear();
+            }
+        }
     }
 }
