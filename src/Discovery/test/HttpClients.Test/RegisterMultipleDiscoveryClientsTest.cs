@@ -225,7 +225,9 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["eureka:client:enabled"] = "false"
+            ["eureka:client:enabled"] = "false",
+            ["eureka:client:shouldRegisterWithEureka"] = "false",
+            ["eureka:client:shouldFetchRegistry"] = "false"
         };
 
         var builder = new ConfigurationBuilder();
@@ -322,7 +324,9 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["eureka:client:enabled"] = "false"
+            ["eureka:client:enabled"] = "false",
+            ["eureka:client:shouldRegisterWithEureka"] = "false",
+            ["eureka:client:shouldFetchRegistry"] = "false"
         };
 
         var builder = new ConfigurationBuilder();
