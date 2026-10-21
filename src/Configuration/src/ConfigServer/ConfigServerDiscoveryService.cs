@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,13 +13,9 @@ using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
-using LockPrimitive =
-#if NET10_0_OR_GREATER
-    System.Threading.Lock
-#else
-    object
-#endif
-    ;
+
+// Justification: SemaphoreSlim only allocates a wait handle when AvailableWaitHandle is accessed, which is never done here.
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -28,7 +25,7 @@ internal sealed partial class ConfigServerDiscoveryService
     private readonly IConfiguration _configuration;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _logger;
-    private readonly LockPrimitive _initLock = new();
+    private readonly SemaphoreSlim _initLock = new(1, 1);
     private ServiceProvider? _temporaryServiceProviderForDiscoveryClients;
     private volatile ICollection<IDiscoveryClient>? _discoveryClients;
 
@@ -54,21 +51,27 @@ internal sealed partial class ConfigServerDiscoveryService
         _logger = loggerFactory.CreateLogger<ConfigServerDiscoveryService>();
     }
 
-    private void EnsureInitialized()
+    private async Task EnsureInitializedAsync(CancellationToken cancellationToken)
     {
         if (_discoveryClients == null)
         {
-            lock (_initLock)
+            await _initLock.WaitAsync(cancellationToken);
+
+            try
             {
                 if (_discoveryClients == null)
                 {
-                    SetupDiscoveryClients();
+                    await SetupDiscoveryClientsAsync();
                 }
+            }
+            finally
+            {
+                _initLock.Release();
             }
         }
     }
 
-    private void SetupDiscoveryClients()
+    private async Task SetupDiscoveryClientsAsync()
     {
         var tempServices = new ServiceCollection();
         tempServices.AddSingleton(_loggerFactory);
@@ -100,7 +103,7 @@ internal sealed partial class ConfigServerDiscoveryService
             WireEurekaDiscoveryClient(tempServices);
         }
 
-        _discoveryClients = GetDiscoveryClientsFromServiceCollection(tempServices);
+        _discoveryClients = await GetDiscoveryClientsFromServiceCollectionAsync(tempServices);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -121,25 +124,42 @@ internal sealed partial class ConfigServerDiscoveryService
         tempServices.AddEurekaDiscoveryClient();
     }
 
-    private IDiscoveryClient[] GetDiscoveryClientsFromServiceCollection(ServiceCollection services)
+    private async Task<IDiscoveryClient[]> GetDiscoveryClientsFromServiceCollectionAsync(ServiceCollection services)
     {
-        _temporaryServiceProviderForDiscoveryClients = services.BuildServiceProvider();
+        ServiceProvider temporaryServiceProvider = services.BuildServiceProvider();
 
-        IDiscoveryClient[] discoveryClients = _temporaryServiceProviderForDiscoveryClients.GetServices<IDiscoveryClient>().ToArray();
-
-        foreach (IDiscoveryClient discoveryClient in discoveryClients)
+        try
         {
-            LogDiscoveryClientFound(discoveryClient.GetType());
-        }
+            IDiscoveryClient[] discoveryClients = temporaryServiceProvider.GetServices<IDiscoveryClient>().ToArray();
 
-        return discoveryClients;
+            foreach (IDiscoveryClient discoveryClient in discoveryClients)
+            {
+                LogDiscoveryClientFound(discoveryClient.GetType());
+            }
+
+            _temporaryServiceProviderForDiscoveryClients = temporaryServiceProvider;
+            return discoveryClients;
+        }
+        catch
+        {
+            try
+            {
+                await temporaryServiceProvider.DisposeAsync();
+            }
+            catch
+            {
+                // Intentionally left empty: the original exception is more useful.
+            }
+
+            throw;
+        }
     }
 
     internal async Task<List<IServiceInstance>> GetConfigServerInstancesAsync(ConfigServerClientOptions optionsSnapshot, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(optionsSnapshot);
 
-        EnsureInitialized();
+        await EnsureInitializedAsync(cancellationToken);
 
         int attempts = 0;
         int backOff = optionsSnapshot.Retry.InitialInterval;
@@ -199,22 +219,61 @@ internal sealed partial class ConfigServerDiscoveryService
 
         LogReplacingDiscoveryClients();
 
-        await ShutdownAsync(cancellationToken);
-
-        DiscoveryClients = discoveryClientsFromServiceProvider;
+        try
+        {
+            await ShutdownAsync(cancellationToken);
+        }
+        finally
+        {
+            // Even when shutting down the temporary discovery clients failed, the replacements must become active.
+            DiscoveryClients = discoveryClientsFromServiceProvider;
+        }
     }
 
     internal async Task ShutdownAsync(CancellationToken cancellationToken)
     {
-        if (_temporaryServiceProviderForDiscoveryClients != null)
+        ServiceProvider? temporaryServiceProvider = _temporaryServiceProviderForDiscoveryClients;
+
+        if (temporaryServiceProvider == null)
         {
-            foreach (IDiscoveryClient discoveryClient in _discoveryClients ?? [])
+            return;
+        }
+
+        List<Exception> exceptions = [];
+
+        foreach (IDiscoveryClient discoveryClient in _discoveryClients ?? [])
+        {
+            try
             {
                 await discoveryClient.ShutdownAsync(cancellationToken);
             }
+            catch (Exception exception)
+            {
+                exceptions.Add(exception);
+            }
+        }
 
-            await _temporaryServiceProviderForDiscoveryClients.DisposeAsync();
+        try
+        {
+            await temporaryServiceProvider.DisposeAsync();
+        }
+        catch (Exception exception)
+        {
+            exceptions.Add(exception);
+        }
+        finally
+        {
             _temporaryServiceProviderForDiscoveryClients = null;
+        }
+
+        if (exceptions.Count == 1)
+        {
+            ExceptionDispatchInfo.Capture(exceptions[0]).Throw();
+        }
+
+        if (exceptions.Count > 1)
+        {
+            throw new AggregateException(exceptions);
         }
     }
 
