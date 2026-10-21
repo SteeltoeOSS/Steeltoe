@@ -747,6 +747,106 @@ public sealed class EurekaClientTest
     }
 
     [Fact]
+    public async Task GetInstanceAsync_SendsRequestToServer()
+    {
+        const string jsonResponse = """
+            {
+              "instance": {
+                "instanceId": "localhost:bar:1234",
+                "app": "FOO",
+                "hostName": "localhost",
+                "ipAddr": "192.168.56.1",
+                "status": "UP",
+                "overriddenStatus": "OUT_OF_SERVICE",
+                "dataCenterInfo": {
+                  "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                  "name": "MyOwn"
+                }
+              }
+            }
+            """;
+
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddOptions();
+        services.AddSingleton<EurekaServiceUriStateManager>();
+        services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
+
+        var httpClientHandler = new DelegateToMockHttpClientHandler();
+
+        httpClientHandler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/FOO/localhost%3Abar%3A1234")
+            .Respond("application/json", jsonResponse);
+
+        services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var client = serviceProvider.GetRequiredService<EurekaClient>();
+
+        InstanceInfo? instance = await client.GetInstanceAsync("FOO", "localhost:bar:1234", TestContext.Current.CancellationToken);
+
+        httpClientHandler.Mock.VerifyNoOutstandingExpectation();
+
+        instance.Should().NotBeNull();
+        instance.InstanceId.Should().Be("localhost:bar:1234");
+        instance.AppName.Should().Be("FOO");
+        instance.Status.Should().Be(InstanceStatus.Up);
+        instance.OverriddenStatus.Should().Be(InstanceStatus.OutOfService);
+    }
+
+    [Fact]
+    public async Task SetStatusOverrideAsync_SendsRequestToServer()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddOptions();
+        services.AddSingleton<EurekaServiceUriStateManager>();
+        services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
+
+        var httpClientHandler = new DelegateToMockHttpClientHandler();
+
+        httpClientHandler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Abar%3A1234/status")
+            .WithExactQueryString("value=OUT_OF_SERVICE&lastDirtyTimestamp=1708369905756").Respond(HttpStatusCode.OK);
+
+        services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var client = serviceProvider.GetRequiredService<EurekaClient>();
+
+        await client.SetStatusOverrideAsync("FOO", "localhost:bar:1234", InstanceStatus.OutOfService,
+            new DateTime(638_439_667_057_566_585, DateTimeKind.Utc), TestContext.Current.CancellationToken);
+
+        httpClientHandler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task DeleteStatusOverrideAsync_SendsRequestToServer()
+    {
+        var services = new ServiceCollection();
+        services.AddLogging();
+        services.AddOptions();
+        services.AddSingleton<EurekaServiceUriStateManager>();
+        services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
+
+        var httpClientHandler = new DelegateToMockHttpClientHandler();
+
+        httpClientHandler.Mock.Expect(HttpMethod.Delete, "http://localhost:8761/eureka/apps/FOO/localhost%3Abar%3A1234/status")
+            .WithExactQueryString("lastDirtyTimestamp=1708369905756").Respond(HttpStatusCode.OK);
+
+        services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var client = serviceProvider.GetRequiredService<EurekaClient>();
+
+        await client.DeleteStatusOverrideAsync("FOO", "localhost:bar:1234", new DateTime(638_439_667_057_566_585, DateTimeKind.Utc),
+            TestContext.Current.CancellationToken);
+
+        httpClientHandler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
     public async Task GetApplicationsAsync_SendsRequestToServer()
     {
         var services = new ServiceCollection();

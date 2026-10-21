@@ -20,7 +20,7 @@ namespace Steeltoe.Discovery.Consul;
 /// </see>
 /// .
 /// </summary>
-public sealed class ConsulDiscoveryClient : IDiscoveryClient
+public sealed class ConsulDiscoveryClient : IDiscoveryClient, IServiceRegistry
 {
     private readonly IConsulClient _client;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
@@ -28,6 +28,9 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
 
     /// <inheritdoc />
     public string Description => "A discovery client for HashiCorp Consul.";
+
+    /// <inheritdoc />
+    public bool IsRegistrationEnabled => _registrar is { IsRunning: true } && _optionsMonitor.CurrentValue.Register;
 
     /// <summary>
     /// This event is never raised. The Consul client doesn't implement caching.
@@ -184,6 +187,57 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     public async Task ShutdownAsync(CancellationToken cancellationToken)
     {
         await _registrar.ShutdownAsync(cancellationToken);
+    }
+
+    /// <summary>
+    /// Gets the status of the local service instance (this app) from Consul.
+    /// </summary>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// "OUT_OF_SERVICE" when the service is in maintenance mode, "UP" otherwise.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">
+    /// The local service instance is not registered with Consul.
+    /// </exception>
+    public async Task<object> GetStatusAsync(CancellationToken cancellationToken)
+    {
+        ConsulServiceRegistrar registrar = GetRunningRegistrar();
+        return await registrar.Registry.GetStatusAsync(registrar.Registration, cancellationToken);
+    }
+
+    /// <summary>
+    /// Changes the status of the local service instance (this app) in Consul, by enabling or disabling maintenance mode.
+    /// </summary>
+    /// <param name="status">
+    /// "OUT_OF_SERVICE" to enable maintenance mode, or "UP" to disable it.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <exception cref="ArgumentException">
+    /// The specified status is unknown.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// The local service instance is not registered with Consul.
+    /// </exception>
+    public async Task SetStatusAsync(string status, CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(status);
+
+        ConsulServiceRegistrar registrar = GetRunningRegistrar();
+        await registrar.Registry.SetStatusAsync(registrar.Registration, status, cancellationToken);
+    }
+
+    private ConsulServiceRegistrar GetRunningRegistrar()
+    {
+        if (_registrar == null || !IsRegistrationEnabled)
+        {
+            throw new InvalidOperationException("This app is not registered with Consul.");
+        }
+
+        return _registrar;
     }
 
     internal async Task AddInstancesToListAsync(ICollection<IServiceInstance> instances, string serviceId, QueryOptions queryOptions,

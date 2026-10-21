@@ -838,6 +838,162 @@ public sealed class EurekaDiscoveryClientTest
         handler.Mock.VerifyNoOutstandingExpectation();
     }
 
+    [Fact]
+    public async Task SetStatusAsync_overrides_status_in_server()
+    {
+        DelegateToMockHttpClientHandler handler = CreateRegistrationHandler();
+
+        handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo/status").WithQueryString("value", "OUT_OF_SERVICE")
+            .Respond(HttpStatusCode.OK);
+
+        await using WebApplication webApplication = BuildAppWithRegistration(handler);
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        discoveryClient.IsRegistrationEnabled.Should().BeTrue();
+
+        await discoveryClient.SetStatusAsync("out_of_service", TestContext.Current.CancellationToken);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task SetStatusAsync_cancels_status_override_in_server()
+    {
+        DelegateToMockHttpClientHandler handler = CreateRegistrationHandler();
+        handler.Mock.Expect(HttpMethod.Delete, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo/status").Respond(HttpStatusCode.OK);
+
+        await using WebApplication webApplication = BuildAppWithRegistration(handler);
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        await discoveryClient.SetStatusAsync("CANCEL_OVERRIDE", TestContext.Current.CancellationToken);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task SetStatusAsync_throws_for_unknown_status()
+    {
+        DelegateToMockHttpClientHandler handler = CreateRegistrationHandler();
+
+        await using WebApplication webApplication = BuildAppWithRegistration(handler);
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        Func<Task> action = async () => await discoveryClient.SetStatusAsync("BOGUS", TestContext.Current.CancellationToken);
+
+        await action.Should().ThrowExactlyAsync<ArgumentException>().WithMessage("Unknown status: BOGUS*");
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task GetStatusAsync_returns_status_from_server()
+    {
+        const string jsonResponse = """
+            {
+              "instance": {
+                "instanceId": "localhost:foo",
+                "app": "FOO",
+                "hostName": "localhost",
+                "ipAddr": "192.168.56.1",
+                "status": "UP",
+                "overriddenStatus": "OUT_OF_SERVICE",
+                "dataCenterInfo": {
+                  "@class": "com.netflix.appinfo.InstanceInfo$DefaultDataCenterInfo",
+                  "name": "MyOwn"
+                }
+              }
+            }
+            """;
+
+        DelegateToMockHttpClientHandler handler = CreateRegistrationHandler();
+        handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond("application/json", jsonResponse);
+
+        await using WebApplication webApplication = BuildAppWithRegistration(handler);
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        object status = await discoveryClient.GetStatusAsync(TestContext.Current.CancellationToken);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+
+        status.Should().BeEquivalentTo(new Dictionary<string, string>
+        {
+            ["status"] = "UP",
+            ["overriddenStatus"] = "OUT_OF_SERVICE"
+        });
+    }
+
+    [Fact]
+    public async Task GetStatusAsync_returns_unknown_when_server_fails()
+    {
+        DelegateToMockHttpClientHandler handler = CreateRegistrationHandler();
+        handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond(HttpStatusCode.InternalServerError);
+
+        await using WebApplication webApplication = BuildAppWithRegistration(handler);
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        object status = await discoveryClient.GetStatusAsync(TestContext.Current.CancellationToken);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+
+        status.Should().BeEquivalentTo(new Dictionary<string, string>
+        {
+            ["status"] = "UNKNOWN"
+        });
+    }
+
+    [Fact]
+    public async Task Status_methods_throw_when_not_registered()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddEurekaDiscoveryClient();
+
+        await using WebApplication webApplication = builder.Build();
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        discoveryClient.IsRegistrationEnabled.Should().BeFalse();
+
+        Func<Task> getAction = async () => await discoveryClient.GetStatusAsync(TestContext.Current.CancellationToken);
+        await getAction.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("This app is not registered with Eureka.");
+
+        Func<Task> setAction = async () => await discoveryClient.SetStatusAsync("OUT_OF_SERVICE", TestContext.Current.CancellationToken);
+        await setAction.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("This app is not registered with Eureka.");
+    }
+
+    private static DelegateToMockHttpClientHandler CreateRegistrationHandler()
+    {
+        var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.OK);
+        return handler;
+    }
+
+    private static WebApplication BuildAppWithRegistration(DelegateToMockHttpClientHandler handler)
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "true",
+            ["Eureka:Client:EurekaServer:RetryCount"] = "0",
+            ["Eureka:Instance:AppName"] = "FOO",
+            ["Eureka:Instance:InstanceId"] = "localhost:foo"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddEurekaDiscoveryClient();
+
+        WebApplication webApplication = builder.Build();
+        webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+
+        return webApplication;
+    }
+
     private sealed class ExtraRequestHeadersDelegatingHandler : DelegatingHandler
     {
         public Dictionary<string, string> ExtraRequestHeaders { get; } = [];

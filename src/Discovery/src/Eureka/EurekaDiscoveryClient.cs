@@ -6,6 +6,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -24,8 +25,10 @@ namespace Steeltoe.Discovery.Eureka;
 /// </see>
 /// .
 /// </summary>
-public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
+public sealed partial class EurekaDiscoveryClient : IDiscoveryClient, IServiceRegistry
 {
+    private const string CancelOverrideStatus = "CANCEL_OVERRIDE";
+
     private readonly EurekaApplicationInfoManager _appInfoManager;
     private readonly EurekaClient _eurekaClient;
     private readonly IOptionsMonitor<EurekaClientOptions> _clientOptionsMonitor;
@@ -62,6 +65,16 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
     {
         get => _remoteApps;
         set => _remoteApps = value;
+    }
+
+    /// <inheritdoc />
+    public bool IsRegistrationEnabled
+    {
+        get
+        {
+            EurekaClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
+            return IsAlive && clientOptions is { Enabled: true, ShouldRegisterWithEureka: true };
+        }
     }
 
     public string Description => "A discovery client for Spring Cloud Eureka.";
@@ -623,6 +636,122 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
     {
         return new EurekaServiceInstance(_appInfoManager.Instance);
     }
+
+    /// <summary>
+    /// Gets the status of the local service instance (this app) from the Eureka server.
+    /// </summary>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// A dictionary with keys "status" and "overriddenStatus". The status is "UNKNOWN" when the Eureka server could not be reached.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">
+    /// The local service instance is not registered with the Eureka server.
+    /// </exception>
+    public async Task<object> GetStatusAsync(CancellationToken cancellationToken)
+    {
+        InstanceInfo snapshot = GetRegisteredInstance();
+
+        try
+        {
+            InstanceInfo? remoteInstance = await _eurekaClient.GetInstanceAsync(snapshot.AppName, snapshot.InstanceId, cancellationToken);
+
+            if (remoteInstance != null)
+            {
+                return new Dictionary<string, string>
+                {
+                    ["status"] = ToStatusText(remoteInstance.Status ?? InstanceStatus.Unknown),
+                    ["overriddenStatus"] = ToStatusText(remoteInstance.OverriddenStatus ?? InstanceStatus.Unknown)
+                };
+            }
+        }
+        catch (EurekaTransportException exception)
+        {
+            LogFailedToGetRemoteStatus(exception);
+        }
+
+        return new Dictionary<string, string>
+        {
+            ["status"] = ToStatusText(InstanceStatus.Unknown)
+        };
+    }
+
+    /// <summary>
+    /// Overrides the status of the local service instance (this app) in the Eureka server. The overridden status takes precedence over the status sent
+    /// by this app, until the override is cancelled.
+    /// </summary>
+    /// <param name="status">
+    /// The status to assign, for example: "UP" or "OUT_OF_SERVICE". Pass "CANCEL_OVERRIDE" to remove a previously overridden status.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <exception cref="ArgumentException">
+    /// The specified status is unknown.
+    /// </exception>
+    /// <exception cref="InvalidOperationException">
+    /// The local service instance is not registered with the Eureka server.
+    /// </exception>
+    /// <exception cref="EurekaTransportException">
+    /// The operation failed because none of the Eureka servers responded with success.
+    /// </exception>
+    public async Task SetStatusAsync(string status, CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(status);
+
+        InstanceInfo snapshot = GetRegisteredInstance();
+
+        if (string.Equals(status, CancelOverrideStatus, StringComparison.OrdinalIgnoreCase))
+        {
+            LogCancellingStatusOverride(snapshot.AppName, snapshot.InstanceId);
+            await _eurekaClient.DeleteStatusOverrideAsync(snapshot.AppName, snapshot.InstanceId, snapshot.LastDirtyTimeUtc, cancellationToken);
+        }
+        else
+        {
+            InstanceStatus newStatus = ParseStatus(status);
+
+            LogOverridingStatus(snapshot.AppName, snapshot.InstanceId, newStatus);
+            await _eurekaClient.SetStatusOverrideAsync(snapshot.AppName, snapshot.InstanceId, newStatus, snapshot.LastDirtyTimeUtc, cancellationToken);
+        }
+    }
+
+    private InstanceInfo GetRegisteredInstance()
+    {
+        if (!IsRegistrationEnabled)
+        {
+            throw new InvalidOperationException("This app is not registered with Eureka.");
+        }
+
+        return _appInfoManager.Instance;
+    }
+
+    private static string ToStatusText(InstanceStatus status)
+    {
+        return status.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
+    }
+
+    private static InstanceStatus ParseStatus(string status)
+    {
+        foreach (InstanceStatus value in Enum.GetValues<InstanceStatus>())
+        {
+            if (string.Equals(ToStatusText(value), status, StringComparison.OrdinalIgnoreCase))
+            {
+                return value;
+            }
+        }
+
+        throw new ArgumentException($"Unknown status: {status}", nameof(status));
+    }
+
+    [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get the status of this app from Eureka.")]
+    private partial void LogFailedToGetRemoteStatus(Exception exception);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Overriding status of instance {InstanceId} in app {AppName} to {Status}.")]
+    private partial void LogOverridingStatus(string appName, string instanceId, InstanceStatus status);
+
+    [LoggerMessage(Level = LogLevel.Information, Message = "Cancelling status override of instance {InstanceId} in app {AppName}.")]
+    private partial void LogCancellingStatusOverride(string appName, string instanceId);
 
     [LoggerMessage(Level = LogLevel.Information, Message = "Initial registration failed.")]
     private partial void LogInitialRegistrationFailed(Exception exception);

@@ -14,6 +14,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.All;
@@ -22,6 +23,7 @@ using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Test.Actuators.ServiceRegistry;
 using Steeltoe.Management.Endpoint.Test.Actuators.ThreadDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
@@ -82,6 +84,7 @@ public sealed class EndpointAuthorizationTest
         {
             services.AddSingleton<IHeapDumper, FakeHeapDumper>();
             services.AddSingleton<IThreadDumper, FakeThreadDumper>();
+            services.AddSingleton<IDiscoveryClient>(new FakeServiceRegistryDiscoveryClient("test-client", true));
 
             if (mode == RegistrationMode.Services)
             {

@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common;
+using Steeltoe.Common.CasingConventions;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
 using Steeltoe.Discovery.Eureka.AppInfo;
@@ -147,15 +148,118 @@ public sealed partial class EurekaClient
         // Because we're sequentially sending a heartbeat to all known servers until one succeeds, we leave it up to the servers
         // to keep each other in sync. So the caller of this method should only try to re-register when none of the Eureka servers reported success.
 
-        Dictionary<string, string>? queryString = lastDirtyTimeUtc != null
-            ? new Dictionary<string, string>
-            {
-                ["lastDirtyTimestamp"] = DateTimeConversions.ToJavaMilliseconds(lastDirtyTimeUtc.Value).ToString(CultureInfo.InvariantCulture)
-            }
-            : null;
+        Dictionary<string, string> queryString = GetLastDirtyTimestampQueryString(lastDirtyTimeUtc);
 
         string path = $"apps/{WebUtility.UrlEncode(appName)}/{WebUtility.UrlEncode(instanceId)}";
+        await ExecuteRequestAsync(HttpMethod.Put, path, queryString.Count > 0 ? queryString : null, null, cancellationToken);
+    }
+
+    /// <summary>
+    /// Queries for a single application instance.
+    /// </summary>
+    /// <param name="appName">
+    /// The name of the app to query.
+    /// </param>
+    /// <param name="instanceId">
+    /// The ID of the instance to query.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <returns>
+    /// The instance, or <c>null</c> when the response contained no instance.
+    /// </returns>
+    /// <exception cref="EurekaTransportException">
+    /// The operation failed because none of the Eureka servers responded with success.
+    /// </exception>
+    public async Task<InstanceInfo?> GetInstanceAsync(string appName, string instanceId, CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(appName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
+
+        string path = $"apps/{WebUtility.UrlEncode(appName)}/{WebUtility.UrlEncode(instanceId)}";
+
+        return await ExecuteRequestAsync(HttpMethod.Get, path, null, null, async response =>
+        {
+            JsonInstanceInfoRoot? root = await response.Content.ReadFromJsonAsync(EurekaJsonSerializerContext.Default.JsonInstanceInfoRoot, cancellationToken);
+            return InstanceInfo.FromJson(root?.Instance, _timeProvider);
+        }, cancellationToken);
+    }
+
+    /// <summary>
+    /// Overrides the status of an application instance in the Eureka server. The overridden status takes precedence over the status sent by the instance
+    /// itself, until the override is removed.
+    /// </summary>
+    /// <param name="appName">
+    /// The name of the app whose status to override.
+    /// </param>
+    /// <param name="instanceId">
+    /// The ID of the instance whose status to override.
+    /// </param>
+    /// <param name="status">
+    /// The status to assign.
+    /// </param>
+    /// <param name="lastDirtyTimeUtc">
+    /// The date and time (in UTC) when the instance was last dirty.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <exception cref="EurekaTransportException">
+    /// The operation failed because none of the Eureka servers responded with success.
+    /// </exception>
+    public async Task SetStatusOverrideAsync(string appName, string instanceId, InstanceStatus status, DateTime? lastDirtyTimeUtc,
+        CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(appName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
+
+        Dictionary<string, string> queryString = GetLastDirtyTimestampQueryString(lastDirtyTimeUtc);
+        queryString["value"] = status.ToSnakeCaseString(SnakeCaseStyle.AllCaps);
+
+        string path = $"apps/{WebUtility.UrlEncode(appName)}/{WebUtility.UrlEncode(instanceId)}/status";
         await ExecuteRequestAsync(HttpMethod.Put, path, queryString, null, cancellationToken);
+    }
+
+    /// <summary>
+    /// Removes the overridden status of an application instance in the Eureka server, so that the status sent by the instance itself takes effect again.
+    /// </summary>
+    /// <param name="appName">
+    /// The name of the app whose status override to remove.
+    /// </param>
+    /// <param name="instanceId">
+    /// The ID of the instance whose status override to remove.
+    /// </param>
+    /// <param name="lastDirtyTimeUtc">
+    /// The date and time (in UTC) when the instance was last dirty.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// The token to monitor for cancellation requests.
+    /// </param>
+    /// <exception cref="EurekaTransportException">
+    /// The operation failed because none of the Eureka servers responded with success.
+    /// </exception>
+    public async Task DeleteStatusOverrideAsync(string appName, string instanceId, DateTime? lastDirtyTimeUtc, CancellationToken cancellationToken)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(appName);
+        ArgumentException.ThrowIfNullOrWhiteSpace(instanceId);
+
+        Dictionary<string, string> queryString = GetLastDirtyTimestampQueryString(lastDirtyTimeUtc);
+
+        string path = $"apps/{WebUtility.UrlEncode(appName)}/{WebUtility.UrlEncode(instanceId)}/status";
+        await ExecuteRequestAsync(HttpMethod.Delete, path, queryString.Count > 0 ? queryString : null, null, cancellationToken);
+    }
+
+    private static Dictionary<string, string> GetLastDirtyTimestampQueryString(DateTime? lastDirtyTimeUtc)
+    {
+        Dictionary<string, string> queryString = [];
+
+        if (lastDirtyTimeUtc != null)
+        {
+            queryString["lastDirtyTimestamp"] = DateTimeConversions.ToJavaMilliseconds(lastDirtyTimeUtc.Value).ToString(CultureInfo.InvariantCulture);
+        }
+
+        return queryString;
     }
 
     /// <summary>

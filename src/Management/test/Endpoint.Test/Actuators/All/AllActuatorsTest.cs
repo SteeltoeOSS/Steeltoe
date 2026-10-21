@@ -100,7 +100,7 @@ public sealed class AllActuatorsTest
     public async Task Does_not_register_duplicate_services(HostBuilderType hostBuilderType, bool platformIsCloudFoundry)
     {
         using IDisposable? scope = platformIsCloudFoundry ? new EnvironmentVariableScope("VCAP_APPLICATION", "{}") : null;
-        int actuatorCount = platformIsCloudFoundry ? 13 : 12;
+        int actuatorCount = platformIsCloudFoundry ? 14 : 13;
 
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {

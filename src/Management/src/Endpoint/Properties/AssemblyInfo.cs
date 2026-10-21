@@ -17,6 +17,7 @@ using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
+using Steeltoe.Management.Endpoint.Actuators.ServiceRegistry;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 using Steeltoe.Management.Endpoint.Configuration;
@@ -40,6 +41,7 @@ using Steeltoe.Management.Endpoint.SpringBootAdminClient;
 [assembly: ConfigurationSchema("Management:Endpoints:Refresh", typeof(RefreshEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Mappings", typeof(RouteMappingsEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Services", typeof(ServicesEndpointOptions))]
+[assembly: ConfigurationSchema("Management:Endpoints:ServiceRegistry", typeof(ServiceRegistryEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:ThreadDump", typeof(ThreadDumpEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:HttpExchanges", typeof(HttpExchangesEndpointOptions))]
 [assembly: ConfigurationSchema("Management:Endpoints:Actuator", typeof(HypermediaEndpointOptions))]

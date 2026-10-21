@@ -15,6 +15,7 @@ using Steeltoe.Management.Endpoint.Actuators.Info;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
+using Steeltoe.Management.Endpoint.Actuators.ServiceRegistry;
 using Steeltoe.Management.Endpoint.Actuators.Services;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
@@ -70,6 +71,7 @@ public static class EndpointServiceCollectionExtensions
         services.AddRouteMappingsActuator(configureMiddleware);
         services.AddRefreshActuator(configureMiddleware);
         services.AddServicesActuator(configureMiddleware);
+        services.AddServiceRegistryActuator(configureMiddleware);
 
         return services;
     }

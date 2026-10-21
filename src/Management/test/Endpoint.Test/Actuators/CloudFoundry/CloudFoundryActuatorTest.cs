@@ -201,6 +201,10 @@ public sealed class CloudFoundryActuatorTest
                   "href": "http://localhost/cloudfoundryapplication/refresh",
                   "templated": false
                 },
+                "service-registry": {
+                  "href": "http://localhost/cloudfoundryapplication/service-registry",
+                  "templated": false
+                },
                 "threaddump": {
                   "href": "http://localhost/cloudfoundryapplication/threaddump",
                   "templated": false

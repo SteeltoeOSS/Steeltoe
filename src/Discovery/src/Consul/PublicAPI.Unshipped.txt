@@ -1,3 +1,6 @@
 #nullable enable
 *REMOVED*Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetLocalServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance?
 Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetLocalServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance!
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetStatusAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object!>!
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.IsRegistrationEnabled.get -> bool
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.SetStatusAsync(string! status, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!

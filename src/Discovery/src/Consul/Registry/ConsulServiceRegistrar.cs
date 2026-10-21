@@ -37,6 +37,11 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
     public ConsulServiceInstance ServiceInstance { get; }
 
     /// <summary>
+    /// Gets the Consul service registry that the registrar uses to do registrations.
+    /// </summary>
+    public ConsulServiceRegistry Registry => _registry;
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="ConsulServiceRegistrar" /> class.
     /// </summary>
     /// <param name="client">

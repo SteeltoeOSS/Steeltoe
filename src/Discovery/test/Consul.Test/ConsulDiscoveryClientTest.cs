@@ -294,4 +294,98 @@ public sealed class ConsulDiscoveryClientTest
 
         await discoveryClient.ShutdownAsync(TestContext.Current.CancellationToken);
     }
+
+    [Fact]
+    public async Task SetStatusAsync_toggles_maintenance_mode()
+    {
+        var agent = Substitute.For<IAgentEndpoint>();
+        var client = Substitute.For<IConsulClient>();
+        client.Agent.Returns(agent);
+
+        ConsulDiscoveryClient discoveryClient = CreateRegisteredDiscoveryClient(client);
+        string instanceId = discoveryClient.GetLocalServiceInstance()!.InstanceId;
+
+        discoveryClient.IsRegistrationEnabled.Should().BeTrue();
+
+        await discoveryClient.SetStatusAsync("OUT_OF_SERVICE", TestContext.Current.CancellationToken);
+        await agent.Received(1).EnableServiceMaintenance(instanceId, "OUT_OF_SERVICE", Arg.Any<CancellationToken>());
+
+        await discoveryClient.SetStatusAsync("UP", TestContext.Current.CancellationToken);
+        await agent.Received(1).DisableServiceMaintenance(instanceId, Arg.Any<CancellationToken>());
+
+        Func<Task> action = async () => await discoveryClient.SetStatusAsync("BOGUS", TestContext.Current.CancellationToken);
+        await action.Should().ThrowExactlyAsync<ArgumentException>().WithMessage("Unknown status: BOGUS*");
+
+        await discoveryClient.ShutdownAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task GetStatusAsync_returns_maintenance_mode()
+    {
+        var agent = Substitute.For<IAgentEndpoint>();
+        var health = Substitute.For<IHealthEndpoint>();
+        var client = Substitute.For<IConsulClient>();
+        client.Agent.Returns(agent);
+        client.Health.Returns(health);
+
+        ConsulDiscoveryClient discoveryClient = CreateRegisteredDiscoveryClient(client);
+        string instanceId = discoveryClient.GetLocalServiceInstance()!.InstanceId;
+
+        var queryResult = new QueryResult<HealthCheck[]>
+        {
+            Response =
+            [
+                new HealthCheck
+                {
+                    ServiceID = instanceId,
+                    Name = "Service Maintenance Mode"
+                }
+            ]
+        };
+
+        health.Checks("foobar", QueryOptions.Default, Arg.Any<CancellationToken>()).Returns(Task.FromResult(queryResult));
+
+        object status = await discoveryClient.GetStatusAsync(TestContext.Current.CancellationToken);
+
+        status.Should().Be("OUT_OF_SERVICE");
+
+        await discoveryClient.ShutdownAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task Status_methods_throw_when_not_registered()
+    {
+        var options = new ConsulDiscoveryOptions
+        {
+            Register = false,
+            HostName = "this.host.com",
+            Port = 8888
+        };
+
+        var client = Substitute.For<IConsulClient>();
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, NullLoggerFactory.Instance);
+
+        discoveryClient.IsRegistrationEnabled.Should().BeFalse();
+
+        Func<Task> getAction = async () => await discoveryClient.GetStatusAsync(TestContext.Current.CancellationToken);
+        await getAction.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("This app is not registered with Consul.");
+
+        Func<Task> setAction = async () => await discoveryClient.SetStatusAsync("OUT_OF_SERVICE", TestContext.Current.CancellationToken);
+        await setAction.Should().ThrowExactlyAsync<InvalidOperationException>().WithMessage("This app is not registered with Consul.");
+    }
+
+    private static ConsulDiscoveryClient CreateRegisteredDiscoveryClient(IConsulClient client)
+    {
+        var options = new ConsulDiscoveryOptions
+        {
+            ServiceName = "foobar",
+            HostName = "this.host.com",
+            Port = 8888,
+            Heartbeat = null
+        };
+
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+        return new ConsulDiscoveryClient(client, optionsMonitor, NullLoggerFactory.Instance);
+    }
 }
