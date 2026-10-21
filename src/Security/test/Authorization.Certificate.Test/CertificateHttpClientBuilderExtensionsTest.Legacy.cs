@@ -37,6 +37,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
 
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
 
         var clientFactory = host.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = clientFactory.CreateClient("test");
@@ -87,6 +88,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
         HostBuilder hostBuilder = GetHostBuilderWithCustomHeader(customCertificateHeader);
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
 
         var clientFactory = host.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = clientFactory.CreateClient("test");
@@ -151,6 +153,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
 
         await using HostWrapper clientHost = HostWrapper.Wrap(clientHostBuilder.Build());
         await clientHost.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificate = clientHost.Services.GetAppInstanceIdentityCertificate();
         var clientFactory = clientHost.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient httpClient = clientFactory.CreateClient("test");
         using HttpResponseMessage response = await httpClient.GetAsync(new Uri($"https://localhost:{port}/"), TestContext.Current.CancellationToken);
@@ -158,7 +161,10 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string instanceCertificatePem = await File.ReadAllTextAsync("instance.crt", TestContext.Current.CancellationToken);
-        var expectedCertificate = X509Certificate2.CreateFromPem(instanceCertificatePem);
+        using var expectedCertificate = X509Certificate2.CreateFromPem(instanceCertificatePem);
+        // The server callback created this certificate from the received header value.
+        using X509Certificate2? receivedCertificateToDispose = receivedCertificate;
+
         receivedCertificate.Should().NotBeNull();
         receivedCertificate.Thumbprint.Should().Be(expectedCertificate.Thumbprint);
     }

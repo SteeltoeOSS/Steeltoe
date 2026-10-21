@@ -131,7 +131,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
         _ = await discoveryClient.FetchFullRegistryAsync(TestContext.Current.CancellationToken);
 
-        handler.ClientCertificates.Cast<X509Certificate>().Should().NotBeEmpty();
+        using X509Certificate certificate = handler.ClientCertificates.Cast<X509Certificate>().Should().ContainSingle().Subject;
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -163,7 +163,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
         _ = await discoveryClient.FetchFullRegistryAsync(TestContext.Current.CancellationToken);
 
-        handler.ClientCertificates.Cast<X509Certificate>().Should().NotBeEmpty();
+        using X509Certificate certificate = handler.ClientCertificates.Cast<X509Certificate>().Should().ContainSingle().Subject;
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
