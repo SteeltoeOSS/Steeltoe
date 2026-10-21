@@ -4,4 +4,5 @@ Steeltoe.Discovery.Eureka.EurekaClient.GetInstanceAsync(string! appName, string!
 Steeltoe.Discovery.Eureka.EurekaClient.SetStatusOverrideAsync(string! appName, string! instanceId, Steeltoe.Discovery.Eureka.AppInfo.InstanceStatus status, System.DateTime? lastDirtyTimeUtc, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!
 Steeltoe.Discovery.Eureka.EurekaDiscoveryClient.GetStatusAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object!>!
 Steeltoe.Discovery.Eureka.EurekaDiscoveryClient.IsRegistrationEnabled.get -> bool
+Steeltoe.Discovery.Eureka.EurekaDiscoveryClient.IsStatusSupported(string! status) -> bool
 Steeltoe.Discovery.Eureka.EurekaDiscoveryClient.SetStatusAsync(string! status, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!

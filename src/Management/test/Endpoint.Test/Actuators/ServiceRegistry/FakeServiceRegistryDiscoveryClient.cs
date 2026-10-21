@@ -6,9 +6,10 @@ using Steeltoe.Common.Discovery;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.ServiceRegistry;
 
-internal sealed class FakeServiceRegistryDiscoveryClient(string description, bool isRegistrationEnabled) : IDiscoveryClient, IServiceRegistry
+internal sealed class FakeServiceRegistryDiscoveryClient(string description, bool isRegistrationEnabled, params string[] extraSupportedStatuses)
+    : IDiscoveryClient, IServiceRegistry
 {
-    private static readonly string[] SupportedStatuses = ["UP", "OUT_OF_SERVICE"];
+    private readonly string[] _supportedStatuses = ["UP", "OUT_OF_SERVICE", .. extraSupportedStatuses];
 
     public string Description { get; } = description;
     public bool IsRegistrationEnabled { get; } = isRegistrationEnabled;
@@ -28,9 +29,14 @@ internal sealed class FakeServiceRegistryDiscoveryClient(string description, boo
         return Task.FromResult(status);
     }
 
+    public bool IsStatusSupported(string status)
+    {
+        return _supportedStatuses.Contains(status);
+    }
+
     public Task SetStatusAsync(string status, CancellationToken cancellationToken)
     {
-        if (!SupportedStatuses.Contains(status))
+        if (!IsStatusSupported(status))
         {
             throw new ArgumentException($"Unknown status: {status}", nameof(status));
         }

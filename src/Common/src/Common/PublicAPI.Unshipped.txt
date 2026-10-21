@@ -2,4 +2,5 @@
 Steeltoe.Common.Discovery.IServiceRegistry
 Steeltoe.Common.Discovery.IServiceRegistry.GetStatusAsync(System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task<object!>!
 Steeltoe.Common.Discovery.IServiceRegistry.IsRegistrationEnabled.get -> bool
+Steeltoe.Common.Discovery.IServiceRegistry.IsStatusSupported(string! status) -> bool
 Steeltoe.Common.Discovery.IServiceRegistry.SetStatusAsync(string! status, System.Threading.CancellationToken cancellationToken) -> System.Threading.Tasks.Task!

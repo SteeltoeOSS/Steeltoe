@@ -31,6 +31,17 @@ public interface IServiceRegistry
     Task<object> GetStatusAsync(CancellationToken cancellationToken);
 
     /// <summary>
+    /// Determines whether the specified status can be passed to <see cref="SetStatusAsync" />.
+    /// </summary>
+    /// <param name="status">
+    /// The status to check, for example: "UP" or "OUT_OF_SERVICE".
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the discovery server supports the status; otherwise, <c>false</c>.
+    /// </returns>
+    bool IsStatusSupported(string status);
+
+    /// <summary>
     /// Changes the status of the local service instance (this app) in the discovery server.
     /// </summary>
     /// <param name="status">

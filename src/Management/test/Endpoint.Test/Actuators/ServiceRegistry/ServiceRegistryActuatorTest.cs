@@ -226,6 +226,24 @@ public sealed class ServiceRegistryActuatorTest
         discoveryClient.Status.Should().Be("UP");
     }
 
+    [Fact]
+    public async Task Endpoint_does_not_change_any_registry_when_status_unsupported_by_one()
+    {
+        var firstDiscoveryClient = new FakeServiceRegistryDiscoveryClient("first-client", true, "CANCEL_OVERRIDE");
+        var secondDiscoveryClient = new FakeServiceRegistryDiscoveryClient("second-client", true);
+
+        await using WebApplication host = await CreateHostAsync(firstDiscoveryClient, secondDiscoveryClient);
+        using HttpClient httpClient = host.GetTestClient();
+
+        HttpResponseMessage response = await httpClient.PostAsync(EndpointUri, CreateJsonContent("""{"status":"CANCEL_OVERRIDE"}"""),
+            TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
+
+        firstDiscoveryClient.Status.Should().Be("UP");
+        secondDiscoveryClient.Status.Should().Be("UP");
+    }
+
     [Theory]
     [InlineData("")]
     [InlineData("{}")]

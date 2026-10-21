@@ -319,6 +319,26 @@ public sealed class ConsulDiscoveryClientTest
         await discoveryClient.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 
+    [Theory]
+    [InlineData("UP", true)]
+    [InlineData("out_of_service", true)]
+    [InlineData("CANCEL_OVERRIDE", false)]
+    [InlineData("DOWN", false)]
+    public void IsStatusSupported_returns_expected(string status, bool expected)
+    {
+        var options = new ConsulDiscoveryOptions
+        {
+            Register = false,
+            HostName = "this.host.com",
+            Port = 8888
+        };
+
+        var client = Substitute.For<IConsulClient>();
+        var discoveryClient = new ConsulDiscoveryClient(client, TestOptionsMonitor.Create(options), NullLoggerFactory.Instance);
+
+        discoveryClient.IsStatusSupported(status).Should().Be(expected);
+    }
+
     [Fact]
     public async Task GetStatusAsync_returns_maintenance_mode()
     {

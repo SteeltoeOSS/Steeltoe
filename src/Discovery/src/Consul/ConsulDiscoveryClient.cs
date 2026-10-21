@@ -22,6 +22,10 @@ namespace Steeltoe.Discovery.Consul;
 /// </summary>
 public sealed class ConsulDiscoveryClient : IDiscoveryClient, IServiceRegistry
 {
+    private const string UpStatus = "UP";
+    private const string OutOfServiceStatus = "OUT_OF_SERVICE";
+    private const string MaintenanceModeCheckName = "Service Maintenance Mode";
+
     private readonly IConsulClient _client;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
     private readonly ConsulServiceRegistrar _registrar;
@@ -30,7 +34,7 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IServiceRegistry
     public string Description => "A discovery client for HashiCorp Consul.";
 
     /// <inheritdoc />
-    public bool IsRegistrationEnabled => _registrar is { IsRunning: true } && _optionsMonitor.CurrentValue.Register;
+    public bool IsRegistrationEnabled => _registrar.IsRunning && _optionsMonitor.CurrentValue.Register;
 
     /// <summary>
     /// This event is never raised. The Consul client doesn't implement caching.
@@ -203,8 +207,19 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IServiceRegistry
     /// </exception>
     public async Task<object> GetStatusAsync(CancellationToken cancellationToken)
     {
-        ConsulServiceRegistrar registrar = GetRunningRegistrar();
-        return await registrar.Registry.GetStatusAsync(registrar.Registration, cancellationToken);
+        ConsulServiceInstance serviceInstance = GetRegisteredServiceInstance();
+
+        QueryResult<HealthCheck[]> queryResult = await _client.Health.Checks(serviceInstance.ServiceId, QueryOptions.Default, cancellationToken);
+
+        foreach (HealthCheck check in queryResult.Response)
+        {
+            if (check.ServiceID == serviceInstance.InstanceId && string.Equals(check.Name, MaintenanceModeCheckName, StringComparison.OrdinalIgnoreCase))
+            {
+                return OutOfServiceStatus;
+            }
+        }
+
+        return UpStatus;
     }
 
     /// <summary>
@@ -226,18 +241,46 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient, IServiceRegistry
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(status);
 
-        ConsulServiceRegistrar registrar = GetRunningRegistrar();
-        await registrar.Registry.SetStatusAsync(registrar.Registration, status, cancellationToken);
+        ConsulServiceInstance serviceInstance = GetRegisteredServiceInstance();
+
+        if (string.Equals(status, OutOfServiceStatus, StringComparison.OrdinalIgnoreCase))
+        {
+            await _client.Agent.EnableServiceMaintenance(serviceInstance.InstanceId, OutOfServiceStatus, cancellationToken);
+        }
+        else if (string.Equals(status, UpStatus, StringComparison.OrdinalIgnoreCase))
+        {
+            await _client.Agent.DisableServiceMaintenance(serviceInstance.InstanceId, cancellationToken);
+        }
+        else
+        {
+            throw new ArgumentException($"Unknown status: {status}", nameof(status));
+        }
     }
 
-    private ConsulServiceRegistrar GetRunningRegistrar()
+    /// <summary>
+    /// Determines whether the specified status can be passed to <see cref="SetStatusAsync" />.
+    /// </summary>
+    /// <param name="status">
+    /// The status to check.
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if the status is "UP" or "OUT_OF_SERVICE"; otherwise, <c>false</c>.
+    /// </returns>
+    public bool IsStatusSupported(string status)
     {
-        if (_registrar == null || !IsRegistrationEnabled)
+        ArgumentNullException.ThrowIfNull(status);
+
+        return string.Equals(status, OutOfServiceStatus, StringComparison.OrdinalIgnoreCase) || string.Equals(status, UpStatus, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private ConsulServiceInstance GetRegisteredServiceInstance()
+    {
+        if (!IsRegistrationEnabled)
         {
             throw new InvalidOperationException("This app is not registered with Consul.");
         }
 
-        return _registrar;
+        return _registrar.ServiceInstance;
     }
 
     internal async Task AddInstancesToListAsync(ICollection<IServiceInstance> instances, string serviceId, QueryOptions queryOptions,

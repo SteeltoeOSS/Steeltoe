@@ -716,6 +716,22 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient, IServiceRe
         }
     }
 
+    /// <summary>
+    /// Determines whether the specified status can be passed to <see cref="SetStatusAsync" />.
+    /// </summary>
+    /// <param name="status">
+    /// The status to check, for example: "UP", "OUT_OF_SERVICE" or "CANCEL_OVERRIDE".
+    /// </param>
+    /// <returns>
+    /// <c>true</c> if Eureka supports the status; otherwise, <c>false</c>.
+    /// </returns>
+    public bool IsStatusSupported(string status)
+    {
+        ArgumentNullException.ThrowIfNull(status);
+
+        return string.Equals(status, CancelOverrideStatus, StringComparison.OrdinalIgnoreCase) || TryParseStatus(status, out _);
+    }
+
     private InstanceInfo GetRegisteredInstance()
     {
         if (!IsRegistrationEnabled)
@@ -733,15 +749,22 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient, IServiceRe
 
     private static InstanceStatus ParseStatus(string status)
     {
+        return TryParseStatus(status, out InstanceStatus value) ? value : throw new ArgumentException($"Unknown status: {status}", nameof(status));
+    }
+
+    private static bool TryParseStatus(string status, out InstanceStatus result)
+    {
         foreach (InstanceStatus value in Enum.GetValues<InstanceStatus>())
         {
             if (string.Equals(ToStatusText(value), status, StringComparison.OrdinalIgnoreCase))
             {
-                return value;
+                result = value;
+                return true;
             }
         }
 
-        throw new ArgumentException($"Unknown status: {status}", nameof(status));
+        result = default;
+        return false;
     }
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Failed to get the status of this app from Eureka.")]

@@ -71,19 +71,19 @@ internal sealed partial class ServiceRegistryEndpointHandler : IServiceRegistryE
 
     private async Task<ServiceRegistryResponse> SetStatusAsync(IServiceRegistry[] registries, string status, CancellationToken cancellationToken)
     {
+        // Validate upfront, to prevent applying the status to only some of the registries.
+        IServiceRegistry? unsupportedRegistry = Array.Find(registries, registry => !registry.IsStatusSupported(status));
+
+        if (unsupportedRegistry != null)
+        {
+            LogInvalidStatus(status, unsupportedRegistry.GetType());
+            return ServiceRegistryResponse.FromError($"Status '{status}' is not supported by {unsupportedRegistry.GetType().Name}.");
+        }
+
         foreach (IServiceRegistry registry in registries)
         {
             LogChangingStatus(status, registry.GetType());
-
-            try
-            {
-                await registry.SetStatusAsync(status, cancellationToken);
-            }
-            catch (ArgumentException exception)
-            {
-                LogInvalidStatus(exception, status, registry.GetType());
-                return ServiceRegistryResponse.FromError($"Status '{status}' is not supported by {registry.GetType().Name}.");
-            }
+            await registry.SetStatusAsync(status, cancellationToken);
         }
 
         return new ServiceRegistryResponse(null);
@@ -96,5 +96,5 @@ internal sealed partial class ServiceRegistryEndpointHandler : IServiceRegistryE
     private partial void LogChangingStatus(string status, Type registryType);
 
     [LoggerMessage(Level = LogLevel.Warning, Message = "Status {Status} is not supported by {RegistryType}.")]
-    private partial void LogInvalidStatus(Exception exception, string status, Type registryType);
+    private partial void LogInvalidStatus(string status, Type registryType);
 }

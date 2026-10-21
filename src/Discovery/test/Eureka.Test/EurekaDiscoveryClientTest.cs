@@ -885,6 +885,30 @@ public sealed class EurekaDiscoveryClientTest
         handler.Mock.VerifyNoOutstandingExpectation();
     }
 
+    [Theory]
+    [InlineData("UP", true)]
+    [InlineData("out_of_service", true)]
+    [InlineData("STARTING", true)]
+    [InlineData("CANCEL_OVERRIDE", true)]
+    [InlineData("BOGUS", false)]
+    public async Task IsStatusSupported_returns_expected(string status, bool expected)
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Eureka:Client:ShouldFetchRegistry"] = "false",
+            ["Eureka:Client:ShouldRegisterWithEureka"] = "false"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddEurekaDiscoveryClient();
+        await using WebApplication webApplication = builder.Build();
+
+        var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
+
+        discoveryClient.IsStatusSupported(status).Should().Be(expected);
+    }
+
     [Fact]
     public async Task GetStatusAsync_returns_status_from_server()
     {
