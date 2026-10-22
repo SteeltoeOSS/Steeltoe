@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using System.Reflection;
 using RichardSzalay.MockHttp;
 
@@ -24,6 +25,35 @@ public sealed class DelegateToMockHttpClientHandler : HttpClientHandler
         ArgumentNullException.ThrowIfNull(action);
 
         action(Mock);
+        return this;
+    }
+
+    /// <summary>
+    /// Responds to every request that has no more specific expectation, so a test never makes a real network call. Use this where the outcome of the call
+    /// does not matter, because connecting to an unavailable server can be slow.
+    /// </summary>
+    /// <param name="statusCode">
+    /// The HTTP status code to return for unmatched requests.
+    /// </param>
+    public DelegateToMockHttpClientHandler RespondToAnyRequest(HttpStatusCode statusCode)
+    {
+        Mock.When("*").Respond(statusCode);
+        return this;
+    }
+
+    /// <summary>
+    /// Responds to every request that has no more specific expectation, so a test never makes a real network call. Use this where the outcome of the call
+    /// does not matter, because connecting to an unavailable server can be slow.
+    /// </summary>
+    /// <param name="statusCode">
+    /// The HTTP status code to return for unmatched requests.
+    /// </param>
+    /// <param name="jsonContent">
+    /// The JSON to return for unmatched requests.
+    /// </param>
+    public DelegateToMockHttpClientHandler RespondToAnyRequest(HttpStatusCode statusCode, string jsonContent)
+    {
+        Mock.When("*").Respond(statusCode, "application/json", jsonContent);
         return this;
     }
 

@@ -354,22 +354,6 @@ public sealed class PostConfigureEurekaInstanceOptionsTest
         return services.BuildServiceProvider(true);
     }
 
-    private sealed class FakeDomainNameResolver : IDomainNameResolver
-    {
-        public const string TestIPAddress = "10.20.30.40";
-        public const string TestHostName = "test.domain-name.com";
-
-        public IPAddress ResolveHostAddress(string hostName, bool throwOnError = false)
-        {
-            return IPAddress.Parse(TestIPAddress);
-        }
-
-        public string ResolveHostName(bool throwOnError = false)
-        {
-            return TestHostName;
-        }
-    }
-
     private sealed class FakeNetworkInterfaceProvider : INetworkInterfaceProvider
     {
         public const string TestIPAddress = "11.22.33.44";

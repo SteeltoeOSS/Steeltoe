@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
@@ -27,8 +28,11 @@ public sealed class ConfigServerClientOptionsTest
     [Fact]
     public async Task ConfigureConfigServerClientOptions_WithDefaults()
     {
+        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().RespondToAnyRequest(HttpStatusCode.NotFound);
+
         var builder = new ConfigurationBuilder();
-        builder.AddConfigServer();
+        // ReSharper disable once AccessToDisposedClosure
+        builder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
         IConfigurationRoot configurationRoot = builder.Build();
 
         IServiceCollection services = new ServiceCollection();

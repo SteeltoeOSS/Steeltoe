@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -87,7 +86,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString()
+            ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString(),
+            ["spring:cloud:config:timeout"] = "10"
         };
 
         HostBuilder hostBuilder = TestHostBuilderFactory.Create();
@@ -100,10 +100,10 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         {
             var configurationRoot = (IConfigurationRoot)host.Services.GetRequiredService<IConfiguration>();
             provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
+            provider.InnerConfigurationReloadTimer.Should().NotBeNull();
         }
 
-        FieldInfo reloadTimerField = provider.GetType().GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        reloadTimerField.GetValue(provider).Should().BeNull();
+        provider.InnerConfigurationReloadTimer.Should().BeNull();
     }
 
     [Fact]
@@ -111,7 +111,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString()
+            ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString(),
+            ["spring:cloud:config:timeout"] = "10"
         };
 
         WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
@@ -124,10 +125,10 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         {
             var configurationRoot = (IConfigurationRoot)webHost.Services.GetRequiredService<IConfiguration>();
             provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
+            provider.InnerConfigurationReloadTimer.Should().NotBeNull();
         }
 
-        FieldInfo reloadTimerField = provider.GetType().GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        reloadTimerField.GetValue(provider).Should().BeNull();
+        provider.InnerConfigurationReloadTimer.Should().BeNull();
     }
 
     [Fact]
@@ -135,7 +136,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString()
+            ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString(),
+            ["spring:cloud:config:timeout"] = "10"
         };
 
         WebApplicationBuilder hostBuilder = TestWebApplicationBuilderFactory.Create();
@@ -144,14 +146,14 @@ public sealed class ConfigServerHostBuilderExtensionsTest
 
         IConfigurationRoot configurationRoot = hostBuilder.Configuration;
         ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
+        provider.InnerConfigurationReloadTimer.Should().NotBeNull();
 
         await using (WebApplication host = hostBuilder.Build())
         {
             _ = host.Services.GetRequiredService<IConfiguration>();
         }
 
-        FieldInfo reloadTimerField = provider.GetType().GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        reloadTimerField.GetValue(provider).Should().BeNull();
+        provider.InnerConfigurationReloadTimer.Should().BeNull();
     }
 
     [Fact]
@@ -159,7 +161,8 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString()
+            ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString(),
+            ["spring:cloud:config:timeout"] = "10"
         };
 
         HostApplicationBuilder hostBuilder = TestHostApplicationBuilderFactory.Create();
@@ -168,14 +171,14 @@ public sealed class ConfigServerHostBuilderExtensionsTest
 
         IConfigurationRoot configurationRoot = hostBuilder.Configuration;
         ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
+        provider.InnerConfigurationReloadTimer.Should().NotBeNull();
 
         using (IHost host = hostBuilder.Build())
         {
             _ = host.Services.GetRequiredService<IConfiguration>();
         }
 
-        FieldInfo reloadTimerField = provider.GetType().GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        reloadTimerField.GetValue(provider).Should().BeNull();
+        provider.InnerConfigurationReloadTimer.Should().BeNull();
     }
 
     [Fact]

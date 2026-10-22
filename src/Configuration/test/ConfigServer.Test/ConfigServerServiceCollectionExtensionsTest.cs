@@ -16,6 +16,7 @@ public sealed class ConfigServerServiceCollectionExtensionsTest
     public void DoesNotAddConfigServerMultipleTimes()
     {
         var builder = new ConfigurationBuilder();
+        builder.Add(FastTestConfigurations.ConfigServer);
         builder.AddConfigServer();
         builder.AddPlaceholderResolver();
         builder.AddDecryption();

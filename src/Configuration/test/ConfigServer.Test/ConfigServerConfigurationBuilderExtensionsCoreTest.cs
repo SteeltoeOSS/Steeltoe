@@ -124,8 +124,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
               "spring": {
                 "cloud": {
                   "config": {
-                    "validateCertificates": false,
-                    "timeout": 0
+                    "validateCertificates": false
                   }
                 }
               }
@@ -136,6 +135,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.Add(FastTestConfigurations.ConfigServer);
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
         using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
@@ -155,8 +155,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
               "spring": {
                 "cloud": {
                   "config": {
-                    "validate_certificates": false,
-                    "timeout": 0
+                    "validate_certificates": false
                   }
                 }
               }
@@ -167,6 +166,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.Add(FastTestConfigurations.ConfigServer);
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
         using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();

@@ -19,7 +19,7 @@ public sealed class RoundRobinLoadBalancerTest
     {
         ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
         TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var client = new ConfigurationDiscoveryClient(optionsMonitor);
+        using var client = new ConfigurationDiscoveryClient(optionsMonitor);
         var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
         var loadBalancer = new RoundRobinLoadBalancer(resolver, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);
 
@@ -49,7 +49,7 @@ public sealed class RoundRobinLoadBalancerTest
     {
         ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
         TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var client = new ConfigurationDiscoveryClient(optionsMonitor);
+        using var client = new ConfigurationDiscoveryClient(optionsMonitor);
         var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
         IDistributedCache distributedCache = GetCache();
         var loadBalancer = new RoundRobinLoadBalancer(resolver, distributedCache, null, NullLogger<RoundRobinLoadBalancer>.Instance);
@@ -179,10 +179,12 @@ public sealed class RoundRobinLoadBalancerTest
         ConfigurationDiscoveryOptions options = CreateTestServiceInstances();
         TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
 
+        using var configurationClient = new ConfigurationDiscoveryClient(optionsMonitor);
+
         IDiscoveryClient[] clients =
         [
             new ThrowingDiscoveryClient(),
-            new ConfigurationDiscoveryClient(optionsMonitor)
+            configurationClient
         ];
 
         var resolver = new ServiceInstancesResolver(clients, NullLogger<ServiceInstancesResolver>.Instance);
@@ -210,7 +212,7 @@ public sealed class RoundRobinLoadBalancerTest
         };
 
         TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var client = new ConfigurationDiscoveryClient(optionsMonitor);
+        using var client = new ConfigurationDiscoveryClient(optionsMonitor);
         IDistributedCache distributedCache = GetCache();
         var resolver = new ServiceInstancesResolver([client], distributedCache, null, NullLogger<ServiceInstancesResolver>.Instance);
         var loadBalancer = new RoundRobinLoadBalancer(resolver, null, null, NullLogger<RoundRobinLoadBalancer>.Instance);

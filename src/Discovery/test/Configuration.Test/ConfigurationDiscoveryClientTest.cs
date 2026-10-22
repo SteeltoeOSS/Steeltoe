@@ -63,7 +63,7 @@ public sealed class ConfigurationDiscoveryClientTest
         };
 
         TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var client = new ConfigurationDiscoveryClient(optionsMonitor);
+        using var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
         fruitInstances.Should().HaveCount(3);
@@ -93,7 +93,7 @@ public sealed class ConfigurationDiscoveryClientTest
         };
 
         TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var client = new ConfigurationDiscoveryClient(optionsMonitor);
+        using var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
 

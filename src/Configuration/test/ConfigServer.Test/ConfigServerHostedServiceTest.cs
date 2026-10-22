@@ -66,6 +66,7 @@ public sealed class ConfigServerHostedServiceTest
     public void FindsConfigServerProviderInPlaceholderProviderInDecryptionProvider()
     {
         var builder = new ConfigurationBuilder();
+        builder.Add(FastTestConfigurations.ConfigServer);
         builder.AddConfigServer();
         builder.AddPlaceholderResolver();
         builder.AddDecryption();
