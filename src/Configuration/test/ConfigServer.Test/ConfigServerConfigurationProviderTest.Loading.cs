@@ -4,7 +4,6 @@
 
 using System.Net;
 using System.Net.Sockets;
-using System.Reflection;
 using System.Text;
 using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -256,10 +255,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
 
-        FieldInfo reloadTimerField =
-            typeof(ConfigServerConfigurationProvider).GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-
-        reloadTimerField.GetValue(provider).Should().NotBeNull();
+        provider.InnerConfigurationReloadTimer.Should().NotBeNull();
 
         fileProvider.ReplaceAppSettingsJsonFile($$"""
             {
@@ -277,7 +273,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         fileProvider.NotifyChanged();
 
-        reloadTimerField.GetValue(provider).Should().BeNull();
+        provider.InnerConfigurationReloadTimer.Should().BeNull();
     }
 
     [Fact]
@@ -321,10 +317,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
 
-        FieldInfo reloadTimerField =
-            typeof(ConfigServerConfigurationProvider).GetField("_configurationReloadTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-
-        reloadTimerField.GetValue(provider).Should().NotBeNull();
+        provider.InnerConfigurationReloadTimer.Should().NotBeNull();
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -342,7 +335,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         fileProvider.NotifyChanged();
 
-        reloadTimerField.GetValue(provider).Should().NotBeNull("timer should be rescheduled, not stopped");
+        provider.InnerConfigurationReloadTimer.Should().NotBeNull("timer should be rescheduled, not stopped");
     }
 
     [Fact]
@@ -384,9 +377,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
-        FieldInfo vaultTimerField = typeof(ConfigServerConfigurationProvider).GetField("_vaultRenewTimer", BindingFlags.NonPublic | BindingFlags.Instance)!;
-
-        vaultTimerField.GetValue(provider).Should().NotBeNull();
+        provider.InnerVaultRenewTimer.Should().NotBeNull();
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -404,7 +395,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         fileProvider.NotifyChanged();
 
-        vaultTimerField.GetValue(provider).Should().BeNull();
+        provider.InnerVaultRenewTimer.Should().BeNull();
     }
 
     [Fact]

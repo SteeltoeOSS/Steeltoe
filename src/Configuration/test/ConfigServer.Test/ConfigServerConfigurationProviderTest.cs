@@ -65,7 +65,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     public void GetLabels_Null()
     {
         var options = new ConfigServerClientOptions();
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string[] result = provider.GetLabels(provider.ClientOptions);
@@ -80,7 +80,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = string.Empty
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string[] result = provider.GetLabels(provider.ClientOptions);
@@ -95,7 +95,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "foobar"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string[] result = provider.GetLabels(provider.ClientOptions);
@@ -110,7 +110,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "1,2,3,"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string[] result = provider.GetLabels(provider.ClientOptions);
@@ -128,7 +128,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "1,,2,3,"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string[] result = provider.GetLabels(provider.ClientOptions);
@@ -148,7 +148,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "development"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
@@ -175,7 +175,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Password = "password"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
@@ -202,7 +202,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Password = "password"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
@@ -227,7 +227,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Token = "MyVaultToken"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), null);
@@ -346,7 +346,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         using HttpClient httpClient = provider.CreateHttpClient(provider.ClientOptions);
@@ -369,7 +369,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
         };
 
-        using (var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance))
+        using (ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options))
         {
             provider.Load();
             provider.ClientOptions.Discovery.Enabled.Should().BeTrue();
@@ -387,6 +387,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.Add(FastTestConfigurations.ConfigServer);
         configurationBuilder.AddInMemoryCollection(appSettings);
         configurationBuilder.AddConfigServer(options);
         using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
@@ -413,6 +414,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.Add(FastTestConfigurations.ConfigServer);
         configurationBuilder.AddInMemoryCollection(appSettings);
         configurationBuilder.AddConfigServer(options);
         using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
@@ -479,6 +481,14 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         action.Should().ThrowExactly<ConfigServerException>().WithMessage("Could not locate Config Server via discovery*");
+    }
+
+    private static ConfigServerConfigurationProvider CreateProviderWithoutRemoteLoading(ConfigServerClientOptions options)
+    {
+        // Used by tests that verify provider behavior other than loading, which would otherwise try to reach Config Server (slow when connecting fails).
+
+        IConfigurationRoot configuration = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer).Build();
+        return new ConfigServerConfigurationProvider(options, configuration, null, null, NullLoggerFactory.Instance);
     }
 
     private static string GetEncodedUserPassword(string user, string password)

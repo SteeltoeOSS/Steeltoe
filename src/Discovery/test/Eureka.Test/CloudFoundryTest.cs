@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
@@ -76,6 +77,7 @@ public sealed class CloudFoundryTest
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication app = builder.Build();
@@ -270,6 +272,7 @@ public sealed class CloudFoundryTest
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication app = builder.Build();
@@ -465,6 +468,7 @@ public sealed class CloudFoundryTest
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication app = builder.Build();
@@ -662,6 +666,7 @@ public sealed class CloudFoundryTest
         builder.Configuration.AddJsonStream(stream);
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication app = builder.Build();
@@ -761,6 +766,7 @@ public sealed class CloudFoundryTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.AddCloudFoundryConfiguration();
         builder.Configuration.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
         builder.Services.AddEurekaDiscoveryClient();
 
         await using WebApplication app = builder.Build();

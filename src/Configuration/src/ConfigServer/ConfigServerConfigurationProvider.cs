@@ -70,7 +70,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     };
 
     internal IDictionary<string, string?> InnerData => Data;
-
+    internal Timer? InnerConfigurationReloadTimer => Volatile.Read(ref _configurationReloadTimer);
+    internal Timer? InnerVaultRenewTimer => Volatile.Read(ref _vaultRenewTimer);
     internal bool HasTemporaryDiscoveryClients => _configServerDiscoveryService.HasTemporaryDiscoveryClients;
 
     /// <summary>

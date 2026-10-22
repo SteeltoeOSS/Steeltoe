@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using System.Runtime.InteropServices;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -28,6 +29,14 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         ["eureka:client:eurekaServer:retryCount"] = "0"
     };
 
+    // Keeps the client enabled, so its startup and shutdown are exercised, but makes no network calls (like ConsulSettings does for Consul).
+    private static readonly Dictionary<string, string?> EurekaSettingsWithoutNetworkCalls = new()
+    {
+        ["eureka:client:enabled"] = "true",
+        ["eureka:client:shouldRegisterWithEureka"] = "false",
+        ["eureka:client:shouldFetchRegistry"] = "false"
+    };
+
     private static readonly Dictionary<string, string?> ConsulSettings = new()
     {
         ["consul:discovery:serviceName"] = "test-host",
@@ -40,7 +49,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
     public async Task AddEurekaDiscoveryClient_WebApplicationBuilder_AddsServiceDiscovery_Eureka()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(EurekaSettings);
+        builder.Configuration.AddInMemoryCollection(EurekaSettingsWithoutNetworkCalls);
         builder.Services.AddEurekaDiscoveryClient();
 
         await using HostWrapper host = HostWrapper.Wrap(builder.Build());
@@ -72,7 +81,9 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         builder.Services.AddEurekaDiscoveryClient();
         builder.Services.ConfigureHttpClientDefaults(action => action.AddServiceDiscovery());
 
+        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().RespondToAnyRequest(HttpStatusCode.OK, "{}");
         await using HostWrapper host = HostWrapper.Wrap(builder.Build());
+        host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         // ReSharper disable once AccessToDisposedClosure
         Task<EurekaDiscoveryClient> resolveTask = Task.Run(() => _ = host.Services.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().Single());

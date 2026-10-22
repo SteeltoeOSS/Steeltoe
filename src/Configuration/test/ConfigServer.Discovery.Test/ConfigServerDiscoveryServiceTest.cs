@@ -32,78 +32,74 @@ public sealed class ConfigServerDiscoveryServiceTest
     }
 
     [Fact]
-    public async Task InvokeGetInstances_ReturnsExpected()
+    public async Task GetConfigServerInstances_returns_instances_found_by_discovery_clients()
     {
         var appSettings = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery))
         {
-            ["eureka:client:eurekaServer:retryCount"] = "0"
+            ["discovery:services:0:serviceId"] = "configserver",
+            ["discovery:services:0:host"] = "config.example.com",
+            ["discovery:services:0:port"] = "8888",
+            ["discovery:services:1:serviceId"] = "other-service",
+            ["discovery:services:1:host"] = "other.example.com",
+            ["discovery:services:1:port"] = "9999"
         };
 
-        var builder = new ConfigurationBuilder();
-        builder.AddInMemoryCollection(appSettings);
-        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
-        var options = new ConfigServerClientOptions();
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).BuildAsRoot();
 
         var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
-        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(options, TestContext.Current.CancellationToken);
+        List<IServiceInstance> result = await service.GetConfigServerInstancesAsync(new ConfigServerClientOptions(), TestContext.Current.CancellationToken);
+
+        IServiceInstance instance = result.Should().ContainSingle().Subject;
+        instance.ServiceId.Should().Be("configserver");
+        instance.Host.Should().Be("config.example.com");
+        instance.Port.Should().Be(8888);
+
+        await service.ShutdownAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
+    public async Task GetConfigServerInstances_returns_nothing_when_Config_Server_is_not_discovered()
+    {
+        var appSettings = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery))
+        {
+            ["discovery:services:0:serviceId"] = "other-service",
+            ["discovery:services:0:host"] = "other.example.com",
+            ["discovery:services:0:port"] = "9999"
+        };
+
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).BuildAsRoot();
+
+        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
+        List<IServiceInstance> result = await service.GetConfigServerInstancesAsync(new ConfigServerClientOptions(), TestContext.Current.CancellationToken);
+
         result.Should().BeEmpty();
 
         await service.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public async Task InvokeGetInstances_RetryEnabled_ReturnsExpected()
+    public async Task GetConfigServerInstances_retries_when_no_instances_are_found()
     {
-        var appSettings = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery))
-        {
-            ["eureka:client:eurekaServer:retryCount"] = "1"
-        };
-
-        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).BuildAsRoot();
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().BuildAsRoot();
 
         var options = new ConfigServerClientOptions
         {
             Retry =
             {
                 Enabled = true,
-                MaxAttempts = 1
-            },
-            Timeout = 10
+                MaxAttempts = 2,
+                InitialInterval = 10
+            }
         };
 
+        var discoveryClient = new TestDiscoveryClient();
         var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
-        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(options, TestContext.Current.CancellationToken);
+        await service.ProvideRuntimeReplacementsAsync([discoveryClient], TestContext.Current.CancellationToken);
+
+        List<IServiceInstance> result = await service.GetConfigServerInstancesAsync(options, TestContext.Current.CancellationToken);
+
         result.Should().BeEmpty();
-
-        await service.ShutdownAsync(TestContext.Current.CancellationToken);
-    }
-
-    [Fact]
-    public async Task GetConfigServerInstances_ReturnsExpected()
-    {
-        var appSettings = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery))
-        {
-            ["eureka:client:eurekaServer:retryCount"] = "0"
-        };
-
-        var builder = new ConfigurationBuilder();
-        builder.AddInMemoryCollection(appSettings);
-        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
-
-        var options = new ConfigServerClientOptions
-        {
-            Retry =
-            {
-                Enabled = false
-            },
-            Timeout = 10
-        };
-
-        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
-        IEnumerable<IServiceInstance> result = await service.GetConfigServerInstancesAsync(options, TestContext.Current.CancellationToken);
-        result.Should().BeEmpty();
-
-        await service.ShutdownAsync(TestContext.Current.CancellationToken);
+        discoveryClient.GetInstancesCallCount.Should().Be(3);
     }
 
     [Fact]
@@ -112,16 +108,20 @@ public sealed class ConfigServerDiscoveryServiceTest
         using ConfigurationRoot configurationRoot =
             new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery).BuildAsRoot();
 
-        var testDiscoveryClient = new TestDiscoveryClient();
+        var discoveryClient = new TestDiscoveryClient();
         var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
 
-        await service.ProvideRuntimeReplacementsAsync([testDiscoveryClient], TestContext.Current.CancellationToken);
+        await service.ProvideRuntimeReplacementsAsync([discoveryClient], TestContext.Current.CancellationToken);
 
-        service.DiscoveryClients.Should().ContainSingle().Which.Should().Be(testDiscoveryClient);
+        service.DiscoveryClients.Should().ContainSingle().Which.Should().Be(discoveryClient);
     }
 
     private sealed class TestDiscoveryClient : IDiscoveryClient
     {
+        private int _getInstancesCallCount;
+
+        public int GetInstancesCallCount => _getInstancesCallCount;
+
         public string Description => throw new NotImplementedException();
 
 #pragma warning disable CS0067 // The event is never used
@@ -135,7 +135,8 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         public Task<IList<IServiceInstance>> GetInstancesAsync(string serviceId, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            Interlocked.Increment(ref _getInstancesCallCount);
+            return Task.FromResult<IList<IServiceInstance>>([]);
         }
 
         public IServiceInstance GetLocalServiceInstance()
