@@ -13,6 +13,7 @@ namespace Steeltoe.Common.Net;
 public sealed class WindowsNetworkFileShare : IDisposable
 {
     private const int NoError = 0;
+    private const int ErrorNotConnected = 2250;
     private readonly string _networkName;
     private readonly IMultipleProviderRouter _multipleProviderRouter;
 
@@ -61,7 +62,12 @@ public sealed class WindowsNetworkFileShare : IDisposable
         // because the _multipleProviderRouter instance may have already been garbage-collected.
 
         int result = _multipleProviderRouter.CancelConnection(_networkName, 0, true);
-        ThrowForNonZeroResult(result, "disconnect from network share");
+
+        // When the share is already disconnected, the goal of disposing is met. Throwing then would also mask an exception from the code using the share.
+        if (result != ErrorNotConnected)
+        {
+            ThrowForNonZeroResult(result, "disconnect from network share");
+        }
     }
 
     internal static void ThrowForNonZeroResult(int errorNumber, string operation)

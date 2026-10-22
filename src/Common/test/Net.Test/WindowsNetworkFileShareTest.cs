@@ -99,4 +99,23 @@ public sealed class WindowsNetworkFileShareTest
 
         exception.InnerException.Message.Should().Be(message);
     }
+
+    [Fact]
+    public void Dispose_does_not_mask_earlier_exception_when_share_is_already_disconnected()
+    {
+        const int errorNotConnected = 2250;
+
+        var router = new FakeMultipleProviderRouter
+        {
+            CancelConnectionResult = errorNotConnected
+        };
+
+        Action action = () =>
+        {
+            using var share = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), router);
+            throw new InvalidOperationException("Original error.");
+        };
+
+        action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Original error.");
+    }
 }
