@@ -303,7 +303,7 @@ public sealed class ConsulDiscoveryClientTest
         client.Agent.Returns(agent);
 
         ConsulDiscoveryClient discoveryClient = CreateRegisteredDiscoveryClient(client);
-        string instanceId = discoveryClient.GetLocalServiceInstance()!.InstanceId;
+        string instanceId = discoveryClient.GetLocalServiceInstance().InstanceId;
 
         discoveryClient.IsRegistrationEnabled.Should().BeTrue();
 
@@ -328,6 +328,8 @@ public sealed class ConsulDiscoveryClientTest
     {
         var options = new ConsulDiscoveryOptions
         {
+            ServiceName = "this-service",
+            InstanceId = "this-instance",
             Register = false,
             HostName = "this.host.com",
             Port = 8888
@@ -349,7 +351,7 @@ public sealed class ConsulDiscoveryClientTest
         client.Health.Returns(health);
 
         ConsulDiscoveryClient discoveryClient = CreateRegisteredDiscoveryClient(client);
-        string instanceId = discoveryClient.GetLocalServiceInstance()!.InstanceId;
+        string instanceId = discoveryClient.GetLocalServiceInstance().InstanceId;
 
         var queryResult = new QueryResult<HealthCheck[]>
         {
@@ -377,6 +379,8 @@ public sealed class ConsulDiscoveryClientTest
     {
         var options = new ConsulDiscoveryOptions
         {
+            ServiceName = "this-service",
+            InstanceId = "this-instance",
             Register = false,
             HostName = "this.host.com",
             Port = 8888
@@ -400,6 +404,7 @@ public sealed class ConsulDiscoveryClientTest
         var options = new ConsulDiscoveryOptions
         {
             ServiceName = "foobar",
+            InstanceId = "foobar-instance",
             HostName = "this.host.com",
             Port = 8888,
             Heartbeat = null

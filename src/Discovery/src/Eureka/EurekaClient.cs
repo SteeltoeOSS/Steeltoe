@@ -179,11 +179,13 @@ public sealed partial class EurekaClient
 
         string path = $"apps/{WebUtility.UrlEncode(appName)}/{WebUtility.UrlEncode(instanceId)}";
 
-        return await ExecuteRequestAsync(HttpMethod.Get, path, null, null, async response =>
+        JsonInstanceInfoRoot root = await ExecuteRequestAsync(HttpMethod.Get, path, null, null, async response =>
         {
             JsonInstanceInfoRoot? root = await response.Content.ReadFromJsonAsync(EurekaJsonSerializerContext.Default.JsonInstanceInfoRoot, cancellationToken);
-            return InstanceInfo.FromJson(root?.Instance, _timeProvider);
+            return root ?? new JsonInstanceInfoRoot();
         }, cancellationToken);
+
+        return InstanceInfo.FromJson(root.Instance, _timeProvider);
     }
 
     /// <summary>
