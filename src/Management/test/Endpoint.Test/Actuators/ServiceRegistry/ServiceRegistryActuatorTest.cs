@@ -53,7 +53,7 @@ public sealed class ServiceRegistryActuatorTest
         options.Enabled.Should().BeNull();
         options.Id.Should().Be("service-registry");
         options.Path.Should().Be("service-registry");
-        options.RequiredPermissions.Should().Be(EndpointPermissions.Restricted);
+        options.RequiredPermissions.Should().Be(EndpointPermissions.Full);
 
         options.GetSafeAllowedVerbs().Should().BeEquivalentTo("GET", "POST");
         options.RequiresExactMatch().Should().BeTrue();

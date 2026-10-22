@@ -1,12 +1,4 @@
 #nullable enable
-Steeltoe.Management.Endpoint.TooManyActuatorRequestsException
-Steeltoe.Management.Endpoint.TooManyActuatorRequestsException.TooManyActuatorRequestsException(string? message) -> void
-Steeltoe.Management.Endpoint.TooManyActuatorRequestsException.TooManyActuatorRequestsException(string? message, System.Exception? innerException) -> void
-override Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryRequest.ToString() -> string!
-static Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.EndpointServiceCollectionExtensions.AddServiceRegistryActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.EndpointServiceCollectionExtensions.AddServiceRegistryActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryResponse.FromError(string! error) -> Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryResponse!
-static Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryResponse.NotRegistered.get -> Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryResponse!
 Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.IServiceRegistryEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryEndpointOptions
@@ -20,3 +12,13 @@ Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryResponse.E
 Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryResponse.IsRegistered.get -> bool
 Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryResponse.ServiceRegistryResponse(object? status) -> void
 Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryResponse.Status.get -> object?
+Steeltoe.Management.Endpoint.TooManyActuatorRequestsException
+Steeltoe.Management.Endpoint.TooManyActuatorRequestsException.TooManyActuatorRequestsException(string? message) -> void
+Steeltoe.Management.Endpoint.TooManyActuatorRequestsException.TooManyActuatorRequestsException(string? message, System.Exception? innerException) -> void
+override Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryEndpointOptions.RequiredPermissions.get -> Steeltoe.Management.Configuration.EndpointPermissions
+override Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryEndpointOptions.RequiredPermissions.set -> void
+override Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryRequest.ToString() -> string!
+static Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.EndpointServiceCollectionExtensions.AddServiceRegistryActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.EndpointServiceCollectionExtensions.AddServiceRegistryActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryResponse.FromError(string! error) -> Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryResponse!
+static Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryResponse.NotRegistered.get -> Steeltoe.Management.Endpoint.Actuators.ServiceRegistry.ServiceRegistryResponse!

@@ -8,6 +8,11 @@ namespace Steeltoe.Management.Endpoint.Actuators.ServiceRegistry;
 
 public sealed class ServiceRegistryEndpointOptions : EndpointOptions
 {
+    /// <summary>
+    /// Gets or sets the permissions required to access this endpoint, when running on Cloud Foundry. Default value: Full.
+    /// </summary>
+    public override EndpointPermissions RequiredPermissions { get; set; } = EndpointPermissions.Full;
+
     /// <inheritdoc />
     protected override IList<string> GetDefaultAllowedVerbs()
     {
