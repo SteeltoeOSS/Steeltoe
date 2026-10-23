@@ -4,6 +4,8 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 
@@ -179,6 +181,88 @@ public sealed class ConfigServerConfigurationSourceTest
             // a nested configuration from the same sources. Without skipping the source there, this would never end.
             postProcessorSource.ProvidersCreated.Should().ContainSingle();
         }
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Does_not_dispose_chained_host_configuration_when_connector_builds_parent_configuration_containing_Config_Server(bool addConfigServerFirst)
+    {
+        var hostSource = new DisposeCountingConfigurationSource();
+
+        // HostBuilder chains the host configuration into the app configuration, taking ownership of it.
+        HostBuilder builder = TestHostBuilderFactory.Create();
+        builder.ConfigureHostConfiguration(configurationBuilder => configurationBuilder.Add(hostSource));
+
+        builder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            // Behaves like a connector: building its parent configuration rebuilds Config Server, which builds a nested configuration from its sources,
+            // including the chained host configuration.
+            var postProcessorSource = new TestPostProcessorConfigurationSource
+            {
+                LoadBuildsParentConfiguration = true
+            };
+
+            if (addConfigServerFirst)
+            {
+                configurationBuilder.AddConfigServer(new ConfigServerClientOptions
+                {
+                    Enabled = false
+                });
+
+                configurationBuilder.Add(postProcessorSource);
+            }
+            else
+            {
+                configurationBuilder.Add(postProcessorSource);
+
+                configurationBuilder.AddConfigServer(new ConfigServerClientOptions
+                {
+                    Enabled = false
+                });
+            }
+        });
+
+        using (builder.Build())
+        {
+            hostSource.ProvidersCreated.Should().ContainSingle();
+            hostSource.ProvidersCreated[0].DisposeCount.Should().Be(0);
+        }
+
+        hostSource.ProvidersCreated[0].DisposeCount.Should().Be(1);
+    }
+
+    [Fact]
+    public void Host_configuration_keeps_reloading_after_connector_builds_parent_configuration_containing_Config_Server()
+    {
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeAppSettingsJsonFile("""{ "Example": { "Value": "initial" } }""");
+
+        HostBuilder builder = TestHostBuilderFactory.Create();
+        builder.ConfigureHostConfiguration(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
+
+        builder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.AddConfigServer(new ConfigServerClientOptions
+            {
+                Enabled = false
+            });
+
+            configurationBuilder.Add(new TestPostProcessorConfigurationSource
+            {
+                LoadBuildsParentConfiguration = true
+            });
+        });
+
+        using IHost host = builder.Build();
+        var configuration = host.Services.GetRequiredService<IConfiguration>();
+
+        configuration["Example:Value"].Should().Be("initial");
+
+        fileProvider.ReplaceAppSettingsJsonFile("""{ "Example": { "Value": "changed" } }""");
+        fileProvider.NotifyChanged();
+
+        configuration["Example:Value"].Should().Be("changed");
     }
 
     private static void AddConfigurationSource(IConfigurationBuilder builder, IConfigurationSource source)

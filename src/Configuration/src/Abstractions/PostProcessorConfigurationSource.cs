@@ -130,8 +130,15 @@ internal abstract class PostProcessorConfigurationSource
         }
     }
 
-    private static ConfigurationRoot BuildWithoutOwningChainedConfigurations(ConfigurationBuilder configurationBuilder)
+    /// <summary>
+    /// Builds the configuration from the specified builder, without the resulting providers taking over ownership of chained configurations (such as the
+    /// host configuration of HostBuilder). Use this when building a configuration from sources that are shared with the actual configuration, which remains
+    /// responsible for disposing the chained configurations.
+    /// </summary>
+    public static ConfigurationRoot BuildWithoutOwningChainedConfigurations(ConfigurationBuilder configurationBuilder)
     {
+        ArgumentNullException.ThrowIfNull(configurationBuilder);
+
         // Composite sources (such as the ones added by AddPlaceholderResolver and AddDecryption) wrap the chained source and rebuild it from the same
         // instance, which can't be replaced. Instead, temporarily clear the ownership flag on those instances while building the copy. The flag is read
         // when the chained provider is created, so it can be restored right after building.

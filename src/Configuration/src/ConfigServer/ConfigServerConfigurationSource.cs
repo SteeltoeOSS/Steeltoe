@@ -104,7 +104,10 @@ internal sealed class ConfigServerConfigurationSource : IConfigurationSource
         // parent configuration, dispose the shared post-processors when this nested configuration is disposed, and connectors would build it endlessly.
         PostProcessorConfigurationSource.MarkAsNestedConfiguration(configurationBuilder);
 
-        Configuration = configurationBuilder.Build();
+        // The sources may include chained configurations that take ownership of the host configuration. Disposing this nested configuration (or the one in a
+        // temporary copy of the parent configuration) must not dispose the host configuration, which is still in use by the actual configuration.
+        Configuration = PostProcessorConfigurationSource.BuildWithoutOwningChainedConfigurations(configurationBuilder);
+
         return new ConfigServerConfigurationProvider(this, _loggerFactory);
     }
 }
