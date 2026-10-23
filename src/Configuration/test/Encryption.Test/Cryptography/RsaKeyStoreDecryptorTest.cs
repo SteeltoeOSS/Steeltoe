@@ -12,11 +12,24 @@ public sealed class RsaKeyStoreDecryptorTest
     private readonly KeyProvider _keyProvider = new("./Cryptography/server.jks", "letmein");
 
     [Fact]
-    public void Decrypt_WithGarbageBase64Throws()
+    public void Decrypt_WithUnknownKeyAliasThrows()
     {
         var rsaKeyStoreDecryptor = new RsaKeyStoreDecryptor(_keyProvider, "nonexistingKey");
 
         Action action = () => rsaKeyStoreDecryptor.Decrypt("dGhpcyBpcyBjb21wbGV0ZSBnYXJiYWdl");
+
+        action.Should().ThrowExactly<DecryptionException>().WithMessage("Key nonexistingKey does not exist in keystore.");
+    }
+
+    [Theory]
+    [InlineData("dGhpcyBpcyBjb21wbGV0ZSBnYXJiYWdl")] // length prefix larger than the cipher text
+    [InlineData("gAAAAA==")] // negative length prefix
+    [InlineData("AA==")] // too short to contain a length prefix
+    public void Decrypt_WithGarbageBase64Throws(string garbage)
+    {
+        var rsaKeyStoreDecryptor = new RsaKeyStoreDecryptor(_keyProvider, "mytestkey");
+
+        Action action = () => rsaKeyStoreDecryptor.Decrypt(garbage);
 
         action.Should().ThrowExactly<DecryptionException>();
     }
