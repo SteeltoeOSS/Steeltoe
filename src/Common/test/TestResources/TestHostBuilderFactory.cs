@@ -62,5 +62,7 @@ public static class TestHostBuilderFactory
         {
             builder.ConfigureServices(services => services.Replace(ServiceDescriptor.Singleton<DiagnosticListener, InactiveDiagnosticListener>()));
         }
+
+        builder.ConfigureServices(services => services.DisableHttpClientRotationTimers());
     }
 }

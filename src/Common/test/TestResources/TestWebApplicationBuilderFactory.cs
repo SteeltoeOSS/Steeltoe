@@ -102,5 +102,7 @@ public static class TestWebApplicationBuilderFactory
         {
             builder.Services.Replace(ServiceDescriptor.Singleton<DiagnosticListener, InactiveDiagnosticListener>());
         }
+
+        builder.Services.DisableHttpClientRotationTimers();
     }
 }
