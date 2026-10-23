@@ -75,6 +75,13 @@ internal sealed class RsaKeyStoreDecryptor : ITextDecryptor
         using var ms = new MemoryStream(fullCipher);
 
         int secretLength = ReadSecretLength(ms);
+
+        // The length prefix is part of the (untrusted) cipher text, so it must fit within the remaining bytes.
+        if (secretLength < 0 || secretLength > fullCipher.Length - 2)
+        {
+            throw new DecryptionException("Invalid secret length in cipher");
+        }
+
         byte[] secretBytes = new byte[secretLength];
         byte[] cipherTextBytes = new byte[fullCipher.Length - secretBytes.Length - 2];
 
