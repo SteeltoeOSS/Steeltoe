@@ -274,6 +274,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
     public async Task GetAccessTokenReturnsExpected()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -299,6 +300,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
     public async Task GetPermissionsReturnsExpected()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);

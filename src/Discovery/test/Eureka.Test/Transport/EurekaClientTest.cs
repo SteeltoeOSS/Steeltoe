@@ -360,6 +360,7 @@ public sealed class EurekaClientTest
         using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
 
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -408,6 +409,7 @@ public sealed class EurekaClientTest
         using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
 
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServer.RetryCount = 0);
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -455,6 +457,7 @@ public sealed class EurekaClientTest
         using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
 
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -517,6 +520,7 @@ public sealed class EurekaClientTest
             """)!.ToJsonString();
 
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -559,6 +563,7 @@ public sealed class EurekaClientTest
         using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
 
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://server1:8761,http://server2:8761");
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -603,6 +608,7 @@ public sealed class EurekaClientTest
     public async Task RegisterAsync_AddsAuthorizationHeaderFromUsernamePasswordInUri()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging();
         services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://user:pass@foo:123/eureka/");
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -630,6 +636,7 @@ public sealed class EurekaClientTest
     public async Task RegisterAsync_AddsAuthorizationHeaderFromOnlyPasswordInUri()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging();
         services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = "http://:pass@foo:123/eureka/");
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -663,6 +670,7 @@ public sealed class EurekaClientTest
             """;
 
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging();
 
         services.AddOptions<EurekaClientOptions>().Configure(options =>
@@ -702,6 +710,7 @@ public sealed class EurekaClientTest
     public async Task DeregisterAsync_SendsRequestToServer()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging();
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -724,6 +733,7 @@ public sealed class EurekaClientTest
     public async Task HeartbeatAsync_SendsRequestToServer()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging();
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -750,6 +760,7 @@ public sealed class EurekaClientTest
     public async Task GetApplicationsAsync_SendsRequestToServer()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging();
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -790,6 +801,7 @@ public sealed class EurekaClientTest
         using var capturingLoggerProvider = new CapturingLoggerProvider(category => category.StartsWith("Steeltoe.", StringComparison.Ordinal));
 
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -825,6 +837,7 @@ public sealed class EurekaClientTest
     public async Task GetApplicationsAsync_IgnoresInstanceWithInvalidJsonValues(string responseContent)
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging();
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -859,6 +872,7 @@ public sealed class EurekaClientTest
     public async Task GetDeltaAsync_SendsRequestToServer()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging();
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -895,6 +909,7 @@ public sealed class EurekaClientTest
     public async Task GetByVipAsync_SendsRequestToServer()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging();
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();
@@ -934,6 +949,7 @@ public sealed class EurekaClientTest
             new CapturingLoggerProvider(category => category.StartsWith("System.Net.Http.HttpClient", StringComparison.Ordinal));
 
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
         services.AddOptions();
         services.AddSingleton<EurekaServiceUriStateManager>();

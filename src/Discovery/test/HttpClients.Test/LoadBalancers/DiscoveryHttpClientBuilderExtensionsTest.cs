@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.HttpClients.LoadBalancers;
 
@@ -74,6 +75,7 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
     public async Task AddLoadBalancerT_CanBeUsedWithAnHttpClient()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddSingleton<FakeLoadBalancer>();
         services.AddHttpClient("test").AddServiceDiscovery<FakeLoadBalancer>();
 
@@ -88,6 +90,7 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
     public async Task CanAddMultipleLoadBalancers()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddConfigurationDiscoveryClient();
         services.AddSingleton<FakeLoadBalancer>();

@@ -7,7 +7,7 @@ using Microsoft.Extensions.Http;
 
 namespace Steeltoe.Common.TestResources;
 
-internal static class ServiceCollectionExtensions
+public static class ServiceCollectionExtensions
 {
     /// <summary>
     /// Disables the internal cleanup tracking timers for all HttpClients in the service container by setting the factory handler rotation lifetime to
