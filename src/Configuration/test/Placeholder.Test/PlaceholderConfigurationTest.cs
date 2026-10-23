@@ -135,13 +135,13 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         using (builder.BuildAsRoot())
         {
             previousProviderA = testSourceA.LastProvider;
-            previousProviderB = testSourceA.LastProvider;
+            previousProviderB = testSourceB.LastProvider;
         }
 
         using ConfigurationRoot nextConfigurationRoot = builder.BuildAsRoot();
 
         TestConfigurationProvider? nextProviderA = testSourceA.LastProvider;
-        TestConfigurationProvider? nextProviderB = testSourceA.LastProvider;
+        TestConfigurationProvider? nextProviderB = testSourceB.LastProvider;
 
         previousProviderA.Should().NotBeNull();
         previousProviderB.Should().NotBeNull();
