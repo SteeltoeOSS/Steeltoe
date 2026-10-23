@@ -194,7 +194,7 @@ public sealed class CloudFoundryConfigurationProviderTest
     }
 
     [Fact]
-    public void Load_VCAP_APPLICATION_Allows_Reload_Without_Throwing_Exception()
+    public async Task Load_VCAP_APPLICATION_Allows_Reload_Without_Throwing_Exception()
     {
         const string environment = """
             {
@@ -213,7 +213,8 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         using var tokenSource = new CancellationTokenSource(250.Milliseconds());
 
-        _ = Task.Run(() =>
+        // Not passing the token to Task.Run: the loop observes it itself, and the task must always start so it can be awaited below.
+        Task reloadTask = Task.Run(() =>
         {
             // ReSharper disable once AccessToDisposedClosure
             while (!tokenSource.IsCancellationRequested)
@@ -221,12 +222,15 @@ public sealed class CloudFoundryConfigurationProviderTest
                 // ReSharper disable once AccessToDisposedClosure
                 configurationRoot.Reload();
             }
-        }, tokenSource.Token);
+        }, CancellationToken.None);
 
         while (!tokenSource.IsCancellationRequested)
         {
             options = configurationRoot.GetSection("vcap:application").Get<CloudFoundryApplicationOptions>();
         }
+
+        // Wait for the background reloads to stop before disposing, and surface any exception they threw.
+        await reloadTask;
 
         options.Should().NotBeNull();
         options.ApplicationVersion.Should().Be("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca");

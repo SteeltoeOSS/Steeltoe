@@ -101,11 +101,9 @@ public sealed class CosmosDbHealthContributorTest
 
         var cosmosClient = Substitute.For<CosmosClient>();
 
-        cosmosClient.ReadAccountAsync().Returns(async _ =>
-        {
-            await Task.Delay(3.Seconds(), TestContext.Current.CancellationToken);
-            return null;
-        });
+        // Never completes, so no timer keeps running after the test finishes.
+        var neverCompleted = new TaskCompletionSource<AccountProperties>();
+        cosmosClient.ReadAccountAsync().Returns(_ => neverCompleted.Task);
 
         await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, cosmosClient);
 

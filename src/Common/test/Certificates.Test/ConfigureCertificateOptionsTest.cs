@@ -113,7 +113,8 @@ public sealed class ConfigureCertificateOptionsTest
         options.Certificate.Should().NotBeNull();
         options.Certificate.HasPrivateKey.Should().BeTrue();
         options.IssuerChain.Should().HaveCount(1);
-        options.IssuerChain[0].Subject.Should().Be("CN=Diego Instance Identity Intermediate CA");
+        using X509Certificate2 issuer = options.IssuerChain[0];
+        issuer.Subject.Should().Be("CN=Diego Instance Identity Intermediate CA");
     }
 
     [Theory]
@@ -138,7 +139,8 @@ public sealed class ConfigureCertificateOptionsTest
         options.Certificate.Should().NotBeNull();
         options.Certificate.HasPrivateKey.Should().BeTrue();
         options.IssuerChain.Should().HaveCount(1);
-        options.IssuerChain[0].Subject.Should().Be("CN=Diego Instance Identity Intermediate CA");
+        using X509Certificate2 issuer = options.IssuerChain[0];
+        issuer.Subject.Should().Be("CN=Diego Instance Identity Intermediate CA");
     }
 
     [Theory]

@@ -57,7 +57,7 @@ public sealed class WindowsNetworkFileShareTest
     {
         var router = new FakeMultipleProviderRouter();
 
-        _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), router);
+        using var share = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), router);
 
         router.Username.Should().Be("user");
         router.Password.Should().Be("password");
@@ -69,7 +69,7 @@ public sealed class WindowsNetworkFileShareTest
     {
         var router = new FakeMultipleProviderRouter();
 
-        _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), router);
+        using var share = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), router);
 
         router.Username.Should().Be(@"domain\user");
         router.Password.Should().Be("password");
