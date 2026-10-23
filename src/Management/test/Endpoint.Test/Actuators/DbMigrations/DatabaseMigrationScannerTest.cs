@@ -23,8 +23,9 @@ public sealed class DatabaseMigrationScannerTest
     public void Throws_when_no_database_provider_configured()
     {
         var scanner = new DatabaseMigrationScanner();
-        var dbContext = new TestDbContext();
+        using var dbContext = new TestDbContext();
 
+        // ReSharper disable once AccessToDisposedClosure
         Action action = () => scanner.GetMigrations(dbContext);
 
         action.Should().ThrowExactly<TargetInvocationException>().WithInnerExceptionExactly<InvalidOperationException>()
