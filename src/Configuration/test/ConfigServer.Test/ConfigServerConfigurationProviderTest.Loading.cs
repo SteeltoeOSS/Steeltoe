@@ -26,7 +26,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Timeout = 10
         };
 
-        var httpClientHandler = new SlowHttpClientHandler(1.Seconds(), new HttpResponseMessage());
+        using var httpClientHandler = new SlowHttpClientHandler(1.Seconds(), new HttpResponseMessage());
         using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
         provider.Load();
 

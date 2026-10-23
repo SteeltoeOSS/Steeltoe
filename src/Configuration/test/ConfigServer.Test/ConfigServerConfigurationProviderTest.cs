@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Logging.Abstractions;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.Discovery;
@@ -471,14 +472,17 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Timeout = 10
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
-        configurationBuilder.AddConfigServer(options);
-
-        Action action = () =>
+        // Loading at provider level (instead of through a configuration root) so the provider can be disposed when loading fails.
+        // The provider is normally created inside the ConfigurationRoot constructor, which throws, so nothing can dispose it.
+        var memorySource = new MemoryConfigurationSource
         {
-            using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
+            InitialData = appSettings
         };
+
+        var source = new ConfigServerConfigurationSource(options, [memorySource], null, null, null, NullLoggerFactory.Instance);
+        using var provider = (ConfigServerConfigurationProvider)source.Build(new ConfigurationBuilder());
+
+        Action action = provider.Load;
 
         action.Should().ThrowExactly<ConfigServerException>().WithMessage("Could not locate Config Server via discovery*");
     }

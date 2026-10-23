@@ -19,5 +19,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         await service.GetConfigServerInstancesAsync(new ConfigServerClientOptions(), TestContext.Current.CancellationToken);
 
         service.DiscoveryClients.Should().BeEmpty();
+
+        await service.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 }
