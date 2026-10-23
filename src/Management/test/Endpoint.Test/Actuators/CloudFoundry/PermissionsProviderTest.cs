@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Http.HttpClientPooling;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
@@ -78,6 +79,7 @@ public sealed class PermissionsProviderTest
         };
 
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -109,6 +111,7 @@ public sealed class PermissionsProviderTest
     private static ServiceProvider BuildServiceProvider()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         return services.BuildServiceProvider(true);
