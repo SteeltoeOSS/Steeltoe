@@ -57,7 +57,7 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
         // ReSharper disable once ShortLivedHttpClient
         using var httpClient = new HttpClient();
 
-        HttpResponseMessage helloResponse =
+        using HttpResponseMessage helloResponse =
             await httpClient.GetAsync(new Uri("http://127.0.0.1:5000/hello?someQuery=value"), TestContext.Current.CancellationToken);
 
         helloResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -67,7 +67,7 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
 
         await Task.Delay(250.Milliseconds(), TestContext.Current.CancellationToken);
 
-        HttpResponseMessage actuatorResponse =
+        using HttpResponseMessage actuatorResponse =
             await httpClient.GetAsync(new Uri("http://127.0.0.1:5000/actuator/httpexchanges"), TestContext.Current.CancellationToken);
 
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);

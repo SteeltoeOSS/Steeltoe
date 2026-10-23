@@ -45,14 +45,13 @@ public sealed class PermissionsProviderTest
         await using ServiceProvider serviceProvider = BuildServiceProvider();
         PermissionsProvider permissionsProvider = CreatePermissionsProvider(serviceProvider);
 
-        var cloudControllerResponse = new HttpResponseMessage(HttpStatusCode.OK)
+        using var cloudControllerResponse = new HttpResponseMessage(HttpStatusCode.OK);
+
+        cloudControllerResponse.Content = JsonContent.Create(new Dictionary<string, bool>
         {
-            Content = JsonContent.Create(new Dictionary<string, bool>
-            {
-                ["read_sensitive_data"] = readSensitive,
-                ["read_basic_data"] = readBasic
-            })
-        };
+            ["read_sensitive_data"] = readSensitive,
+            ["read_basic_data"] = readBasic
+        });
 
         EndpointPermissions? result = await permissionsProvider.ParsePermissionsResponseAsync(cloudControllerResponse, TestContext.Current.CancellationToken);
         result.Should().Be(expectedPermissions);
