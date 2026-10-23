@@ -28,7 +28,7 @@ public sealed class EurekaApplicationInfoManagerTest
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
 
-        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
+        using var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
             NullLogger<EurekaApplicationInfoManager>.Instance);
 
         appManager.Instance.IsDirty = false;
@@ -59,7 +59,7 @@ public sealed class EurekaApplicationInfoManagerTest
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
 
-        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
+        using var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
             NullLogger<EurekaApplicationInfoManager>.Instance);
 
         appManager.Instance.IsDirty = false;
@@ -95,7 +95,7 @@ public sealed class EurekaApplicationInfoManagerTest
         TestOptionsMonitor<EurekaClientOptions> clientOptionsMonitor = TestOptionsMonitor.Create(clientOptions);
         TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
 
-        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
+        using var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
             NullLogger<EurekaApplicationInfoManager>.Instance);
 
         appManager.Instance.IsDirty = false;
@@ -123,7 +123,7 @@ public sealed class EurekaApplicationInfoManagerTest
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
 
-        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
+        using var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
             NullLogger<EurekaApplicationInfoManager>.Instance);
 
         appManager.Instance.IsDirty = false;
@@ -155,7 +155,7 @@ public sealed class EurekaApplicationInfoManagerTest
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
 
-        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
+        using var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
             NullLogger<EurekaApplicationInfoManager>.Instance);
 
         appManager.Instance.IsDirty = false;
@@ -185,7 +185,7 @@ public sealed class EurekaApplicationInfoManagerTest
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
 
-        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
+        using var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
             NullLogger<EurekaApplicationInfoManager>.Instance);
 
         appManager.Instance.IsDirty = false;
@@ -217,7 +217,7 @@ public sealed class EurekaApplicationInfoManagerTest
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
 
-        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
+        using var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
             NullLogger<EurekaApplicationInfoManager>.Instance);
 
         appManager.Instance.IsDirty = false;
@@ -261,7 +261,7 @@ public sealed class EurekaApplicationInfoManagerTest
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
 
-        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
+        using var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
             NullLogger<EurekaApplicationInfoManager>.Instance);
 
         appManager.Instance.IsDirty = true;
@@ -292,7 +292,7 @@ public sealed class EurekaApplicationInfoManagerTest
         var clientOptionsMonitor = new TestOptionsMonitor<EurekaClientOptions>();
         TestOptionsMonitor<EurekaInstanceOptions> instanceOptionsMonitor = TestOptionsMonitor.Create(instanceOptions);
 
-        var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
+        using var appManager = new EurekaApplicationInfoManager(clientOptionsMonitor, instanceOptionsMonitor, TimeProvider.System,
             NullLogger<EurekaApplicationInfoManager>.Instance);
 
         appManager.UpdateInstance(InstanceStatus.OutOfService, null, new Dictionary<string, string?>
