@@ -9,6 +9,7 @@ using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Primitives;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
 
@@ -130,7 +131,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Create_FailFastEnabledAndExceptionThrownDuringPolledConfigurationReload_DoesNotCrash()
     {
-        await TestFailureTracer.CaptureAsync(async tracer =>
+        await TestFailureTracer.CaptureAsync(tracer =>
         {
             const string responseJson = """
                 {
@@ -154,6 +155,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
             using var handler = new DelegateToMockHttpClientHandler();
             using var firstRequestCountdownEvent = new CountdownEvent(1);
+            using var requestAfterFailureCountdownEvent = new CountdownEvent(1);
             int requestCount = 0;
 
             MockedRequest testLabelRequest = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/test-label").Respond(_ =>
@@ -163,6 +165,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 if (!firstRequestCountdownEvent.IsSet)
                 {
                     firstRequestCountdownEvent.Signal();
+                }
+
+                // The first poll after loading succeeds (second request), the third request fails and the fourth proves that polling continued.
+                if (currentCount >= 4 && !requestAfterFailureCountdownEvent.IsSet)
+                {
+                    requestAfterFailureCountdownEvent.Signal();
                 }
 
                 if (currentCount <= 2)
@@ -184,10 +192,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
             handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(1);
 
-            await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+            bool requestAfterFailureCompleted = requestAfterFailureCountdownEvent.Wait(10.Seconds(), TestContext.Current.CancellationToken);
+            requestAfterFailureCompleted.Should().BeTrue();
 
-            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(2);
+            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(4);
             provider.GetReloadToken().HasChanged.Should().BeFalse();
+            return Task.CompletedTask;
         });
     }
 
@@ -293,6 +303,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         var fileProvider = new MemoryFileProvider();
 
+        // The initial interval is too long for a poll to happen during this test.
         fileProvider.IncludeAppSettingsJsonFile("""
             {
               "spring": {
@@ -300,7 +311,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
                   "config": {
                     "name": "myName",
                     "enabled": true,
-                    "pollingInterval": "00:00:05"
+                    "pollingInterval": "00:00:30"
                   }
                 }
               }
@@ -308,7 +319,22 @@ public sealed partial class ConfigServerConfigurationProviderTest
             """);
 
         using var handler = new DelegateToMockHttpClientHandler();
-        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond("application/json", responseJson);
+        using var request2CountdownEvent = new CountdownEvent(1);
+        int requestCount = 0;
+
+        handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond(_ =>
+        {
+            // The first request happens when loading. A second request can only come from the rescheduled timer.
+            if (Interlocked.Increment(ref requestCount) >= 2 && !request2CountdownEvent.IsSet)
+            {
+                request2CountdownEvent.Signal();
+            }
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(responseJson, Encoding.UTF8, "application/json")
+            };
+        });
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
@@ -318,6 +344,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
 
         provider.InnerConfigurationReloadTimer.Should().NotBeNull();
+        request2CountdownEvent.IsSet.Should().BeFalse();
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -326,7 +353,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
                   "config": {
                     "name": "myName",
                     "enabled": true,
-                    "pollingInterval": "00:00:10"
+                    "pollingInterval": "00:00:00.200"
                   }
                 }
               }
@@ -335,7 +362,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         fileProvider.NotifyChanged();
 
-        provider.InnerConfigurationReloadTimer.Should().NotBeNull("timer should be rescheduled, not stopped");
+        provider.InnerConfigurationReloadTimer.Should().NotBeNull();
+
+        bool pollHappened = request2CountdownEvent.Wait(10.Seconds(), TestContext.Current.CancellationToken);
+        pollHappened.Should().BeTrue();
     }
 
     [Fact]
@@ -448,7 +478,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using var handler = new DelegateToMockHttpClientHandler();
 
-        handler.Mock.When(HttpMethod.Get, "http://auth-server.com")
+        MockedRequest accessTokenRequest = handler.Mock.When(HttpMethod.Post, "http://auth-server.com")
             .Throw(new HttpRequestException("Connection refused", new SocketException((int)SocketError.ConnectionRefused)));
 
         var options = new ConfigServerClientOptions
@@ -468,6 +498,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
             $"WARN {typeof(ConfigServerConfigurationProvider)}: Failed to fetch access token from 'http://auth-server.com/'.",
             $"WARN {typeof(ConfigServerConfigurationProvider)}: Failed fetching remote configuration from server(s)."
         ], assertionOptions => assertionOptions.WithStrictOrdering());
+
+        // The access token is requested with POST, once for each Config Server.
+        handler.Mock.GetMatchCount(accessTokenRequest).Should().Be(2);
 
         provider.InnerData.Should().BeEmpty();
     }
@@ -910,10 +943,28 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public void DataDictionary_DoesNotContainRedundantClientSettings()
     {
+        const string responseJson = """
+            {
+              "name": "name",
+              "profiles": [
+                "environment"
+              ],
+              "label": "main",
+              "propertySources": [
+                {
+                  "name": "source",
+                  "source": {
+                    "response-key": "response-value"
+                  }
+                }
+              ]
+            }
+            """;
+
+        // Discovery, fail-fast and retry are not enabled, because they change the flow of loading.
         var options = new ConfigServerClientOptions
         {
-            Enabled = false,
-            FailFast = true,
+            Enabled = true,
             Environment = "environment",
             Label = "main",
             Name = "name",
@@ -926,7 +977,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
             ValidateCertificates = false,
             Retry =
             {
-                Enabled = true,
                 InitialInterval = 500,
                 MaxInterval = 5000,
                 Multiplier = 2.0,
@@ -934,7 +984,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
             },
             Discovery =
             {
-                Enabled = true,
                 ServiceId = "my-config-server"
             },
             Health =
@@ -954,8 +1003,16 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.When(HttpMethod.Post, "https://uaa.example.com/oauth/token").Respond("application/json", """{ "access_token": "access-token" }""");
+        handler.Mock.When(HttpMethod.Get, "https://foo.bar/name/environment/main").Respond("application/json", responseJson);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
         provider.Load();
+
+        // Proves that loading from Config Server took place, so the absence of the client settings below is meaningful.
+        provider.TryGet("response-key", out string? responseValue).Should().BeTrue();
+        responseValue.Should().Be("response-value");
 
         provider.TryGet("spring:cloud:config:enabled", out _).Should().BeFalse();
         provider.TryGet("spring:cloud:config:failFast", out _).Should().BeFalse();
@@ -994,32 +1051,44 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public void Reload_And_Bind_Without_Throwing_Exception()
+    public async Task Reload_And_Bind_Without_Throwing_Exception()
     {
-        const string responseJson = """
-            {
-              "name": "test-name",
-              "profiles": [
-                "Production"
-              ],
-              "label": "test-label",
-              "version": "test-version",
-              "propertySources": [
-                {
-                  "name": "source",
-                  "source": {
-                    "name": "my-app",
-                    "version": "fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca"
-                  }
-                }
-              ]
-            }
-            """;
-
         ConfigServerClientOptions clientOptions = GetCommonOptions();
 
         using var handler = new DelegateToMockHttpClientHandler();
-        handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{clientOptions.Name}/{clientOptions.Environment}").Respond("application/json", responseJson);
+        int requestCount = 0;
+
+        handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{clientOptions.Name}/{clientOptions.Environment}").Respond(_ =>
+        {
+            // Alternate the response, so the data really changes between reloads.
+            string alternatingValue = Interlocked.Increment(ref requestCount) % 2 == 0 ? "even" : "odd";
+
+            string responseJson = $$"""
+                {
+                  "name": "test-name",
+                  "profiles": [
+                    "Production"
+                  ],
+                  "label": "test-label",
+                  "version": "test-version",
+                  "propertySources": [
+                    {
+                      "name": "source",
+                      "source": {
+                        "name": "my-app",
+                        "version": "fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca",
+                        "alternating": "{{alternatingValue}}"
+                      }
+                    }
+                  ]
+                }
+                """;
+
+            return new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = new StringContent(responseJson, Encoding.UTF8, "application/json")
+            };
+        });
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddConfigServer(clientOptions, null, () => handler, NullLoggerFactory.Instance);
@@ -1027,21 +1096,35 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
 
+        int changeCount = 0;
+        using IDisposable changeRegistration = ChangeToken.OnChange(configurationRoot.GetReloadToken, () => Interlocked.Increment(ref changeCount));
+
         TestOptions? testOptions = null;
         using var tokenSource = new CancellationTokenSource(250.Milliseconds());
 
-        _ = Task.Run(() =>
+        // Not passing the token to Task.Run: the loop observes it itself, and the task must always start so it can be awaited below.
+        Task<int> reloadTask = Task.Run(() =>
         {
+            int reloadCount = 0;
+
             while (!tokenSource.IsCancellationRequested)
             {
                 configurationRoot.Reload();
+                reloadCount++;
             }
-        }, tokenSource.Token);
+
+            return reloadCount;
+        }, CancellationToken.None);
 
         while (!tokenSource.IsCancellationRequested)
         {
             testOptions = configurationRoot.Get<TestOptions>();
         }
+
+        // Surfaces any exception thrown while reloading in the background, and proves that reloading actually happened.
+        int reloadsCompleted = await reloadTask;
+        reloadsCompleted.Should().BeGreaterThan(0);
+        changeCount.Should().BeGreaterThan(0);
 
         testOptions.Should().NotBeNull();
         testOptions.Name.Should().Be("my-app");
