@@ -41,6 +41,33 @@ public sealed class PlaceholderConfigurationTest : IDisposable
     }
 
     [Fact]
+    public void Reload_reuses_the_inner_configuration_root()
+    {
+        var testSource = new TestConfigurationSource("A", _loggerFactory);
+
+        var builder = new ConfigurationBuilder();
+        builder.Add(testSource);
+        builder.AddPlaceholderResolver(_loggerFactory);
+
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
+
+        PlaceholderConfigurationProvider provider = configurationRoot.Providers.OfType<PlaceholderConfigurationProvider>().Should().ContainSingle().Subject;
+        IConfigurationRoot? innerRoot = provider.ConfigurationRoot;
+        innerRoot.Should().NotBeNull();
+
+        for (int index = 0; index < 3; index++)
+        {
+            configurationRoot.Reload();
+
+            // Creating a new inner root on every reload would leave the old roots subscribed to the change tokens of the owned providers.
+            provider.ConfigurationRoot.Should().BeSameAs(innerRoot);
+        }
+
+        testSource.LastProvider.Should().NotBeNull();
+        testSource.LastProvider.LoadCount.Should().Be(4);
+    }
+
+    [Fact]
     public void Reloads_owned_providers()
     {
         var testSourceA = new TestConfigurationSource("A", _loggerFactory);

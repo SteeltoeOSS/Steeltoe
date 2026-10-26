@@ -63,12 +63,12 @@ public sealed class ConfigServerConfigurationSourceTest
         });
 
         // One provider for the application configuration, and one created by the Config Server source for its own configuration.
-        innerSource.ProvidersCreated.Should().HaveCount(2);
-        innerSource.ProvidersCreated.Should().OnlyContain(provider => provider.DisposeCount == 0);
+        innerSource.Providers.Should().HaveCount(2);
+        innerSource.Providers.Should().OnlyContain(provider => provider.DisposeCount == 0);
 
         manager.Dispose();
 
-        innerSource.ProvidersCreated.Should().OnlyContain(provider => provider.DisposeCount == 1);
+        innerSource.Providers.Should().OnlyContain(provider => provider.DisposeCount == 1);
     }
 
     [Fact]
@@ -87,18 +87,18 @@ public sealed class ConfigServerConfigurationSourceTest
                 Enabled = false
             });
 
-            innerSource.ProvidersCreated.Should().HaveCount(2);
+            innerSource.Providers.Should().HaveCount(2);
 
             // Removing a source causes ConfigurationManager to dispose all providers and build them again.
             // This happens when adding the placeholder resolver after calling AddConfigServer.
             manager.Sources.Remove(otherSource);
 
-            innerSource.ProvidersCreated.Should().HaveCount(4);
-            innerSource.ProvidersCreated.Take(2).Should().OnlyContain(provider => provider.DisposeCount == 1);
-            innerSource.ProvidersCreated.Skip(2).Should().OnlyContain(provider => provider.DisposeCount == 0);
+            innerSource.Providers.Should().HaveCount(4);
+            innerSource.Providers.Take(2).Should().OnlyContain(provider => provider.DisposeCount == 1);
+            innerSource.Providers.Skip(2).Should().OnlyContain(provider => provider.DisposeCount == 0);
         }
 
-        innerSource.ProvidersCreated.Should().OnlyContain(provider => provider.DisposeCount == 1);
+        innerSource.Providers.Should().OnlyContain(provider => provider.DisposeCount == 1);
     }
 
     [Fact]
@@ -225,11 +225,11 @@ public sealed class ConfigServerConfigurationSourceTest
 
         using (builder.Build())
         {
-            hostSource.ProvidersCreated.Should().ContainSingle();
-            hostSource.ProvidersCreated[0].DisposeCount.Should().Be(0);
+            hostSource.Providers.Should().ContainSingle();
+            hostSource.Providers[0].DisposeCount.Should().Be(0);
         }
 
-        hostSource.ProvidersCreated[0].DisposeCount.Should().Be(1);
+        hostSource.Providers[0].DisposeCount.Should().Be(1);
     }
 
     [Fact]
@@ -268,30 +268,6 @@ public sealed class ConfigServerConfigurationSourceTest
     private static void AddConfigurationSource(IConfigurationBuilder builder, IConfigurationSource source)
     {
         builder.Add(source);
-    }
-
-    private sealed class DisposeCountingConfigurationSource : IConfigurationSource
-    {
-        public List<DisposeCountingConfigurationProvider> ProvidersCreated { get; } = [];
-
-        public IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            var provider = new DisposeCountingConfigurationProvider();
-            ProvidersCreated.Add(provider);
-            return provider;
-        }
-    }
-
-    private sealed class DisposeCountingConfigurationProvider : ConfigurationProvider, IDisposable
-    {
-        private long _disposeCount;
-
-        public long DisposeCount => Interlocked.Read(ref _disposeCount);
-
-        public void Dispose()
-        {
-            Interlocked.Increment(ref _disposeCount);
-        }
     }
 
     private sealed class DisposeCountingPostProcessor : IConfigurationPostProcessor, IDisposable

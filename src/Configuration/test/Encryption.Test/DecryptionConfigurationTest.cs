@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Encryption.Cryptography;
@@ -111,6 +112,45 @@ public sealed class DecryptionConfigurationTest : IDisposable
 
         sensitiveLines.Should().NotBeEmpty();
         sensitiveLines.Should().AllSatisfy(message => message.Should().StartWith("TRCE"));
+    }
+
+    [Theory]
+    [InlineData(true, true)]
+    [InlineData(true, false)]
+    [InlineData(false, true)]
+    public void Disposes_providers_of_host_and_app_configuration_when_host_is_disposed(bool usePlaceholder, bool useDecryption)
+    {
+        var hostSource = new DisposeCountingConfigurationSource();
+        var appSource = new DisposeCountingConfigurationSource();
+
+        // HostBuilder chains the host configuration into the app configuration, which then wraps it in the composite sources
+        // that are added by AddDecryption() and AddPlaceholderResolver().
+        HostBuilder builder = TestHostBuilderFactory.Create();
+        builder.ConfigureHostConfiguration(configurationBuilder => configurationBuilder.Add(hostSource));
+
+        builder.ConfigureAppConfiguration(configurationBuilder =>
+        {
+            configurationBuilder.Add(appSource);
+
+            if (useDecryption)
+            {
+                configurationBuilder.AddDecryption(new ToUpperCaseDecryptor(), _loggerFactory);
+            }
+
+            if (usePlaceholder)
+            {
+                configurationBuilder.AddPlaceholderResolver(_loggerFactory);
+            }
+        });
+
+        using (builder.Build())
+        {
+            hostSource.Providers.Should().ContainSingle().Which.DisposeCount.Should().Be(0);
+            appSource.Providers.Should().ContainSingle().Which.DisposeCount.Should().Be(0);
+        }
+
+        hostSource.Providers.Should().ContainSingle().Which.DisposeCount.Should().Be(1);
+        appSource.Providers.Should().ContainSingle().Which.DisposeCount.Should().Be(1);
     }
 
     public void Dispose()
