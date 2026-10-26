@@ -66,18 +66,27 @@ public sealed class HostedSpringBootConfigurationTest
     {
         using var scope = new EnvironmentVariableScope("SPRING_APPLICATION_JSON", "{\"foo.bar\":\"value\"}");
 
+        var countingSource = new DisposeCountingConfigurationSource();
         HostBuilder hostBuilder = TestHostBuilderFactory.Create();
 
         hostBuilder.ConfigureAppConfiguration(configurationBuilder =>
         {
             configurationBuilder.AddSpringBootFromEnvironmentVariable();
+            configurationBuilder.Add(countingSource);
             configurationBuilder.AddPlaceholderResolver();
         });
 
-        using IHost host = hostBuilder.Build();
-        var configuration = host.Services.GetRequiredService<IConfiguration>();
+        using (IHost host = hostBuilder.Build())
+        {
+            var configuration = host.Services.GetRequiredService<IConfiguration>();
 
-        configuration["foo:bar"].Should().Be("value");
+            configuration["foo:bar"].Should().Be("value");
+
+            // The provider is owned by the placeholder resolver, which must dispose it together with the host.
+            countingSource.Providers.Should().ContainSingle().Which.DisposeCount.Should().Be(0);
+        }
+
+        countingSource.Providers.Should().ContainSingle().Which.DisposeCount.Should().Be(1);
     }
 
     [Fact]

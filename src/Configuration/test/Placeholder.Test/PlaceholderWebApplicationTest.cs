@@ -94,14 +94,20 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
             ["value"] = "B"
         };
 
+        var countingSource = new TestConfigurationSource("counting", _loggerFactory);
+
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.Sources.Clear();
         builder.Configuration.AddInMemoryCollection(template);
         builder.Configuration.AddInMemoryCollection(valueProviderA);
         builder.Configuration.AddInMemoryCollection(valueProviderB);
+        builder.Configuration.Sources.Add(countingSource);
         builder.Configuration.AddPlaceholderResolver(_loggerFactory);
 
         builder.Configuration["placeholder"].Should().Be("B");
+
+        TestConfigurationProvider previousProvider = countingSource.LastProvider!;
+        previousProvider.DisposeCount.Should().Be(0);
 
         IConfigurationBuilder configurationBuilder = builder.Configuration;
 
@@ -112,6 +118,12 @@ public sealed class PlaceholderWebApplicationTest : IDisposable
         configurationBuilder.Properties.Remove(string.Empty);
 
         builder.Configuration["placeholder"].Should().Be("A");
+
+        previousProvider.DisposeCount.Should().Be(1);
+
+        TestConfigurationProvider currentProvider = countingSource.LastProvider!;
+        currentProvider.Should().NotBeSameAs(previousProvider);
+        currentProvider.DisposeCount.Should().Be(0);
 
         using WebApplication app = builder.Build();
     }

@@ -268,35 +268,6 @@ public sealed class ParentConfigurationTest
         return compositeSource;
     }
 
-    private sealed class DisposeCountingConfigurationSource : IConfigurationSource
-    {
-        public List<DisposeCountingConfigurationProvider> Providers { get; } = [];
-
-        public IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            var provider = new DisposeCountingConfigurationProvider();
-            Providers.Add(provider);
-            return provider;
-        }
-    }
-
-    private sealed class DisposeCountingConfigurationProvider : ConfigurationProvider, IDisposable
-    {
-        private long _disposeCount;
-
-        public long DisposeCount => Interlocked.Read(ref _disposeCount);
-
-        public void TriggerReload()
-        {
-            OnReload();
-        }
-
-        public void Dispose()
-        {
-            Interlocked.Increment(ref _disposeCount);
-        }
-    }
-
     private sealed class DisposeCountingPostProcessor : IConfigurationPostProcessor, IDisposable
     {
         private long _disposeCount;

@@ -16,6 +16,7 @@ using Aspire;
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Kubernetes.ServiceBindings")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Kubernetes.ServiceBindings.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Placeholder")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.Placeholder.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.RandomValue")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.SpringBoot")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors")]

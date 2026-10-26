@@ -22,7 +22,10 @@ public sealed class RandomValueProviderTest
     {
         var provider = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         provider.TryGet("random:string", out string? value);
-        value.Should().NotBeNull();
+        value.Should().MatchRegex("^[0-9A-F]{32}$");
+
+        provider.TryGet("random:string", out string? otherValue);
+        otherValue.Should().NotBe(value);
     }
 
     [Fact]
@@ -30,7 +33,12 @@ public sealed class RandomValueProviderTest
     {
         var provider = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         provider.TryGet("random:uuid", out string? value);
-        value.Should().NotBeNull();
+
+        Guid.TryParse(value, out Guid guid).Should().BeTrue();
+        guid.Should().NotBe(Guid.Empty);
+
+        provider.TryGet("random:uuid", out string? otherValue);
+        otherValue.Should().NotBe(value);
     }
 
     [Fact]
@@ -38,7 +46,9 @@ public sealed class RandomValueProviderTest
     {
         var provider = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         provider.TryGet("random:int", out string? value);
-        value.Should().NotBeNull();
+
+        int.TryParse(value, CultureInfo.InvariantCulture, out int number).Should().BeTrue();
+        number.Should().BeGreaterThanOrEqualTo(0);
     }
 
     [Fact]
@@ -68,7 +78,9 @@ public sealed class RandomValueProviderTest
     {
         var provider = new RandomValueProvider("random:", NullLoggerFactory.Instance);
         provider.TryGet("random:long", out string? value);
-        value.Should().NotBeNull();
+
+        long.TryParse(value, CultureInfo.InvariantCulture, out long number).Should().BeTrue();
+        number.Should().BeGreaterThanOrEqualTo(0);
     }
 
     [Fact]
@@ -78,7 +90,7 @@ public sealed class RandomValueProviderTest
         provider.TryGet("random:long[4,10]", out string? value);
         value.Should().NotBeNull();
 
-        int number = int.Parse(value, CultureInfo.InvariantCulture);
+        long number = long.Parse(value, CultureInfo.InvariantCulture);
         number.Should().BeInRange(4, 10);
     }
 
@@ -89,7 +101,7 @@ public sealed class RandomValueProviderTest
         provider.TryGet("random:long(10)", out string? value);
         value.Should().NotBeNull();
 
-        int number = int.Parse(value, CultureInfo.InvariantCulture);
+        long number = long.Parse(value, CultureInfo.InvariantCulture);
         number.Should().BeInRange(0, 10);
     }
 }
