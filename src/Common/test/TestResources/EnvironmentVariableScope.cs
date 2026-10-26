@@ -11,7 +11,6 @@ public sealed class EnvironmentVariableScope : IDisposable
 {
     private readonly string _name;
     private readonly string? _originalValue;
-    private readonly bool _hasChanges;
 
     public EnvironmentVariableScope(string name, string? value)
     {
@@ -19,9 +18,8 @@ public sealed class EnvironmentVariableScope : IDisposable
 
         _name = name;
         _originalValue = Environment.GetEnvironmentVariable(name);
-        _hasChanges = _originalValue != value;
 
-        if (_hasChanges)
+        if (_originalValue != value)
         {
             Environment.SetEnvironmentVariable(name, value);
         }
@@ -29,9 +27,6 @@ public sealed class EnvironmentVariableScope : IDisposable
 
     public void Dispose()
     {
-        if (_hasChanges)
-        {
-            Environment.SetEnvironmentVariable(_name, _originalValue);
-        }
+        Environment.SetEnvironmentVariable(_name, _originalValue);
     }
 }

@@ -14,6 +14,11 @@ public sealed class CertificateConfigurationExtensionsTest
     [Fact]
     public void AddAppInstanceIdentityCertificate_SetsPaths_RunningLocal()
     {
+        // AddAppInstanceIdentityCertificate sets these variables process-wide when not running on Cloud Foundry.
+        using var certificateScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", null);
+        using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", null);
+        using var certificateAuthorityScope = new EnvironmentVariableScope("CF_SYSTEM_CERT_PATH", null);
+
         var builder = new ConfigurationBuilder();
         builder.AddAppInstanceIdentityCertificate();
         using ConfigurationRoot configurationRoot = builder.BuildAsRoot();

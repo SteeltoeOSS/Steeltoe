@@ -66,6 +66,7 @@ public sealed partial class CertificateAuthorizationTest
     [Fact]
     public async Task CertificateAuth_Legacy_RejectsOrgMismatch()
     {
+
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameOrg}");
         using X509Certificate2 clientCertificate = CreateClientCertificateFromLocalAuthority(Guid.NewGuid(), Certificates.ServerSpaceId);
         await using HostWrapper host = HostWrapper.Wrap(GetLegacyHostBuilder().Build());
@@ -81,6 +82,7 @@ public sealed partial class CertificateAuthorizationTest
     [Fact]
     public async Task CertificateAuth_Legacy_RejectsSpaceMismatch()
     {
+
         var requestUri = new Uri($"https://localhost/{CertificateAuthorizationPolicies.SameSpace}");
         using X509Certificate2 clientCertificate = CreateClientCertificateFromLocalAuthority(Certificates.ServerOrgId, Guid.NewGuid());
         await using HostWrapper host = HostWrapper.Wrap(GetLegacyHostBuilder().Build());
