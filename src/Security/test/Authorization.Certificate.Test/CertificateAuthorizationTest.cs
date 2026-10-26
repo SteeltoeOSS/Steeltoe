@@ -19,8 +19,13 @@ using Steeltoe.Common.TestResources.IO;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 
-public sealed partial class CertificateAuthorizationTest
+public sealed partial class CertificateAuthorizationTest : IDisposable
 {
+    // AddAppInstanceIdentityCertificate sets these variables process-wide when not running on Cloud Foundry, so they are restored after each test.
+    private readonly EnvironmentVariableScope _certificateScope = new("CF_INSTANCE_CERT", null);
+    private readonly EnvironmentVariableScope _keyScope = new("CF_INSTANCE_KEY", null);
+    private readonly EnvironmentVariableScope _certificateAuthorityScope = new("CF_SYSTEM_CERT_PATH", null);
+
     [Fact]
     public async Task CertificateAuth_ForbiddenWithoutCert()
     {
@@ -248,5 +253,12 @@ public sealed partial class CertificateAuthorizationTest
         string b64 = Convert.ToBase64String(bytes);
         httpClient.DefaultRequestHeaders.Add(certificateHeaderName, b64);
         return httpClient;
+    }
+
+    public void Dispose()
+    {
+        _certificateAuthorityScope.Dispose();
+        _keyScope.Dispose();
+        _certificateScope.Dispose();
     }
 }
