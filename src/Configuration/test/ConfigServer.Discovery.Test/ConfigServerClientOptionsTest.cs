@@ -102,7 +102,7 @@ public sealed class ConfigServerClientOptionsTest
         services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions(configureOptions);
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
         provider.ClientOptions.Uri.Should().Be("http://overridden-by-discovery");
@@ -321,7 +321,7 @@ public sealed class ConfigServerClientOptionsTest
         services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions(configureOptions);
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
         provider.ClientOptions.Uri.Should().Be("http://overridden-by-discovery");
