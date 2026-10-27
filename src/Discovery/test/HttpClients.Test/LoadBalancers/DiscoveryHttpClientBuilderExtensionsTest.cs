@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.HttpClients.LoadBalancers;
@@ -74,16 +76,28 @@ public sealed class DiscoveryHttpClientBuilderExtensionsTest
     [Fact]
     public async Task AddLoadBalancerT_CanBeUsedWithAnHttpClient()
     {
+        var loadBalancer = new FakeLoadBalancer();
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        MockedRequest resolvedRequest = handler.Mock.When(HttpMethod.Get, "https://some-resolved-host:1234/api").Respond(HttpStatusCode.OK);
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
+
         var services = new ServiceCollection();
         services.DisableHttpClientRotationTimers();
-        services.AddSingleton<FakeLoadBalancer>();
-        services.AddHttpClient("test").AddServiceDiscovery<FakeLoadBalancer>();
+        services.AddSingleton(loadBalancer);
+
+        // ReSharper disable once AccessToDisposedClosure
+        services.AddHttpClient("test").ConfigurePrimaryHttpMessageHandler(() => handler).AddServiceDiscovery<FakeLoadBalancer>();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var factory = serviceProvider.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = factory.CreateClient("test");
 
-        client.Should().NotBeNull();
+        using HttpResponseMessage response = await client.GetAsync(new Uri("https://replace-me/api"), TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        handler.Mock.GetMatchCount(resolvedRequest).Should().Be(1);
+        loadBalancer.Statistics.Should().ContainSingle();
     }
 
     [Fact]

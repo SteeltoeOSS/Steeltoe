@@ -77,18 +77,6 @@ public sealed class RoundRobinLoadBalancerTest
     }
 
     [Fact]
-    public async Task ResolveServiceInstanceAsync_NonDefaultPort_ReturnsOriginalURI()
-    {
-        IDiscoveryClient client = new TestDiscoveryClient();
-        var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
-        var loadBalancer = new RoundRobinLoadBalancer(resolver, NullLogger<RoundRobinLoadBalancer>.Instance);
-        var uri = new Uri("https://foo:8080/test");
-
-        Uri result = await loadBalancer.ResolveServiceInstanceAsync(uri, TestContext.Current.CancellationToken);
-        result.Should().Be(uri);
-    }
-
-    [Fact]
     public async Task ResolveServiceInstanceAsync_DoesNotFindService_ReturnsOriginalURI()
     {
         IDiscoveryClient client = new TestDiscoveryClient();
@@ -117,7 +105,8 @@ public sealed class RoundRobinLoadBalancerTest
     {
         var client = new TestDiscoveryClient([
             new TestServiceInstance(new Uri("HTTPS://CASE-HOST:1234/")),
-            new TestServiceInstance(new Uri("https://case-host:1234/"))
+            new TestServiceInstance(new Uri("https://case-host:1234/")),
+            new TestServiceInstance(new Uri("https://other-host:5678/"))
         ], "svc");
 
         var resolver = new ServiceInstancesResolver([client], NullLogger<ServiceInstancesResolver>.Instance);
@@ -125,15 +114,24 @@ public sealed class RoundRobinLoadBalancerTest
 
         Uri first = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://svc/api"), TestContext.Current.CancellationToken);
         Uri second = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://svc/api"), TestContext.Current.CancellationToken);
+        Uri third = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://svc/api"), TestContext.Current.CancellationToken);
 
-        first.Should().Be(second);
+        // Without removing the duplicate, the second instance would be the same host again, and the other host would only come third.
+        first.Should().Be(new Uri("https://case-host:1234/api"));
+        second.Should().Be(new Uri("https://other-host:5678/api"));
+        third.Should().Be(first);
     }
 
     [Fact]
     public async Task ResolveServiceInstanceAsync_RemovesDuplicates_CaseInsensitive_MultipleDiscoveryClients()
     {
         var targetUri = new Uri("https://merged:1/");
-        var clientA = new TestDiscoveryClient([new TestServiceInstance(targetUri)], "svc");
+
+        var clientA = new TestDiscoveryClient([
+            new TestServiceInstance(targetUri),
+            new TestServiceInstance(new Uri("https://other:2/"))
+        ], "svc");
+
         var clientB = new TestDiscoveryClient([new TestServiceInstance(targetUri)], "svc");
 
         var resolver = new ServiceInstancesResolver([
@@ -145,8 +143,12 @@ public sealed class RoundRobinLoadBalancerTest
 
         Uri first = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://svc/api"), TestContext.Current.CancellationToken);
         Uri second = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://svc/api"), TestContext.Current.CancellationToken);
+        Uri third = await loadBalancer.ResolveServiceInstanceAsync(new Uri("https://svc/api"), TestContext.Current.CancellationToken);
 
-        first.Should().Be(second);
+        // Without removing the duplicate that both discovery clients return, the same instance would be used twice before the other one.
+        first.Should().Be(new Uri("https://merged:1/api"));
+        second.Should().Be(new Uri("https://other:2/api"));
+        third.Should().Be(first);
     }
 
     [Fact]
