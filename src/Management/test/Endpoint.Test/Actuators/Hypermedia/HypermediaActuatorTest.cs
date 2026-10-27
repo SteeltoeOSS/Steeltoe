@@ -214,6 +214,7 @@ public sealed class HypermediaActuatorTest
         {
             ["Management:Endpoints:Actuator:Id"] = "hypermedia",
             ["Management:Endpoints:Actuator:Path"] = string.Empty,
+            ["Management:Endpoints:Actuator:Exposure:Include:0"] = "hypermedia",
             ["Management:Endpoints:Actuator:Exposure:Exclude:0"] = "hypermedia"
         };
 
