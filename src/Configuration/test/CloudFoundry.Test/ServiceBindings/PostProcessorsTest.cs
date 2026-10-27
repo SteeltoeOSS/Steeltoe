@@ -59,6 +59,22 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
 
                 tempPaths.Add(tempPath);
             }
+
+            // Reloading configuration processes the same binding again, which must reuse the files instead of creating new ones.
+            Dictionary<string, string?> reloadedConfigurationData =
+                GetConfigurationData(TestProviderName, TestBindingName, [MySqlCloudFoundryPostProcessor.BindingType], null, secrets);
+
+            postProcessor.PostProcessConfiguration(provider, reloadedConfigurationData);
+
+            foreach (string key in new[]
+            {
+                "ssl-cert",
+                "ssl-key",
+                "ssl-ca"
+            })
+            {
+                reloadedConfigurationData[$"{keyPrefix}:{key}"].Should().Be(configurationData[$"{keyPrefix}:{key}"]);
+            }
         }
 
         foreach (string tempPath in tempPaths)
@@ -113,6 +129,22 @@ public sealed class PostProcessorsTest : BasePostProcessorsTest
                 AssertUnixFileModeIsUserOnly(tempPath);
 
                 tempPaths.Add(tempPath);
+            }
+
+            // Reloading configuration processes the same binding again, which must reuse the files instead of creating new ones.
+            Dictionary<string, string?> reloadedConfigurationData =
+                GetConfigurationData(TestProviderName, TestBindingName, [PostgreSqlCloudFoundryPostProcessor.BindingType], null, secrets);
+
+            postProcessor.PostProcessConfiguration(provider, reloadedConfigurationData);
+
+            foreach (string key in new[]
+            {
+                "SSL Certificate",
+                "SSL Key",
+                "Root Certificate"
+            })
+            {
+                reloadedConfigurationData[$"{keyPrefix}:{key}"].Should().Be(configurationData[$"{keyPrefix}:{key}"]);
             }
         }
 
