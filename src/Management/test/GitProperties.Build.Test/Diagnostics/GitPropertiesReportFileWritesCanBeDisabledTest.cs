@@ -18,6 +18,11 @@ public sealed class GitPropertiesReportFileWritesCanBeDisabledTest : GitProperti
 
         repository.DeleteSharedCache();
 
+        // Remove the outputs of the first build, otherwise the assertions below are satisfied by files that were not written by the silent build.
+        repository.TestApp.DeleteGeneratedGitProperties();
+        repository.TestApp.GitPropertiesGenerated.Should().BeFalse();
+        repository.TestApp.FallbackGitPropertiesGenerated.Should().BeFalse();
+
         DotNetCommandOutput silentOutput =
             await repository.TestApp.BuildAsync("-p:GitPropertiesWriteToProjectDirectory=true", "-p:GitPropertiesReportFileWrites=false");
 

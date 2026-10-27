@@ -1598,6 +1598,10 @@ public partial class GeneratorTests
             .ToArray();
 
         var outputPath = Path.Combine(Directory.GetCurrentDirectory(), "IntegrationTest.json");
+
+        // Remove the output of any previous run, otherwise a generator that writes nothing would still pass.
+        File.Delete(outputPath);
+
         ConfigSchemaGenerator.GenerateSchema(
             typeof(GeneratorTests).Assembly.Location,
             referenceAssemblies,
