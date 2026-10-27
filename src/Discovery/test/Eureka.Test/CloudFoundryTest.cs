@@ -28,12 +28,12 @@ public sealed class CloudFoundryTest
                     "proxyPort": 100,
                     "proxyUserName": "proxyUserName",
                     "proxyPassword": "proxyPassword",
-                    "shouldGZipContent": true,
+                    "shouldGZipContent": false,
                     "connectTimeoutSeconds": 100
                   },
                   "allowRedirects": true,
                   "shouldDisableDelta": true,
-                  "shouldFilterOnlyUpInstances": true,
+                  "shouldFilterOnlyUpInstances": false,
                   "shouldFetchRegistry": false,
                   "registryRefreshSingleVipAddress": "registryRefreshSingleVipAddress",
                   "shouldRegisterWithEureka": false,
@@ -45,7 +45,7 @@ public sealed class CloudFoundryTest
                   "instanceId": "instanceId",
                   "appName": "appName",
                   "appGroup": "appGroup",
-                  "instanceEnabledOnInit": true,
+                  "instanceEnabledOnInit": false,
                   "hostname": "hostname",
                   "port": 100,
                   "securePort": 100,
@@ -95,8 +95,8 @@ public sealed class CloudFoundryTest
         clientOptions.RegistryRefreshSingleVipAddress.Should().Be("registryRefreshSingleVipAddress");
         clientOptions.IsFetchDeltaDisabled.Should().BeTrue();
         clientOptions.ShouldFetchRegistry.Should().BeFalse();
-        clientOptions.ShouldFilterOnlyUpInstances.Should().BeTrue();
-        clientOptions.EurekaServer.ShouldGZipContent.Should().BeTrue();
+        clientOptions.ShouldFilterOnlyUpInstances.Should().BeFalse();
+        clientOptions.EurekaServer.ShouldGZipContent.Should().BeFalse();
         clientOptions.ShouldRegisterWithEureka.Should().BeFalse();
 
         var instanceOptionsMonitor = app.Services.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>();
@@ -105,7 +105,7 @@ public sealed class CloudFoundryTest
         instanceOptions.InstanceId.Should().Be("instanceId");
         instanceOptions.AppName.Should().Be("appName");
         instanceOptions.AppGroupName.Should().Be("appGroup");
-        instanceOptions.IsInstanceEnabledOnInit.Should().BeTrue();
+        instanceOptions.IsInstanceEnabledOnInit.Should().BeFalse();
         instanceOptions.NonSecurePort.Should().Be(100);
         instanceOptions.HostName.Should().Be("hostname");
         instanceOptions.SecurePort.Should().Be(100);
@@ -219,12 +219,12 @@ public sealed class CloudFoundryTest
                     "proxyPort": 100,
                     "proxyUserName": "proxyUserName",
                     "proxyPassword": "proxyPassword",
-                    "shouldGZipContent": true,
+                    "shouldGZipContent": false,
                     "connectTimeoutSeconds": 100
                   },
                   "allowRedirects": true,
                   "shouldDisableDelta": true,
-                  "shouldFilterOnlyUpInstances": true,
+                  "shouldFilterOnlyUpInstances": false,
                   "shouldFetchRegistry": false,
                   "registryRefreshSingleVipAddress": "registryRefreshSingleVipAddress",
                   "shouldRegisterWithEureka": false,
@@ -235,7 +235,7 @@ public sealed class CloudFoundryTest
                 "instance": {
                   "instanceId": "instanceId",
                   "appGroup": "appGroup",
-                  "instanceEnabledOnInit": true,
+                  "instanceEnabledOnInit": false,
                   "hostname": "my-hostname",
                   "port": 100,
                   "securePort": 100,
@@ -290,8 +290,8 @@ public sealed class CloudFoundryTest
         clientOptions.RegistryRefreshSingleVipAddress.Should().Be("registryRefreshSingleVipAddress");
         clientOptions.IsFetchDeltaDisabled.Should().BeTrue();
         clientOptions.ShouldFetchRegistry.Should().BeFalse();
-        clientOptions.ShouldFilterOnlyUpInstances.Should().BeTrue();
-        clientOptions.EurekaServer.ShouldGZipContent.Should().BeTrue();
+        clientOptions.ShouldFilterOnlyUpInstances.Should().BeFalse();
+        clientOptions.EurekaServer.ShouldGZipContent.Should().BeFalse();
         clientOptions.ShouldRegisterWithEureka.Should().BeFalse();
         clientOptions.AccessTokenUri.Should().Be("https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token");
         clientOptions.ClientId.Should().Be("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe");
@@ -304,7 +304,7 @@ public sealed class CloudFoundryTest
         instanceOptions.InstanceId.Should().Be("my-hostname:instance_id");
         instanceOptions.AppName.Should().Be("foo");
         instanceOptions.AppGroupName.Should().Be("appGroup");
-        instanceOptions.IsInstanceEnabledOnInit.Should().BeTrue();
+        instanceOptions.IsInstanceEnabledOnInit.Should().BeFalse();
         instanceOptions.NonSecurePort.Should().Be(100);
         instanceOptions.HostName.Should().Be("my-hostname");
         instanceOptions.SecurePort.Should().Be(100);
@@ -414,12 +414,12 @@ public sealed class CloudFoundryTest
                     "proxyPort": 100,
                     "proxyUserName": "proxyUserName",
                     "proxyPassword": "proxyPassword",
-                    "shouldGZipContent": true,
+                    "shouldGZipContent": false,
                     "connectTimeoutSeconds": 100
                   },
                   "allowRedirects": true,
                   "shouldDisableDelta": true,
-                  "shouldFilterOnlyUpInstances": true,
+                  "shouldFilterOnlyUpInstances": false,
                   "shouldFetchRegistry": false,
                   "registryRefreshSingleVipAddress": "registryRefreshSingleVipAddress",
                   "shouldRegisterWithEureka": false,
@@ -431,7 +431,7 @@ public sealed class CloudFoundryTest
                   "registrationMethod": "route",
                   "instanceId": "instanceId",
                   "appGroup": "appGroup",
-                  "instanceEnabledOnInit": true,
+                  "instanceEnabledOnInit": false,
                   "hostname": "my-hostname",
                   "port": 100,
                   "securePort": 100,
@@ -486,8 +486,8 @@ public sealed class CloudFoundryTest
         clientOptions.RegistryRefreshSingleVipAddress.Should().Be("registryRefreshSingleVipAddress");
         clientOptions.IsFetchDeltaDisabled.Should().BeTrue();
         clientOptions.ShouldFetchRegistry.Should().BeFalse();
-        clientOptions.ShouldFilterOnlyUpInstances.Should().BeTrue();
-        clientOptions.EurekaServer.ShouldGZipContent.Should().BeTrue();
+        clientOptions.ShouldFilterOnlyUpInstances.Should().BeFalse();
+        clientOptions.EurekaServer.ShouldGZipContent.Should().BeFalse();
         clientOptions.ShouldRegisterWithEureka.Should().BeFalse();
         clientOptions.AccessTokenUri.Should().Be("https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token");
         clientOptions.ClientId.Should().Be("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe");
@@ -500,7 +500,7 @@ public sealed class CloudFoundryTest
         instanceOptions.InstanceId.Should().Be("foo.apps.test-cloud.com:instance_id");
         instanceOptions.AppName.Should().Be("foo");
         instanceOptions.AppGroupName.Should().Be("appGroup");
-        instanceOptions.IsInstanceEnabledOnInit.Should().BeTrue();
+        instanceOptions.IsInstanceEnabledOnInit.Should().BeFalse();
         instanceOptions.NonSecurePort.Should().Be(80);
         instanceOptions.HostName.Should().Be("foo.apps.test-cloud.com");
         instanceOptions.SecurePort.Should().Be(443);
@@ -611,12 +611,12 @@ public sealed class CloudFoundryTest
                     "proxyPort": 100,
                     "proxyUserName": "proxyUserName",
                     "proxyPassword": "proxyPassword",
-                    "shouldGZipContent": true,
+                    "shouldGZipContent": false,
                     "connectTimeoutSeconds": 100
                   },
                   "allowRedirects": true,
                   "shouldDisableDelta": true,
-                  "shouldFilterOnlyUpInstances": true,
+                  "shouldFilterOnlyUpInstances": false,
                   "shouldFetchRegistry": false,
                   "registryRefreshSingleVipAddress": "registryRefreshSingleVipAddress",
                   "shouldRegisterWithEureka": false,
@@ -629,7 +629,7 @@ public sealed class CloudFoundryTest
                   "instanceId": "instanceId",
                   "appName": "appName",
                   "appGroup": "appGroup",
-                  "instanceEnabledOnInit": true,
+                  "instanceEnabledOnInit": false,
                   "hostname": "my-hostname",
                   "port": 100,
                   "securePort": 100,
@@ -684,8 +684,8 @@ public sealed class CloudFoundryTest
         clientOptions.RegistryRefreshSingleVipAddress.Should().Be("registryRefreshSingleVipAddress");
         clientOptions.IsFetchDeltaDisabled.Should().BeTrue();
         clientOptions.ShouldFetchRegistry.Should().BeFalse();
-        clientOptions.ShouldFilterOnlyUpInstances.Should().BeTrue();
-        clientOptions.EurekaServer.ShouldGZipContent.Should().BeTrue();
+        clientOptions.ShouldFilterOnlyUpInstances.Should().BeFalse();
+        clientOptions.EurekaServer.ShouldGZipContent.Should().BeFalse();
         clientOptions.ShouldRegisterWithEureka.Should().BeFalse();
         clientOptions.AccessTokenUri.Should().Be("https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token");
         clientOptions.ClientId.Should().Be("p-service-registry-06e28efd-24be-4ce3-9784-854ed8d2acbe");
@@ -698,7 +698,7 @@ public sealed class CloudFoundryTest
         instanceOptions.InstanceId.Should().Be("my-hostname:instance_id");
         instanceOptions.AppName.Should().Be("appName");
         instanceOptions.AppGroupName.Should().Be("appGroup");
-        instanceOptions.IsInstanceEnabledOnInit.Should().BeTrue();
+        instanceOptions.IsInstanceEnabledOnInit.Should().BeFalse();
         instanceOptions.NonSecurePort.Should().Be(100);
         instanceOptions.HostName.Should().Be("my-hostname");
         instanceOptions.SecurePort.Should().Be(100);
