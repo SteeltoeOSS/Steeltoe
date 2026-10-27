@@ -370,7 +370,7 @@ public sealed class HostBuilderTest
 
         using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://sba-server.com/instances").Respond(HttpStatusCode.InternalServerError);
-        MockedRequest unregisterMock = handler.Mock.When(HttpMethod.Delete, "http://sba-server.com/instances/1").Respond(HttpStatusCode.InternalServerError);
+        MockedRequest unregisterMock = handler.Mock.When(HttpMethod.Delete, "http://sba-server.com/instances/*").Respond(HttpStatusCode.InternalServerError);
 
         await using (WebApplication app = builder.Build())
         {
@@ -505,6 +505,7 @@ public sealed class HostBuilderTest
                         "Client": {
                           "Url": "http://sba-server2.com",
                           "BaseUrl": "not-a-valid-uri",
+                          "RefreshInterval": "{{100.Milliseconds()}}",
                           "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                         }
                       }
@@ -514,7 +515,9 @@ public sealed class HostBuilderTest
                 """);
 
             fileProvider.NotifyChanged();
-            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+
+            cycleWaiter.Reset();
+            await cycleWaiter.WaitForCyclesAsync(2);
 
             await app.StopAsync(TestContext.Current.CancellationToken);
         }

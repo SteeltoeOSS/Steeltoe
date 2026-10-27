@@ -236,12 +236,17 @@ public sealed class RefreshActuatorTest
 
         responseBody1.Should().BeJson("[]");
 
+        var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<RefreshEndpointOptions>>();
+        optionsMonitor.CurrentValue.ReturnConfiguration.Should().BeFalse();
+
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
             }
             """);
 
         fileProvider.NotifyChanged();
+
+        optionsMonitor.CurrentValue.ReturnConfiguration.Should().BeTrue();
 
         using HttpResponseMessage response2 =
             await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
