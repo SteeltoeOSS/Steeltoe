@@ -50,19 +50,20 @@ public sealed class EurekaClientOptionsTest
                     "proxyPort": 100,
                     "proxyUserName": "proxyUserName",
                     "proxyPassword": "proxyPassword",
-                    "shouldGZipContent": true,
+                    "shouldGZipContent": false,
                     "connectTimeoutSeconds": 100
                   },
                   "allowRedirects": true,
                   "shouldDisableDelta": true,
-                  "shouldFilterOnlyUpInstances": true,
-                  "shouldFetchRegistry": true,
+                  "shouldFilterOnlyUpInstances": false,
+                  "shouldFetchRegistry": false,
                   "registryRefreshSingleVipAddress": "registryRefreshSingleVipAddress",
-                  "shouldRegisterWithEureka": true,
+                  "shouldRegisterWithEureka": false,
                   "registryFetchIntervalSeconds": 100,
                   "instanceInfoReplicationIntervalSeconds": 100,
                   "serviceUrl": "https://foo.bar:8761/eureka/",
                   "Health": {
+                    "Enabled": "false",
                     "CheckEnabled": "true"
                   }
                 },
@@ -118,12 +119,12 @@ public sealed class EurekaClientOptionsTest
         clientOptions.RegistryFetchIntervalSeconds.Should().Be(100);
         clientOptions.RegistryRefreshSingleVipAddress.Should().Be("registryRefreshSingleVipAddress");
         clientOptions.IsFetchDeltaDisabled.Should().BeTrue();
-        clientOptions.ShouldFetchRegistry.Should().BeTrue();
-        clientOptions.ShouldFilterOnlyUpInstances.Should().BeTrue();
-        clientOptions.EurekaServer.ShouldGZipContent.Should().BeTrue();
-        clientOptions.ShouldRegisterWithEureka.Should().BeTrue();
+        clientOptions.ShouldFetchRegistry.Should().BeFalse();
+        clientOptions.ShouldFilterOnlyUpInstances.Should().BeFalse();
+        clientOptions.EurekaServer.ShouldGZipContent.Should().BeFalse();
+        clientOptions.ShouldRegisterWithEureka.Should().BeFalse();
         clientOptions.Health.Should().NotBeNull();
-        clientOptions.Health.ContributorEnabled.Should().BeTrue();
+        clientOptions.Health.ContributorEnabled.Should().BeFalse();
         clientOptions.Health.CheckEnabled.Should().BeTrue();
         clientOptions.Health.MonitoredApps.Should().BeNull();
     }

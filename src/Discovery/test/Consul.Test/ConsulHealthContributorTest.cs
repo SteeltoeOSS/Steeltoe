@@ -103,8 +103,8 @@ public sealed class ConsulHealthContributorTest
         result.Should().NotBeNull();
         result.Status.Should().Be(HealthStatus.Up);
         result.Details.Should().HaveCount(2);
-        result.Details.Should().ContainKey("leader");
-        result.Details.Should().ContainKey("services");
+        result.Details.Should().ContainKey("leader").WhoseValue.Should().Be("the-status");
+        result.Details.Should().ContainKey("services").WhoseValue.Should().BeEquivalentTo(queryResult.Response);
     }
 
     [Fact]

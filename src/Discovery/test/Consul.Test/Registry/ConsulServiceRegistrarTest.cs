@@ -287,7 +287,7 @@ public sealed class ConsulServiceRegistrarTest
         await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
 
         PeriodicHeartbeat heartbeat = scope.Registrar.Heartbeat!;
-        TimeSpan beforeInterval = heartbeat.Interval;
+        heartbeat.Interval.Should().BeCloseTo(TimeSpan.FromSeconds(3.33), TimeSpan.FromMilliseconds(10));
 
         var changedSettings = new Dictionary<string, string?>
         {
@@ -301,7 +301,7 @@ public sealed class ConsulServiceRegistrarTest
         scope.OptionsMonitor.Change(changedOptions);
 
         scope.Registrar.Heartbeat.Should().BeSameAs(heartbeat);
-        heartbeat.Interval.Should().NotBe(beforeInterval);
+        heartbeat.Interval.Should().BeCloseTo(TimeSpan.FromSeconds(6.67), TimeSpan.FromMilliseconds(10));
         scope.OptionsMonitor.ListenerCount.Should().Be(1);
     }
 
