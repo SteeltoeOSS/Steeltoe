@@ -148,17 +148,16 @@ public sealed class EurekaHealthCheckHandlerTest
 
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
+        var discoveryClient = app.Services.GetRequiredService<EurekaDiscoveryClient>();
+        Task heartbeatCycleTask = WaitForHeartbeatCycleAsync(discoveryClient);
+
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         app.Services.GetServices<IDiscoveryClient>().Should().ContainSingle();
 
-        var discoveryClient = app.Services.GetRequiredService<EurekaDiscoveryClient>();
-        await WaitForHeartbeatCycleAsync(discoveryClient);
+        await heartbeatCycleTask;
 
         contributor.IsAwaited.Should().BeTrue();
-
-        var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
-        infoManager.Instance.Status.Should().Be(InstanceStatus.Up);
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }

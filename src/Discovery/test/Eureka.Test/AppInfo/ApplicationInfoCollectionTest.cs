@@ -96,12 +96,14 @@ public sealed class ApplicationInfoCollectionTest
 
         apps.ApplicationMap.Should().HaveCount(2);
         ApplicationInfo? storedApp1 = apps.ApplicationMap.Should().ContainKey("app1".ToUpperInvariant()).WhoseValue;
+        storedApp1.Instances.Should().HaveCount(2);
         storedApp1.Instances.Should().ContainSingle(info => info.InstanceId == "replaced1_id1");
-        storedApp1.Instances.Should().ContainSingle(info => info.InstanceId == "replaced1_id1");
+        storedApp1.Instances.Should().ContainSingle(info => info.InstanceId == "replaced1_id2");
 
         ApplicationInfo? storedApp2 = apps.ApplicationMap.Should().ContainKey("app2".ToUpperInvariant()).WhoseValue;
+        storedApp2.Instances.Should().HaveCount(2);
         storedApp2.Instances.Should().ContainSingle(info => info.InstanceId == "app2_id1");
-        storedApp2.Instances.Should().ContainSingle(info => info.InstanceId == "app2_id1");
+        storedApp2.Instances.Should().ContainSingle(info => info.InstanceId == "app2_id2");
     }
 
     [Fact]

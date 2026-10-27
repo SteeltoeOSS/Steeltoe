@@ -463,6 +463,7 @@ public sealed class EurekaDiscoveryClientTest
 
         var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NotFound);
+        MockedRequest unregisterMock = handler.Mock.When(HttpMethod.Delete, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond(HttpStatusCode.OK);
 
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
@@ -471,6 +472,7 @@ public sealed class EurekaDiscoveryClientTest
 
         await discoveryClient.ShutdownAsync(TestContext.Current.CancellationToken);
 
+        handler.Mock.GetMatchCount(unregisterMock).Should().Be(0);
         handler.Mock.VerifyNoOutstandingExpectation();
     }
 
@@ -833,6 +835,8 @@ public sealed class EurekaDiscoveryClientTest
         IList<IServiceInstance> instancesFromGet = await discoveryClient.GetInstancesAsync("vapp1", TestContext.Current.CancellationToken);
         IReadOnlyList<IServiceInstance> instancesFromEvent = eventArgs.InstancesByServiceId.Should().ContainKey("vapp1").WhoseValue;
 
+        instancesFromGet.Should().HaveCount(filterOnlyUpInstances ? 1 : 2);
+        instancesFromEvent.Should().HaveCount(filterOnlyUpInstances ? 1 : 2);
         instancesFromEvent.Should().BeEquivalentTo(instancesFromGet);
 
         handler.Mock.VerifyNoOutstandingExpectation();
