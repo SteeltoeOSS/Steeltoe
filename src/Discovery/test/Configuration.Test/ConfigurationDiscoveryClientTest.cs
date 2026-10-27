@@ -78,7 +78,7 @@ public sealed class ConfigurationDiscoveryClientTest
     [Fact]
     public async Task ReceivesUpdatesTo_ConfiguredServices()
     {
-        var options = new ConfigurationDiscoveryOptions
+        var initialOptions = new ConfigurationDiscoveryOptions
         {
             Services =
             {
@@ -92,16 +92,40 @@ public sealed class ConfigurationDiscoveryClientTest
             }
         };
 
-        TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
+        TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(initialOptions);
         using var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
 
         fruitInstances.Should().ContainSingle().Which.Host.Should().Be("fruit-ball");
 
-        options.Services[0].Host = "updatedValue";
+        var changedOptions = new ConfigurationDiscoveryOptions
+        {
+            Services =
+            {
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitService",
+                    Host = "updatedValue",
+                    Port = 443,
+                    IsSecure = true
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "vegetableService",
+                    Host = "vegemite",
+                    Port = 8081
+                }
+            }
+        };
 
+        optionsMonitor.Change(changedOptions);
+
+        fruitInstances = await client.GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
         fruitInstances.Should().ContainSingle().Which.Host.Should().Be("updatedValue");
+
+        ISet<string> serviceIds = await client.GetServiceIdsAsync(TestContext.Current.CancellationToken);
+        serviceIds.Should().BeEquivalentTo("fruitService", "vegetableService");
     }
 
     [Fact]
