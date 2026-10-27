@@ -64,7 +64,21 @@ public sealed class ConsulServiceRegistrarTest
     [Fact]
     public async Task Start_WithTtlCheck_RegistersAndStartsHeartbeat()
     {
-        await using var scope = new TestRegistrarScope([]);
+        var appSettings = new Dictionary<string, string?>
+        {
+            // The shortest TTL that keeps the heartbeat interval at 1s, so the first heartbeat arrives quickly.
+            ["consul:discovery:heartbeat:ttlValue"] = "2"
+        };
+
+        await using var scope = new TestRegistrarScope(appSettings);
+        var heartbeatSent = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        scope.Agent.PassTTL(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(_ =>
+        {
+            heartbeatSent.TrySetResult();
+            return Task.FromResult(DefaultWriteResult);
+        });
+
         await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
 
         string instanceId = scope.Registrar.ServiceInstance.InstanceId;
@@ -76,8 +90,11 @@ public sealed class ConsulServiceRegistrarTest
         scope.Registrar.IsRunning.Should().BeTrue();
         scope.Registrar.Heartbeat.Should().NotBeNull();
         scope.Registrar.Heartbeat.CheckId.Should().Be($"service:{instanceId}");
-        scope.Registrar.Heartbeat.Interval.Should().Be(TimeSpan.FromSeconds(20));
+        scope.Registrar.Heartbeat.Interval.Should().Be(TimeSpan.FromSeconds(1));
         scope.OptionsMonitor.ListenerCount.Should().Be(1);
+
+        await heartbeatSent.Task.WaitAsync(TimeSpan.FromMinutes(2), TestContext.Current.CancellationToken);
+        await scope.Agent.Received().PassTTL($"service:{instanceId}", "ttl", Arg.Any<CancellationToken>());
         scope.LoggerProvider.GetAll().Should().BeEmpty();
     }
 
