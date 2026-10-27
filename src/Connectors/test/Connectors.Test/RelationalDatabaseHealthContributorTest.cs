@@ -162,6 +162,28 @@ public sealed class RelationalDatabaseHealthContributorTest
     }
 
     [Fact]
+    public async Task Is_Connected_But_Query_Fails_Returns_Down_Status()
+    {
+        var command = Substitute.For<DbCommand>();
+        command.ExecuteScalarAsync(Arg.Any<CancellationToken>()).Returns(Task.FromException<object?>(new InvalidOperationException("Query failed.")));
+
+        await using var connection = new FakeDbConnection(command);
+
+        var healthContributor =
+            // ReSharper disable once AccessToDisposedClosure
+            new RelationalDatabaseHealthContributor(() => connection, "SQL Server", "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+            {
+                ServiceName = "Example"
+            };
+
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
+
+        result.Should().NotBeNull();
+        result.Status.Should().Be(HealthStatus.Down);
+        result.Details.Should().Contain("error", "InvalidOperationException: Query failed.");
+    }
+
+    [Fact]
     public async Task Canceled_Throws()
     {
         var connection = Substitute.For<DbConnection>();
