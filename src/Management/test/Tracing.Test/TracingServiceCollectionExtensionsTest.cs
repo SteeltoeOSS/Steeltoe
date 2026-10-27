@@ -20,7 +20,7 @@ public sealed class TracingServiceCollectionExtensionsTest
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
         serviceProvider.GetService<IApplicationInstanceInfo>().Should().NotBeNull().And.BeOfType<ApplicationInstanceInfo>();
-
+        serviceProvider.GetService<IDynamicLoggerProvider>().Should().NotBeNull();
         serviceProvider.GetServices<IDynamicMessageProcessor>().OfType<TracingLogProcessor>().Should().ContainSingle();
     }
 }

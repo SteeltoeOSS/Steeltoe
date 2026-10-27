@@ -222,6 +222,7 @@ public sealed class ConfigurationExtensionsTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         await using WebApplication app = builder.Build();
+        app.Urls.Add("http://localhost:8888");
         var configuration = app.Services.GetRequiredService<IConfiguration>();
 
         ICollection<string> addresses = configuration.GetListenAddresses();
