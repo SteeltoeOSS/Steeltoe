@@ -14,7 +14,8 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public void Disposing_provider_shuts_down_temporary_discovery_clients()
     {
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().RespondToAnyRequest(HttpStatusCode.NotFound);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
 
         var builder = new ConfigurationBuilder();
         builder.Add(FastTestConfigurations.Discovery);
@@ -46,7 +47,8 @@ public sealed class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Replacing_discovery_clients_shuts_down_temporary_discovery_clients()
     {
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().RespondToAnyRequest(HttpStatusCode.NotFound);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
 
         var builder = new ConfigurationBuilder();
         builder.Add(FastTestConfigurations.Discovery);

@@ -18,7 +18,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         var options = new ConfigServerClientOptions();
 
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().RespondToAnyRequest(HttpStatusCode.NotFound);
+        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
 
         // ReSharper disable once AccessToDisposedClosure
         using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
@@ -33,7 +34,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         var options = new ConfigServerClientOptions();
 
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().RespondToAnyRequest(HttpStatusCode.NotFound);
+        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
 
         // ReSharper disable once AccessToDisposedClosure
         var source = new ConfigServerConfigurationSource(options, [], null, null, () => handler, NullLoggerFactory.Instance);

@@ -28,7 +28,8 @@ public sealed class ConfigServerClientOptionsTest
     [Fact]
     public async Task ConfigureConfigServerClientOptions_WithDefaults()
     {
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().RespondToAnyRequest(HttpStatusCode.NotFound);
+        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
 
         var builder = new ConfigurationBuilder();
         // ReSharper disable once AccessToDisposedClosure

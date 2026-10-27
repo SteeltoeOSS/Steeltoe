@@ -81,7 +81,8 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         builder.Services.AddEurekaDiscoveryClient();
         builder.Services.ConfigureHttpClientDefaults(action => action.AddServiceDiscovery());
 
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().RespondToAnyRequest(HttpStatusCode.OK, "{}");
+        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.OK, "{}");
         await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
