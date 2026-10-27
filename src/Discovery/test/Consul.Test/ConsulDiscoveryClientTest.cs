@@ -292,6 +292,26 @@ public sealed class ConsulDiscoveryClientTest
         instance.Host.Should().Be("this.host.com");
         instance.Port.Should().Be(8888);
 
+        bool isRegistered = enabled && register;
+
+        if (isRegistered)
+        {
+            await agent.Received(1).ServiceRegister(Arg.Is<AgentServiceRegistration>(payload => payload.ID == "this-instance"), Arg.Any<CancellationToken>());
+        }
+        else
+        {
+            await agent.DidNotReceive().ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>());
+        }
+
         await discoveryClient.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        if (isRegistered)
+        {
+            await agent.Received(1).ServiceDeregister("this-instance", Arg.Any<CancellationToken>());
+        }
+        else
+        {
+            await agent.DidNotReceive().ServiceDeregister(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        }
     }
 }
