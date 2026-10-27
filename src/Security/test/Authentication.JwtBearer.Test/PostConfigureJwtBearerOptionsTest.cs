@@ -2,11 +2,14 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
+using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
@@ -36,6 +39,53 @@ public sealed class PostConfigureJwtBearerOptionsTest
         postConfigurer.PostConfigure(null, jwtBearerOptions);
 
         jwtBearerOptions.TokenValidationParameters.ValidAudiences.Should().Contain("testClient");
+    }
+
+    [Fact]
+    public void PostConfigure_ResolvesSigningKeysFromTokenKeysEndpointOfAuthority()
+    {
+        const string keySet = """
+            {
+              "keys": [
+                {
+                  "kid": "key-a",
+                  "kty": "RSA",
+                  "use": "sig",
+                  "n": "AJPu8R9-W2AaabJ-eHAVvhZa73k3vty-MZe4sdd1yvHgXApjTsgYTc4ZLOraA4kY64MOUFu-nBYq1URSFUJImbFMA8hjmsd6vDTicgRV4qZSFEnK8fGiNI5GP2HeosQ",
+                  "e": "AQAB"
+                }
+              ]
+            }
+            """;
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        MockedRequest tokenKeysRequest = handler.Mock.When(HttpMethod.Get, "https://authority.example.com/token_keys").Respond("application/json", keySet);
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
+
+        using var httpClient = new HttpClient(handler);
+
+        var jwtBearerOptions = new JwtBearerOptions
+        {
+            Authority = "https://authority.example.com",
+            Backchannel = httpClient
+        };
+
+        using ConfigurationRoot configurationRoot = new ConfigurationBuilder().BuildAsRoot();
+        using var resolver = new TokenKeyResolver(TimeProvider.System, NullLoggerFactory.Instance);
+        var postConfigurer = new PostConfigureJwtBearerOptions(configurationRoot, resolver);
+
+        postConfigurer.PostConfigure(null, jwtBearerOptions);
+
+        TokenValidationParameters parameters = jwtBearerOptions.TokenValidationParameters;
+        parameters.ValidIssuer.Should().Be("https://authority.example.com/oauth/token");
+        parameters.IssuerSigningKeyResolver.Should().NotBeNull();
+
+        IEnumerable<SecurityKey> keys = parameters.IssuerSigningKeyResolver(string.Empty, null, "key-a", parameters);
+
+        keys.Should().ContainSingle().Which.KeyId.Should().Be("key-a");
+        handler.Mock.GetMatchCount(tokenKeysRequest).Should().Be(1);
+
+        parameters.IssuerSigningKeyResolver(string.Empty, null, "unknown-key", parameters).Should().BeEmpty();
     }
 
     [Fact]
