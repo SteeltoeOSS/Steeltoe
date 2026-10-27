@@ -2,19 +2,43 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.Extensions.Http;
+using System.Net;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Steeltoe.Common.TestResources;
+
+// ReSharper disable AccessToDisposedClosure
 
 namespace Steeltoe.Common.Http.Test;
 
 public sealed class HeaderRedactionTest
 {
     [Fact]
-    public void HttpClientFactory_uses_HTTP_header_redaction_by_default()
+    public async Task HttpClientFactory_uses_HTTP_header_redaction_by_default()
     {
-        // https://learn.microsoft.com/en-us/dotnet/core/compatibility/networking/9.0/redact-headers
-        Version? assemblyVersion = typeof(HttpClientFactoryOptions).Assembly.GetName().Version;
+        using var capturingLoggerProvider =
+            new CapturingLoggerProvider(category => category.StartsWith("System.Net.Http.HttpClient", StringComparison.Ordinal));
 
-        assemblyVersion.Should().NotBeNull();
-        assemblyVersion.Major.Should().BeGreaterThanOrEqualTo(9);
+        var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
+        services.AddLogging(options => options.SetMinimumLevel(LogLevel.Trace).AddProvider(capturingLoggerProvider));
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.OK);
+        services.AddHttpClient("example").ConfigurePrimaryHttpMessageHandler(_ => handler);
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+        using HttpClient httpClient = httpClientFactory.CreateClient("example");
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/example"));
+        request.Headers.Add("Authorization", "Bearer super-secret-token");
+
+        using HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        string logMessages = string.Join(Environment.NewLine, capturingLoggerProvider.GetAll());
+        logMessages.Should().Contain("Authorization: *");
+        logMessages.Should().NotContain("super-secret-token");
     }
 }

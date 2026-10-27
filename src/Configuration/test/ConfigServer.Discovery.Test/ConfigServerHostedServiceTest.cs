@@ -14,7 +14,8 @@ public sealed class ConfigServerHostedServiceTest
     [Fact]
     public async Task Starting_replaces_temporary_discovery_clients()
     {
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().RespondToAnyRequest(HttpStatusCode.NotFound);
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
 
         // ReSharper disable once AccessToDisposedClosure
         using ConfigurationRoot configurationRoot = BuildConfigurationWithDiscovery(handler);
@@ -34,7 +35,8 @@ public sealed class ConfigServerHostedServiceTest
     [Fact]
     public async Task Stopping_shuts_down_temporary_discovery_clients()
     {
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().RespondToAnyRequest(HttpStatusCode.NotFound);
+        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
 
         // ReSharper disable once AccessToDisposedClosure
         using ConfigurationRoot configurationRoot = BuildConfigurationWithDiscovery(handler);
