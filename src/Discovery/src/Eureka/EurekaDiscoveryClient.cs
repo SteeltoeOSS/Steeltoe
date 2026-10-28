@@ -33,8 +33,8 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
     private readonly TimeProvider _timeProvider;
     private readonly IDisposable? _clientOptionsChangeToken;
     private readonly ILogger<EurekaDiscoveryClient> _logger;
-    private readonly Timer? _heartbeatTimer;
-    private readonly Timer? _cacheRefreshTimer;
+    private readonly ITimer? _heartbeatTimer;
+    private readonly ITimer? _cacheRefreshTimer;
     private readonly SemaphoreSlim _registerUnregisterAsyncLock = new(1);
     private readonly SemaphoreSlim _registryFetchAsyncLock = new(1);
     private volatile bool _hasRegistered;
@@ -242,13 +242,13 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
         }
     }
 
-    private static Timer StartTimer(TimeSpan interval, Action action)
+    private ITimer StartTimer(TimeSpan interval, Action action)
     {
         var gatedAction = new GatedAction(action);
-        return new Timer(_ => gatedAction.Run(), null, interval, interval);
+        return _timeProvider.CreateTimer(_ => gatedAction.Run(), null, interval, interval);
     }
 
-    private static void ChangeTimer(Timer? timer, TimeSpan? interval)
+    private static void ChangeTimer(ITimer? timer, TimeSpan? interval)
     {
         if (timer != null && interval > TimeSpan.Zero)
         {
