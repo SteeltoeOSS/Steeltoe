@@ -26,6 +26,7 @@ internal sealed partial class ConfigServerDiscoveryService
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _logger;
     private readonly SemaphoreSlim _initLock = new(1, 1);
+    private Action<IServiceCollection>? _configureTemporaryServices;
     private ServiceProvider? _temporaryServiceProviderForDiscoveryClients;
     private volatile ICollection<IDiscoveryClient>? _discoveryClients;
 
@@ -49,6 +50,20 @@ internal sealed partial class ConfigServerDiscoveryService
         _configuration = configuration;
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<ConfigServerDiscoveryService>();
+    }
+
+    /// <summary>
+    /// Allows tests to add services (such as fake discovery clients) to the temporary container that the discovery clients are created in. Must be called
+    /// before the first lookup.
+    /// </summary>
+    /// <param name="configureServices">
+    /// Adds services to the temporary container.
+    /// </param>
+    internal void ConfigureTemporaryServicesForTest(Action<IServiceCollection> configureServices)
+    {
+        ArgumentNullException.ThrowIfNull(configureServices);
+
+        _configureTemporaryServices = configureServices;
     }
 
     private async Task EnsureInitializedAsync(CancellationToken cancellationToken)
@@ -102,6 +117,8 @@ internal sealed partial class ConfigServerDiscoveryService
         {
             WireEurekaDiscoveryClient(tempServices);
         }
+
+        _configureTemporaryServices?.Invoke(tempServices);
 
         _discoveryClients = await GetDiscoveryClientsFromServiceCollectionAsync(tempServices);
     }
