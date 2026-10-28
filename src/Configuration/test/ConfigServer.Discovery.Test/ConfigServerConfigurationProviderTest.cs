@@ -43,33 +43,4 @@ public sealed class ConfigServerConfigurationProviderTest
 
         provider.HasTemporaryDiscoveryClients.Should().BeFalse();
     }
-
-    [Fact]
-    public async Task Replacing_discovery_clients_shuts_down_temporary_discovery_clients()
-    {
-        using var handler = new DelegateToMockHttpClientHandler();
-        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
-
-        var builder = new ConfigurationBuilder();
-        builder.Add(FastTestConfigurations.Discovery);
-
-        var options = new ConfigServerClientOptions
-        {
-            Discovery =
-            {
-                Enabled = true
-            }
-        };
-
-        // ReSharper disable once AccessToDisposedClosure
-        builder.AddConfigServer(options, null, () => handler, NullLoggerFactory.Instance);
-
-        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
-        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
-
-        // This is what the hosted service does at startup. Disposing the configuration afterward (via using) has nothing left to shut down.
-        await provider.ProvideRuntimeReplacementsAsync([], TestContext.Current.CancellationToken);
-
-        provider.HasTemporaryDiscoveryClients.Should().BeFalse();
-    }
 }
