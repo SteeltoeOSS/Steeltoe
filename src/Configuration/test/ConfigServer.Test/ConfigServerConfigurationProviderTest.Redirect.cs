@@ -51,7 +51,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Token = "vault-secret"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, loggerFactory);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, TimeProvider.System, loggerFactory);
 
         ConfigEnvironment? result = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
@@ -98,7 +98,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             ClientSecret = "some-secret"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, loggerFactory);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, TimeProvider.System, loggerFactory);
 
         ConfigEnvironment? result = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
@@ -143,7 +143,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Token = "MyVaultToken"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, loggerFactory);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, TimeProvider.System, loggerFactory);
 
         await provider.RefreshVaultTokenAsync(provider.ClientOptions, TestContext.Current.CancellationToken);
 
@@ -189,7 +189,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             ClientSecret = "some-secret"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, loggerFactory);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, TimeProvider.System, loggerFactory);
 
         await provider.RefreshVaultTokenAsync(provider.ClientOptions, TestContext.Current.CancellationToken);
 

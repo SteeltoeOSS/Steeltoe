@@ -18,7 +18,7 @@ public sealed class ConfigServerHostedServiceTest
         var provider = new ConfigServerConfigurationProvider(new ConfigServerClientOptions
         {
             Enabled = false
-        }, null, null, null, NullLoggerFactory.Instance);
+        }, null, null, null, TimeProvider.System, NullLoggerFactory.Instance);
 
         provider.Load();
 

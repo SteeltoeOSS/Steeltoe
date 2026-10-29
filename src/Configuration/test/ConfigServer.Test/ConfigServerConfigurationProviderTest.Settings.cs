@@ -18,11 +18,11 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         var options = new ConfigServerClientOptions();
 
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.RespondToAnyRequest(HttpStatusCode.NotFound);
 
         // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
         provider.Load();
 
         string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;
@@ -34,7 +34,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     {
         var options = new ConfigServerClientOptions();
 
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.RespondToAnyRequest(HttpStatusCode.NotFound);
 
         // ReSharper disable once AccessToDisposedClosure
@@ -76,7 +76,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, TimeProvider.System, NullLoggerFactory.Instance);
 
         // ReSharper disable AccessToDisposedClosure
         Action action = () => provider.BuildConfigServerUri(provider.ClientOptions, null!, null);
