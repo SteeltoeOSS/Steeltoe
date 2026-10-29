@@ -73,7 +73,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
     }
 
     [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
-    public async Task AddEurekaDiscoveryClient_WorksWithGlobalServiceDiscovery()
+    public async Task AddEurekaDiscoveryClient_DoesNotDeadlockWhenResolvedWithGlobalServiceDiscovery()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(EurekaSettings);
@@ -81,7 +81,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         builder.Services.AddEurekaDiscoveryClient();
         builder.Services.ConfigureHttpClientDefaults(action => action.AddServiceDiscovery());
 
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.RespondToAnyRequest(HttpStatusCode.OK, "{}");
         await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
@@ -89,7 +89,8 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         // ReSharper disable once AccessToDisposedClosure
         Task<EurekaDiscoveryClient> resolveTask = Task.Run(() => _ = host.Services.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().Single());
 
-        Func<Task> action = async () => await resolveTask.WaitAsync(5.Seconds(), TestContext.Current.CancellationToken);
+        // Resolving takes milliseconds. The timeout only detects a deadlock, and is generous because a loaded machine can be slow.
+        Func<Task> action = async () => await resolveTask.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken);
 
         await action.Should().NotThrowAsync();
 

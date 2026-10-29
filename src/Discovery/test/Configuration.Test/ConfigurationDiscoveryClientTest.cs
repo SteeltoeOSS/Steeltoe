@@ -249,14 +249,8 @@ public sealed class ConfigurationDiscoveryClientTest
         await using WebApplication webApplication = builder.Build();
 
         ConfigurationDiscoveryClient discoveryClient = webApplication.Services.GetServices<IDiscoveryClient>().OfType<ConfigurationDiscoveryClient>().Single();
-        DiscoveryInstancesFetchedEventArgs? eventArgs = null;
-        int eventCount = 0;
-
-        discoveryClient.InstancesFetched += (_, args) =>
-        {
-            eventArgs = args;
-            Interlocked.Increment(ref eventCount);
-        };
+        var eventFetched = new TaskCompletionSource<DiscoveryInstancesFetchedEventArgs>(TaskCreationOptions.RunContinuationsAsynchronously);
+        discoveryClient.InstancesFetched += (_, args) => eventFetched.TrySetResult(args);
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -287,9 +281,9 @@ public sealed class ConfigurationDiscoveryClientTest
 
         fileProvider.NotifyChanged();
 
-        SpinWait.SpinUntil(() => eventCount == 1, 5.Seconds()).Should().BeTrue();
+        // The event is raised on another thread. The timeout is only a safety net against hanging forever.
+        DiscoveryInstancesFetchedEventArgs eventArgs = await eventFetched.Task.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken);
 
-        eventArgs.Should().NotBeNull();
         eventArgs.InstancesByServiceId.Should().HaveCount(2);
         eventArgs.InstancesByServiceId.Should().ContainKey("ServiceA").WhoseValue.Should().HaveCount(1);
         eventArgs.InstancesByServiceId.Should().ContainKey("ServiceB").WhoseValue.Should().HaveCount(2);

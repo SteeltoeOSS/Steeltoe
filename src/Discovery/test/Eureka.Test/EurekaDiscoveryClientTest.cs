@@ -718,24 +718,26 @@ public sealed class EurekaDiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
         ApplicationsFetchedEventArgs? applicationsEventArgs = null;
-        int applicationsEventCount = 0;
         DiscoveryInstancesFetchedEventArgs? instancesEventArgs = null;
-        int instancesEventCount = 0;
+        using var applicationsFetched = new SemaphoreSlim(0);
+        using var instancesFetched = new SemaphoreSlim(0);
 
+        // ReSharper disable AccessToDisposedClosure
         discoveryClient.ApplicationsFetched += (_, args) =>
         {
             applicationsEventArgs = args;
-            Interlocked.Increment(ref applicationsEventCount);
+            applicationsFetched.Release();
         };
 
         discoveryClient.InstancesFetched += (_, args) =>
         {
             instancesEventArgs = args;
-            Interlocked.Increment(ref instancesEventCount);
+            instancesFetched.Release();
         };
+        // ReSharper restore AccessToDisposedClosure
 
         await discoveryClient.FetchRegistryAsync(true, TestContext.Current.CancellationToken);
-        SpinWait.SpinUntil(() => applicationsEventCount == 1 && instancesEventCount == 1, 5.Seconds()).Should().BeTrue();
+        await WaitForBothEventsAsync(applicationsFetched, instancesFetched);
 
         applicationsEventArgs.Should().NotBeNull();
         InstanceInfo oldInstanceFromAppEvent = applicationsEventArgs.Applications.Should().ContainSingle().Which.Instances.Should().ContainSingle().Which;
@@ -749,7 +751,7 @@ public sealed class EurekaDiscoveryClientTest
         oldInstancesFromGet.Should().ContainSingle().Which.Uri.Should().Be(oldInstanceFromEvent.Uri);
 
         await discoveryClient.FetchRegistryAsync(false, TestContext.Current.CancellationToken);
-        SpinWait.SpinUntil(() => applicationsEventCount == 2 && instancesEventCount == 2, 5.Seconds()).Should().BeTrue();
+        await WaitForBothEventsAsync(applicationsFetched, instancesFetched);
 
         InstanceInfo newInstanceFromAppEvent = applicationsEventArgs.Applications.Should().ContainSingle().Which.Instances.Should().ContainSingle().Which;
         newInstanceFromAppEvent.ActionType.Should().Be(ActionType.Modified);
@@ -824,13 +826,13 @@ public sealed class EurekaDiscoveryClientTest
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-        DiscoveryInstancesFetchedEventArgs? eventArgs = null;
-        discoveryClient.InstancesFetched += (_, args) => eventArgs = args;
+        var eventFetched = new TaskCompletionSource<DiscoveryInstancesFetchedEventArgs>(TaskCreationOptions.RunContinuationsAsynchronously);
+        discoveryClient.InstancesFetched += (_, args) => eventFetched.TrySetResult(args);
 
         await discoveryClient.FetchRegistryAsync(true, TestContext.Current.CancellationToken);
-        SpinWait.SpinUntil(() => eventArgs != null, 5.Seconds()).Should().BeTrue();
 
-        eventArgs.Should().NotBeNull();
+        // The event is raised on another thread. The timeout is only a safety net against hanging forever.
+        DiscoveryInstancesFetchedEventArgs eventArgs = await eventFetched.Task.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken);
 
         IList<IServiceInstance> instancesFromGet = await discoveryClient.GetInstancesAsync("vapp1", TestContext.Current.CancellationToken);
         IReadOnlyList<IServiceInstance> instancesFromEvent = eventArgs.InstancesByServiceId.Should().ContainKey("vapp1").WhoseValue;
@@ -840,6 +842,13 @@ public sealed class EurekaDiscoveryClientTest
         instancesFromEvent.Should().BeEquivalentTo(instancesFromGet);
 
         handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    private static async Task WaitForBothEventsAsync(SemaphoreSlim applicationsFetched, SemaphoreSlim instancesFetched)
+    {
+        // The events are raised on another thread. The timeout is only a safety net against hanging forever.
+        (await applicationsFetched.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
+        (await instancesFetched.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
     }
 
     private sealed class ExtraRequestHeadersDelegatingHandler : DelegatingHandler
