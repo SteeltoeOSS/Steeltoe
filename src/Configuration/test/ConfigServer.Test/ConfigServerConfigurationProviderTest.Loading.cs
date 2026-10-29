@@ -28,7 +28,8 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Timeout = 10
         };
 
-        using var handler = new SlowHttpClientHandler(1.Seconds(), new HttpResponseMessage());
+        // The handler responds so much later than the timeout that, even on a heavily loaded machine, only the timeout can end the request.
+        using var handler = new SlowHttpClientHandler(30.Seconds(), new HttpResponseMessage());
         using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
 
         provider.Load();

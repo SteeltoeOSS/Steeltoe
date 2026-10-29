@@ -8,21 +8,73 @@ namespace Steeltoe.Discovery.Eureka.Test;
 
 public sealed class GatedActionTest
 {
-    private int _timerFuncCount;
-
     [Fact]
     public async Task Run_Enforces_SingleActiveTask()
     {
-        Interlocked.Exchange(ref _timerFuncCount, 0);
-        var timedTask = new GatedAction(TimerFunc);
-        await using var timer = new Timer(_ => timedTask.Run(), null, 10, 100);
-        SpinWait.SpinUntil(() => false, 1.Seconds());
-        _timerFuncCount.Should().Be(1);
+        int runCount = 0;
+        using var firstRunStarted = new ManualResetEventSlim();
+        using var releaseFirstRun = new ManualResetEventSlim();
+
+        var gatedAction = new GatedAction(() =>
+        {
+            // Only the first run blocks, so a second concurrent run would be visible in the count instead of hanging the test.
+            // ReSharper disable once AccessToModifiedClosure
+            if (Interlocked.Increment(ref runCount) == 1)
+            {
+                // ReSharper disable AccessToDisposedClosure
+                firstRunStarted.Set();
+                releaseFirstRun.Wait(TestContext.Current.CancellationToken);
+                // ReSharper restore AccessToDisposedClosure
+            }
+        });
+
+        Task firstRun = Task.Run(gatedAction.Run, CancellationToken.None);
+        firstRunStarted.Wait(30.Seconds(), TestContext.Current.CancellationToken).Should().BeTrue();
+
+        // Calls that arrive while the action is running return immediately without running it.
+        gatedAction.Run();
+        gatedAction.Run();
+
+        Volatile.Read(ref runCount).Should().Be(1);
+
+        releaseFirstRun.Set();
+        await firstRun;
+
+        Volatile.Read(ref runCount).Should().Be(1);
     }
 
-    private void TimerFunc()
+    [Fact]
+    public void Run_RunsAgain_AfterPreviousRunCompleted()
     {
-        Interlocked.Increment(ref _timerFuncCount);
-        Thread.Sleep(3.Seconds());
+        int runCount = 0;
+        var gatedAction = new GatedAction(() => runCount++);
+
+        gatedAction.Run();
+        gatedAction.Run();
+
+        runCount.Should().Be(2);
+    }
+
+    [Fact]
+    public void Run_RunsAgain_AfterPreviousRunFailed()
+    {
+        int runCount = 0;
+
+        var gatedAction = new GatedAction(() =>
+        {
+            runCount++;
+
+            if (runCount == 1)
+            {
+                throw new InvalidOperationException("The action failed.");
+            }
+        });
+
+        Action firstRun = gatedAction.Run;
+        firstRun.Should().ThrowExactly<InvalidOperationException>();
+
+        gatedAction.Run();
+
+        runCount.Should().Be(2);
     }
 }
