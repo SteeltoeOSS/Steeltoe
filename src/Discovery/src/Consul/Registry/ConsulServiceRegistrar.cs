@@ -259,7 +259,7 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
                 if (attempts < options.MaxAttempts)
                 {
                     LogStartingRetry(exception, attempts);
-                    await Task.Delay(backOff, cancellationToken);
+                    await Task.Delay(TimeSpan.FromMilliseconds(backOff), _timeProvider, cancellationToken);
                     int nextBackOff = (int)(options.Multiplier * backOff);
                     backOff = Math.Min(nextBackOff, options.MaxInterval);
                 }

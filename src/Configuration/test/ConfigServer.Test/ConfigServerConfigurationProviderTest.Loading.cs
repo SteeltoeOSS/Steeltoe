@@ -795,10 +795,13 @@ public sealed partial class ConfigServerConfigurationProviderTest
         handler.Mock.GetMatchCount(request).Should().Be(1);
     }
 
-    [Fact]
-    public async Task Load_ConfigServerReturnsBadStatus_FailFastEnabled_RetryEnabled()
+    [Theory]
+    [InlineData(10, 1.1, 2000, 5, "10,11,12,13")]
+    [InlineData(1000, 2.0, 3000, 5, "1000,2000,3000,3000")]
+    public async Task Load_ConfigServerReturnsBadStatus_FailFastEnabled_RetryEnabled(int initialInterval, double multiplier, int maxInterval, int maxAttempts,
+        string delaysExpected)
     {
-        await TestFailureTracer.CaptureAsync(tracer =>
+        await TestFailureTracer.CaptureAsync(async tracer =>
         {
             var options = new ConfigServerClientOptions
             {
@@ -807,7 +810,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 Retry =
                 {
                     Enabled = true,
-                    InitialInterval = 10
+                    MaxAttempts = maxAttempts,
+                    InitialInterval = initialInterval,
+                    Multiplier = multiplier,
+                    MaxInterval = maxInterval
                 },
                 Timeout = 1000
             };
@@ -815,21 +821,32 @@ public sealed partial class ConfigServerConfigurationProviderTest
             using var handler = new DelegateToMockHttpClientHandler();
             MockedRequest request = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond(HttpStatusCode.InternalServerError);
 
-            var timeProvider = new FakeTimeProvider();
+            var timeProvider = new RecordingFakeTimeProvider();
+            using var configServerProvider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, tracer.LoggerFactory);
 
-            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, tracer.LoggerFactory);
+            // Loading blocks while it waits to retry, so it runs on another thread.
+            Task loadTask = Task.Run(configServerProvider.Load, CancellationToken.None);
 
-            Action action = provider.Load;
+            // Each retry waits first. Advancing the clock by exactly that delay lets the next attempt start.
+            for (int index = 0; index < maxAttempts - 1; index++)
+            {
+                TimeSpan delay = await timeProvider.WaitForNextTimerAsync(TestContext.Current.CancellationToken);
+                timeProvider.Advance(delay);
+            }
 
-            action.Should().ThrowExactly<ConfigServerException>().WithMessage($"*after {options.Retry.MaxAttempts} attempts*");
+            Func<Task> action = async () => await loadTask;
 
-            handler.Mock.GetMatchCount(request).Should().Be(options.Retry.MaxAttempts);
+            await action.Should().ThrowExactlyAsync<ConfigServerException>().WithMessage($"*after {maxAttempts} attempts*");
+
+            handler.Mock.GetMatchCount(request).Should().Be(maxAttempts);
+
+            TimeSpan[] dueTimesExpected = [.. delaysExpected.Split(',').Select(int.Parse).Select(ms => TimeSpan.FromMilliseconds(ms))];
+            timeProvider.DueTimes.Should().Equal(dueTimesExpected);
 
             // After the last attempt, nothing may be scheduled that tries again later, however much time passes.
             timeProvider.Advance(1.Hours());
 
-            handler.Mock.GetMatchCount(request).Should().Be(options.Retry.MaxAttempts);
-            return Task.CompletedTask;
+            handler.Mock.GetMatchCount(request).Should().Be(maxAttempts);
         });
     }
 
