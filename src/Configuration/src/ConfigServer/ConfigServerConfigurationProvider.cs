@@ -109,7 +109,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         _shutdownToken = _shutdownTokenSource.Token; // Don't inline: the token survives disposal, while the source does not.
         IConfiguration effectiveConfiguration = configuration ?? new ConfigurationBuilder().Build();
         _configurer = new ConfigureConfigServerClientOptions(effectiveConfiguration, configure);
-        _configServerDiscoveryService = new ConfigServerDiscoveryService(effectiveConfiguration, loggerFactory);
+        _configServerDiscoveryService = new ConfigServerDiscoveryService(effectiveConfiguration, timeProvider, loggerFactory);
 
         _defaultOptions = clientOptions.Clone();
         _clientOptions = _defaultOptions;
@@ -367,7 +367,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
                     if (attempts < optionsSnapshot.Retry.MaxAttempts)
                     {
-                        await Task.Delay(backOff, cancellationToken);
+                        await Task.Delay(TimeSpan.FromMilliseconds(backOff), _timeProvider, cancellationToken);
                         int nextBackOff = (int)(backOff * optionsSnapshot.Retry.Multiplier);
                         backOff = Math.Min(nextBackOff, optionsSnapshot.Retry.MaxInterval);
                     }

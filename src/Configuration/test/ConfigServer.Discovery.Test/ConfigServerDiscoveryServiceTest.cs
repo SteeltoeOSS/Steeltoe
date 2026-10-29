@@ -22,7 +22,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         using ConfigurationRoot configurationRoot =
             new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery).BuildAsRoot();
 
-        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, TimeProvider.System, NullLoggerFactory.Instance);
         await service.GetConfigServerInstancesAsync(new ConfigServerClientOptions(), TestContext.Current.CancellationToken);
 
         service.DiscoveryClients.Should().HaveCount(3);
@@ -48,7 +48,7 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         using ConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).BuildAsRoot();
 
-        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, TimeProvider.System, NullLoggerFactory.Instance);
         List<IServiceInstance> result = await service.GetConfigServerInstancesAsync(new ConfigServerClientOptions(), TestContext.Current.CancellationToken);
 
         IServiceInstance instance = result.Should().ContainSingle().Subject;
@@ -71,7 +71,7 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         using ConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).BuildAsRoot();
 
-        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, TimeProvider.System, NullLoggerFactory.Instance);
         List<IServiceInstance> result = await service.GetConfigServerInstancesAsync(new ConfigServerClientOptions(), TestContext.Current.CancellationToken);
 
         result.Should().BeEmpty();
@@ -79,8 +79,11 @@ public sealed class ConfigServerDiscoveryServiceTest
         await service.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 
-    [Fact]
-    public async Task GetConfigServerInstances_retries_when_no_instances_are_found()
+    [Theory]
+    [InlineData(10, 1.1, 2000, 4, "10,11,12,13")]
+    [InlineData(1000, 2.0, 3000, 4, "1000,2000,3000,3000")]
+    public async Task GetConfigServerInstances_retries_with_increasing_back_off_when_no_instances_are_found(int initialInterval, double multiplier,
+        int maxInterval, int maxAttempts, string delaysExpected)
     {
         using ConfigurationRoot configurationRoot = new ConfigurationBuilder().BuildAsRoot();
 
@@ -89,19 +92,34 @@ public sealed class ConfigServerDiscoveryServiceTest
             Retry =
             {
                 Enabled = true,
-                MaxAttempts = 2,
-                InitialInterval = 10
+                MaxAttempts = maxAttempts,
+                InitialInterval = initialInterval,
+                Multiplier = multiplier,
+                MaxInterval = maxInterval
             }
         };
 
+        var timeProvider = new RecordingFakeTimeProvider();
         var discoveryClient = new TestDiscoveryClient();
-        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, timeProvider, NullLoggerFactory.Instance);
         await service.ProvideRuntimeReplacementsAsync([discoveryClient], TestContext.Current.CancellationToken);
 
-        List<IServiceInstance> result = await service.GetConfigServerInstancesAsync(options, TestContext.Current.CancellationToken);
+        Task<List<IServiceInstance>> getInstancesTask = service.GetConfigServerInstancesAsync(options, TestContext.Current.CancellationToken);
 
-        result.Should().BeEmpty();
-        discoveryClient.GetInstancesCallCount.Should().Be(3);
+        // Each retry waits first. Advancing the clock by exactly that delay lets the next attempt start.
+        for (int index = 0; index < maxAttempts; index++)
+        {
+            TimeSpan delay = await timeProvider.WaitForNextTimerAsync(TestContext.Current.CancellationToken);
+            timeProvider.Advance(delay);
+        }
+
+        List<IServiceInstance> instances = await getInstancesTask;
+
+        instances.Should().BeEmpty();
+        discoveryClient.GetInstancesCallCount.Should().Be(maxAttempts + 1);
+
+        TimeSpan[] dueTimesExpected = [.. delaysExpected.Split(',').Select(int.Parse).Select(ms => TimeSpan.FromMilliseconds(ms))];
+        timeProvider.DueTimes.Should().Equal(dueTimesExpected);
     }
 
     [Fact]
@@ -111,7 +129,7 @@ public sealed class ConfigServerDiscoveryServiceTest
             new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer | FastTestConfigurations.Discovery).BuildAsRoot();
 
         var discoveryClient = new TestDiscoveryClient();
-        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, TimeProvider.System, NullLoggerFactory.Instance);
 
         await service.ProvideRuntimeReplacementsAsync([discoveryClient], TestContext.Current.CancellationToken);
 
@@ -195,7 +213,7 @@ public sealed class ConfigServerDiscoveryServiceTest
 
         using ConfigurationRoot configurationRoot = new ConfigurationBuilder().Add(FastTestConfigurations.Discovery).BuildAsRoot();
 
-        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, TimeProvider.System, NullLoggerFactory.Instance);
 
         service.ConfigureTemporaryServicesForTest(services =>
         {
@@ -284,7 +302,7 @@ public sealed class ConfigServerDiscoveryServiceTest
         // Disables the built-in discovery clients from doing anything.
         ConfigurationRoot configurationRoot = new ConfigurationBuilder().Add(FastTestConfigurations.Discovery).BuildAsRoot();
 
-        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, TimeProvider.System, NullLoggerFactory.Instance);
 
         service.ConfigureTemporaryServicesForTest(services =>
         {

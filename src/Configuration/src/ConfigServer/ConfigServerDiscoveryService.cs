@@ -23,6 +23,7 @@ internal sealed partial class ConfigServerDiscoveryService
 {
     private static readonly AssemblyLoader AssemblyLoader = new();
     private readonly IConfiguration _configuration;
+    private readonly TimeProvider _timeProvider;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _logger;
     private readonly SemaphoreSlim _initLock = new(1, 1);
@@ -42,12 +43,14 @@ internal sealed partial class ConfigServerDiscoveryService
     /// </summary>
     internal bool HasTemporaryDiscoveryClients => _temporaryServiceProviderForDiscoveryClients != null;
 
-    public ConfigServerDiscoveryService(IConfiguration configuration, ILoggerFactory loggerFactory)
+    public ConfigServerDiscoveryService(IConfiguration configuration, TimeProvider timeProvider, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(timeProvider);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _configuration = configuration;
+        _timeProvider = timeProvider;
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<ConfigServerDiscoveryService>();
     }
@@ -200,7 +203,7 @@ internal sealed partial class ConfigServerDiscoveryService
 
             if (attempts <= optionsSnapshot.Retry.MaxAttempts)
             {
-                await Task.Delay(backOff, cancellationToken);
+                await Task.Delay(TimeSpan.FromMilliseconds(backOff), _timeProvider, cancellationToken);
                 int nextBackOff = (int)(backOff * optionsSnapshot.Retry.Multiplier);
                 backOff = Math.Min(nextBackOff, optionsSnapshot.Retry.MaxInterval);
             }
