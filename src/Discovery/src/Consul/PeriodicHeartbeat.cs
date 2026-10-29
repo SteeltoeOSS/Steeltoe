@@ -31,6 +31,7 @@ internal sealed partial class PeriodicHeartbeat : IAsyncDisposable
     private readonly LockPrimitive _lock = new();
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly IConsulClient _client;
+    private readonly TimeProvider _timeProvider;
     private readonly ILogger<PeriodicHeartbeat> _logger;
     private readonly IDisposable? _optionsChangeSubscription;
 
@@ -73,20 +74,25 @@ internal sealed partial class PeriodicHeartbeat : IAsyncDisposable
     /// <param name="client">
     /// The Consul client.
     /// </param>
+    /// <param name="timeProvider">
+    /// Provides access to the system time, which schedules the heartbeats.
+    /// </param>
     /// <param name="logger">
     /// Used for internal logging. Pass <see cref="NullLogger{T}.Instance" /> to disable logging.
     /// </param>
     public PeriodicHeartbeat(string checkId, TimeSpan interval, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, IConsulClient client,
-        ILogger<PeriodicHeartbeat> logger)
+        TimeProvider timeProvider, ILogger<PeriodicHeartbeat> logger)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(checkId);
         ArgumentNullException.ThrowIfNull(optionsMonitor);
         ArgumentNullException.ThrowIfNull(client);
+        ArgumentNullException.ThrowIfNull(timeProvider);
         ArgumentNullException.ThrowIfNull(logger);
 
         CheckId = checkId;
         _interval = interval;
         _client = client;
+        _timeProvider = timeProvider;
         _logger = logger;
 
         // Subscribe first, so no change can be missed. Notifications that arrive before the lock below is released wait for it.
@@ -137,7 +143,7 @@ internal sealed partial class PeriodicHeartbeat : IAsyncDisposable
         {
             if (!_isDisposed && _task == null)
             {
-                _periodicTimer = new PeriodicTimer(_interval);
+                _periodicTimer = new PeriodicTimer(_interval, _timeProvider);
                 _task = TimerLoopAsync(_periodicTimer);
             }
         }

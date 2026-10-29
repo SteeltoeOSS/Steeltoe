@@ -71,7 +71,7 @@ public sealed class ConsulDiscoveryClientTest
         client.Health.Returns(health);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, NullLoggerFactory.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
 
         List<IServiceInstance> serviceInstances = [];
 
@@ -143,7 +143,7 @@ public sealed class ConsulDiscoveryClientTest
         client.Catalog.Returns(catalog);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, NullLoggerFactory.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
         ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(TestContext.Current.CancellationToken);
 
         serviceIds.Should().HaveCount(2);
@@ -227,7 +227,7 @@ public sealed class ConsulDiscoveryClientTest
             .Returns(Task.FromResult(queryResult2));
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, NullLoggerFactory.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
         IList<IServiceInstance> serviceInstances = await discoveryClient.GetAllInstancesAsync(QueryOptions.Default, TestContext.Current.CancellationToken);
 
         serviceInstances.Should().HaveCount(2);
@@ -283,7 +283,7 @@ public sealed class ConsulDiscoveryClientTest
         client.Agent.Returns(agent);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, NullLoggerFactory.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
 
         IServiceInstance instance = discoveryClient.GetLocalServiceInstance();
 
