@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
 using System.Net;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
@@ -365,12 +364,16 @@ public sealed class HealthAggregationTest
     [Fact]
     public async Task Aggregates_contributors_in_parallel()
     {
+        var timeProvider = new RecordingFakeTimeProvider();
+
         List<IHealthContributor> contributors =
         [
-            new SlowContributor(2.Seconds()),
-            new SlowContributor(3.Seconds()),
-            new SlowContributor(4.Seconds())
+            new SlowContributor(timeProvider, 2.Seconds()),
+            new SlowContributor(timeProvider, 3.Seconds())
         ];
+
+        // The aggregator runs at most as many contributors in parallel as there are processors.
+        Assert.SkipWhen(contributors.Count > System.Environment.ProcessorCount, "Not enough CPUs to run all contributors in parallel.");
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
@@ -381,12 +384,15 @@ public sealed class HealthAggregationTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
+        Task<HttpResponseMessage> responseTask = httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
-        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        // Both contributors must be waiting at the same time before either one completes, which proves they run in parallel.
+        await timeProvider.WaitForNextTimerAsync(TestContext.Current.CancellationToken);
+        await timeProvider.WaitForNextTimerAsync(TestContext.Current.CancellationToken);
 
-        stopwatch.Stop();
+        timeProvider.Advance(3.Seconds());
+
+        using HttpResponseMessage response = await responseTask;
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -401,16 +407,10 @@ public sealed class HealthAggregationTest
                 },
                 "alwaysSlow-1": {
                   "status": "UP"
-                },
-                "alwaysSlow-2": {
-                  "status": "UP"
                 }
               }
             }
             """);
-
-        // Upper bound must be less than 2+3+4=9s if contributors ran sequentially.
-        stopwatch.Elapsed.Should().BeGreaterThan(500.Milliseconds()).And.BeLessThan(9.Seconds());
     }
 
     [Fact]
@@ -445,16 +445,21 @@ public sealed class HealthAggregationTest
     [Fact]
     public async Task Propagates_cancellation()
     {
-        List<IHealthContributor> contributors = [new SlowContributor(5.Seconds())];
+        var timeProvider = new RecordingFakeTimeProvider();
+        List<IHealthContributor> contributors = [new SlowContributor(timeProvider, 5.Seconds())];
         await using ServiceProvider emptyServiceProvider = new ServiceCollection().BuildServiceProvider(true);
         var aggregator = new HealthAggregator();
 
         using var source = new CancellationTokenSource();
-        source.CancelAfter(1.Seconds());
 
-        // ReSharper disable AccessToDisposedClosure
-        Func<Task> action = async () => await aggregator.AggregateAsync(contributors, [], emptyServiceProvider, source.Token);
-        // ReSharper restore AccessToDisposedClosure
+        Task aggregateTask = aggregator.AggregateAsync(contributors, [], emptyServiceProvider, source.Token);
+
+        // The contributor is waiting, so cancellation arrives while it is running.
+        await timeProvider.WaitForNextTimerAsync(TestContext.Current.CancellationToken);
+        await source.CancelAsync();
+
+        // The time limit makes a regression fail instead of hang.
+        Func<Task> action = async () => await aggregateTask.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<TaskCanceledException>();
     }

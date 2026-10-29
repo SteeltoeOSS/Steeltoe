@@ -6,15 +6,16 @@ using Steeltoe.Common.HealthChecks;
 
 namespace Steeltoe.Management.Endpoint.Test.Actuators.Health.TestContributors;
 
-internal sealed class SlowContributor(TimeSpan? sleepTime) : IHealthContributor
+internal sealed class SlowContributor(TimeProvider timeProvider, TimeSpan sleepTime) : IHealthContributor
 {
-    private readonly TimeSpan _sleepTime = sleepTime ?? TimeSpan.FromSeconds(5);
+    private readonly TimeProvider _timeProvider = timeProvider;
+    private readonly TimeSpan _sleepTime = sleepTime;
 
     public string Id => "alwaysSlow";
 
     public async Task<HealthCheckResult?> CheckHealthAsync(CancellationToken cancellationToken)
     {
-        await Task.Delay(_sleepTime, cancellationToken);
+        await Task.Delay(_sleepTime, _timeProvider, cancellationToken);
 
         return new HealthCheckResult
         {
