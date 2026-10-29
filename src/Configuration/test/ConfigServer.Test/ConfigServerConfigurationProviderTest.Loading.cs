@@ -10,6 +10,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Primitives;
+using Microsoft.Extensions.Time.Testing;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
 
@@ -27,8 +28,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Timeout = 10
         };
 
-        using var httpClientHandler = new SlowHttpClientHandler(1.Seconds(), new HttpResponseMessage());
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => httpClientHandler, NullLoggerFactory.Instance);
+        using var handler = new SlowHttpClientHandler(1.Seconds(), new HttpResponseMessage());
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
+
         provider.Load();
 
         List<Uri> requestUris = [new("http://localhost:9999/app/profile")];
@@ -39,14 +41,14 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public async Task RemoteLoadAsync_ConfigServerReturnsGreaterThanEqualBadRequest()
+    public async Task RemoteLoadAsync_ConfigServerReturnsInternalServerError()
     {
         ConfigServerClientOptions options = GetCommonOptions();
 
         using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.InternalServerError);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
 
         Func<Task> action = async () => await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
@@ -63,7 +65,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.NoContent);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
 
         ConfigEnvironment? result = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
@@ -72,9 +74,9 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public async Task Create_WithConfigurationReloadTimer()
+    public async Task Polling_reloads_from_Config_Server_without_changing_configuration_when_data_is_unchanged()
     {
-        await TestFailureTracer.CaptureAsync(async tracer =>
+        await TestFailureTracer.CaptureAsync(tracer =>
         {
             const string responseJson = """
                 {
@@ -98,33 +100,26 @@ public sealed partial class ConfigServerConfigurationProviderTest
             using var handler = new DelegateToMockHttpClientHandler();
             handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/label").Respond(HttpStatusCode.NotFound);
 
-            using var firstRequestCountdownEvent = new CountdownEvent(1);
+            MockedRequest testLabelRequest = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/test-label")
+                .Respond("application/json", responseJson);
 
-            MockedRequest testLabelRequest = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/test-label").Respond(_ =>
-            {
-                if (!firstRequestCountdownEvent.IsSet)
-                {
-                    firstRequestCountdownEvent.Signal();
-                }
+            var timeProvider = new FakeTimeProvider();
 
-                return new HttpResponseMessage(HttpStatusCode.OK)
-                {
-                    Content = new StringContent(responseJson, Encoding.UTF8, "application/json")
-                };
-            });
-
-            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, tracer.LoggerFactory);
+            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, tracer.LoggerFactory);
             provider.Load();
 
-            bool firstRequestCompleted = firstRequestCountdownEvent.Wait(2.Seconds(), TestContext.Current.CancellationToken);
-            firstRequestCompleted.Should().BeTrue();
+            handler.Mock.GetMatchCount(testLabelRequest).Should().Be(1);
 
-            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(1);
+            // Each polling interval causes one request.
+            timeProvider.Advance(options.PollingInterval);
+            handler.Mock.GetMatchCount(testLabelRequest).Should().Be(2);
 
-            await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+            timeProvider.Advance(options.PollingInterval);
+            handler.Mock.GetMatchCount(testLabelRequest).Should().Be(3);
 
-            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(2);
+            // The data is unchanged, so the configuration did not change.
             provider.GetReloadToken().HasChanged.Should().BeFalse();
+            return Task.CompletedTask;
         });
     }
 
@@ -154,26 +149,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
             };
 
             using var handler = new DelegateToMockHttpClientHandler();
-            using var firstRequestCountdownEvent = new CountdownEvent(1);
-            using var requestAfterFailureCountdownEvent = new CountdownEvent(1);
             int requestCount = 0;
 
             MockedRequest testLabelRequest = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/test-label").Respond(_ =>
             {
-                int currentCount = Interlocked.Increment(ref requestCount);
-
-                if (!firstRequestCountdownEvent.IsSet)
-                {
-                    firstRequestCountdownEvent.Signal();
-                }
-
-                // The first poll after loading succeeds (second request), the third request fails and the fourth proves that polling continued.
-                if (currentCount >= 4 && !requestAfterFailureCountdownEvent.IsSet)
-                {
-                    requestAfterFailureCountdownEvent.Signal();
-                }
-
-                if (currentCount <= 2)
+                // Loading and the first poll succeed. Every request after that fails.
+                if (Interlocked.Increment(ref requestCount) <= 2)
                 {
                     return new HttpResponseMessage(HttpStatusCode.OK)
                     {
@@ -184,25 +165,32 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 return new HttpResponseMessage(HttpStatusCode.BadRequest);
             });
 
-            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, tracer.LoggerFactory);
+            var timeProvider = new FakeTimeProvider();
+
+            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, tracer.LoggerFactory);
             provider.Load();
 
-            bool firstRequestCompleted = firstRequestCountdownEvent.Wait(2.Seconds(), TestContext.Current.CancellationToken);
-            firstRequestCompleted.Should().BeTrue();
+            handler.Mock.GetMatchCount(testLabelRequest).Should().Be(1);
 
-            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(1);
+            timeProvider.Advance(options.PollingInterval);
+            handler.Mock.GetMatchCount(testLabelRequest).Should().Be(2);
 
-            bool requestAfterFailureCompleted = requestAfterFailureCountdownEvent.Wait(10.Seconds(), TestContext.Current.CancellationToken);
-            requestAfterFailureCompleted.Should().BeTrue();
+            // With fail-fast enabled, a failing poll must still not throw from the timer callback.
+            Action failingPoll = () => timeProvider.Advance(options.PollingInterval);
+            failingPoll.Should().NotThrow();
+            handler.Mock.GetMatchCount(testLabelRequest).Should().Be(3);
 
-            handler.Mock.GetMatchCount(testLabelRequest).Should().BeGreaterThanOrEqualTo(4);
+            // Polling continues after the failure.
+            timeProvider.Advance(options.PollingInterval);
+            handler.Mock.GetMatchCount(testLabelRequest).Should().Be(4);
+
             provider.GetReloadToken().HasChanged.Should().BeFalse();
             return Task.CompletedTask;
         });
     }
 
     [Fact]
-    public async Task Create_WithNonZeroPollingIntervalAndClientDisabled_PollingConfigurationReloadDisabled()
+    public void Create_WithNonZeroPollingIntervalAndClientDisabled_PollingConfigurationReloadDisabled()
     {
         var options = new ConfigServerClientOptions
         {
@@ -215,10 +203,15 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var handler = new DelegateToMockHttpClientHandler();
         MockedRequest request = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production/label").Respond(HttpStatusCode.OK);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        var timeProvider = new FakeTimeProvider();
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, NullLoggerFactory.Instance);
         provider.Load();
 
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+        provider.InnerConfigurationReloadTimer.Should().BeNull();
+
+        // Many polling intervals pass, but Config Server is never contacted.
+        timeProvider.Advance(1.Hours());
         handler.Mock.GetMatchCount(request).Should().Be(0);
     }
 
@@ -463,7 +456,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Uri = "http://server1:8888, http://server2:8888"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
         provider.Load();
 
         provider.TryGet("key1", out string? value).Should().BeTrue();
@@ -488,7 +481,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Uri = "http://config-server1:8888,http://config-server2:8888"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, loggerFactory);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, loggerFactory);
         provider.Load();
 
         IList<string> logMessages = loggerProvider.GetAll();
@@ -535,7 +528,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Name = "myName"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
         provider.Load();
 
         provider.TryGet("key1", out string? value).Should().BeTrue();
@@ -581,7 +574,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}/label").Respond(HttpStatusCode.NotFound);
         handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}/test-label").Respond("application/json", responseJson);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
         provider.Load();
 
         handler.Mock.VerifyNoOutstandingExpectation();
@@ -615,7 +608,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond("application/json", responseJson);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
 
         ConfigEnvironment? env = await provider.RemoteLoadAsync(provider.ClientOptions, options.GetUris(), null, TestContext.Current.CancellationToken);
 
@@ -635,7 +628,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public async Task Load_MultipleConfigServers_ReturnsGreaterThanEqualBadRequest_StopsChecking()
+    public void Load_MultipleConfigServers_ReturnsInternalServerError_StopsChecking()
     {
         ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://localhost:8888, http://localhost:8888";
@@ -645,18 +638,21 @@ public sealed partial class ConfigServerConfigurationProviderTest
         MockedRequest request = handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}")
             .Respond(HttpStatusCode.InternalServerError);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        var timeProvider = new FakeTimeProvider();
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, NullLoggerFactory.Instance);
         provider.Load();
 
         handler.Mock.GetMatchCount(request).Should().Be(1);
 
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+        // Nothing may be scheduled that checks again later, however much time passes.
+        timeProvider.Advance(1.Hours());
 
         handler.Mock.GetMatchCount(request).Should().Be(1);
     }
 
     [Fact]
-    public async Task Load_MultipleConfigServers_ReturnsNotFoundStatus_DoesNotContinueChecking()
+    public void Load_MultipleConfigServers_ReturnsNotFoundStatus_DoesNotContinueChecking()
     {
         ConfigServerClientOptions options = GetCommonOptions();
         options.Uri = "http://localhost:8888, http://localhost:8888";
@@ -666,12 +662,15 @@ public sealed partial class ConfigServerConfigurationProviderTest
         MockedRequest request = handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}")
             .Respond(HttpStatusCode.NotFound);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        var timeProvider = new FakeTimeProvider();
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, NullLoggerFactory.Instance);
         provider.Load();
 
         handler.Mock.GetMatchCount(request).Should().Be(1);
 
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+        // Nothing may be scheduled that checks again later, however much time passes.
+        timeProvider.Advance(1.Hours());
 
         handler.Mock.GetMatchCount(request).Should().Be(1);
     }
@@ -684,7 +683,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.NotFound);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
         provider.Load();
 
         handler.Mock.VerifyNoOutstandingExpectation();
@@ -700,7 +699,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.NotFound);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
 
         Action action = provider.Load;
 
@@ -709,7 +708,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public async Task Load_MultipleConfigServers_ReturnsNotFoundStatus__DoesNotContinueChecking_FailFastEnabled()
+    public void Load_MultipleConfigServers_ReturnsNotFoundStatus__DoesNotContinueChecking_FailFastEnabled()
     {
         ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
@@ -720,14 +719,17 @@ public sealed partial class ConfigServerConfigurationProviderTest
         MockedRequest request = handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}")
             .Respond(HttpStatusCode.NotFound);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        var timeProvider = new FakeTimeProvider();
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, NullLoggerFactory.Instance);
 
         Action action = provider.Load;
 
         action.Should().ThrowExactly<ConfigServerException>();
         handler.Mock.GetMatchCount(request).Should().Be(1);
 
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+        // Nothing may be scheduled that checks again later, however much time passes.
+        timeProvider.Advance(1.Hours());
 
         handler.Mock.GetMatchCount(request).Should().Be(1);
     }
@@ -740,7 +742,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         options.FailFast = true;
 
         using var handler = new DelegateToMockHttpClientHandler();
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
 
         Action action = provider.Load;
 
@@ -757,7 +759,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond(HttpStatusCode.InternalServerError);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
 
         Action action = provider.Load;
 
@@ -766,7 +768,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
-    public async Task Load_MultipleConfigServers_ReturnsBadStatus_StopsChecking_FailFastEnabled()
+    public void Load_MultipleConfigServers_ReturnsBadStatus_StopsChecking_FailFastEnabled()
     {
         ConfigServerClientOptions options = GetCommonOptions();
         options.FailFast = true;
@@ -777,14 +779,17 @@ public sealed partial class ConfigServerConfigurationProviderTest
         MockedRequest request = handler.Mock.When(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}")
             .Respond(HttpStatusCode.InternalServerError);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        var timeProvider = new FakeTimeProvider();
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, NullLoggerFactory.Instance);
 
         Action action = provider.Load;
 
         action.Should().ThrowExactly<ConfigServerException>();
         handler.Mock.GetMatchCount(request).Should().Be(1);
 
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+        // Nothing may be scheduled that checks again later, however much time passes.
+        timeProvider.Advance(1.Hours());
 
         handler.Mock.GetMatchCount(request).Should().Be(1);
     }
@@ -792,7 +797,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     [Fact]
     public async Task Load_ConfigServerReturnsBadStatus_FailFastEnabled_RetryEnabled()
     {
-        await TestFailureTracer.CaptureAsync(async tracer =>
+        await TestFailureTracer.CaptureAsync(tracer =>
         {
             var options = new ConfigServerClientOptions
             {
@@ -809,15 +814,21 @@ public sealed partial class ConfigServerConfigurationProviderTest
             using var handler = new DelegateToMockHttpClientHandler();
             MockedRequest request = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/myName/Production").Respond(HttpStatusCode.InternalServerError);
 
-            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, tracer.LoggerFactory);
+            var timeProvider = new FakeTimeProvider();
+
+            using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, tracer.LoggerFactory);
 
             Action action = provider.Load;
 
-            action.Should().ThrowExactly<ConfigServerException>();
+            action.Should().ThrowExactly<ConfigServerException>().WithMessage($"*after {options.Retry.MaxAttempts} attempts*");
 
-            await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+            handler.Mock.GetMatchCount(request).Should().Be(options.Retry.MaxAttempts);
 
-            handler.Mock.GetMatchCount(request).Should().BeGreaterThan(3);
+            // After the last attempt, nothing may be scheduled that tries again later, however much time passes.
+            timeProvider.Advance(1.Hours());
+
+            handler.Mock.GetMatchCount(request).Should().Be(options.Retry.MaxAttempts);
+            return Task.CompletedTask;
         });
     }
 
@@ -850,7 +861,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond("application/json", responseJson);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
         provider.Load();
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -895,7 +906,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond("application/json", responseJson);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
         provider.Load();
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -1007,7 +1018,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         handler.Mock.When(HttpMethod.Post, "https://uaa.example.com/oauth/token").Respond("application/json", """{ "access_token": "access-token" }""");
         handler.Mock.When(HttpMethod.Get, "https://foo.bar/name/environment/main").Respond("application/json", responseJson);
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
         provider.Load();
 
         // Proves that loading from Config Server took place, so the absence of the client settings below is meaningful.

@@ -55,9 +55,10 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private readonly IDisposable? _sourceConfiguration;
     private readonly CancellationTokenSource _shutdownTokenSource = new();
     private readonly CancellationToken _shutdownToken;
+    private readonly TimeProvider _timeProvider;
 
-    private Timer? _configurationReloadTimer;
-    private Timer? _vaultRenewTimer;
+    private ITimer? _configurationReloadTimer;
+    private ITimer? _vaultRenewTimer;
     private volatile DiscoveryLookupResult? _lastDiscoveryLookupResult;
     private volatile ConfigServerClientOptions _clientOptions;
     private long _isReload;
@@ -70,8 +71,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     };
 
     internal IDictionary<string, string?> InnerData => Data;
-    internal Timer? InnerConfigurationReloadTimer => Volatile.Read(ref _configurationReloadTimer);
-    internal Timer? InnerVaultRenewTimer => Volatile.Read(ref _vaultRenewTimer);
+    internal ITimer? InnerConfigurationReloadTimer => Volatile.Read(ref _configurationReloadTimer);
+    internal ITimer? InnerVaultRenewTimer => Volatile.Read(ref _vaultRenewTimer);
     internal bool HasTemporaryDiscoveryClients => _configServerDiscoveryService.HasTemporaryDiscoveryClients;
 
     /// <summary>
@@ -90,18 +91,20 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
     public ConfigServerConfigurationProvider(ConfigServerConfigurationSource source, ILoggerFactory loggerFactory)
-        : this(source.DefaultOptions, source.Configuration, source.Configure, source.CreateHttpClientHandler, loggerFactory)
+        : this(source.DefaultOptions, source.Configuration, source.Configure, source.CreateHttpClientHandler, TimeProvider.System, loggerFactory)
     {
         // Each call to ConfigServerConfigurationSource.Build() creates a new configuration, which this provider owns.
         _sourceConfiguration = source.Configuration as IDisposable;
     }
 
     internal ConfigServerConfigurationProvider(ConfigServerClientOptions clientOptions, IConfiguration? configuration,
-        Action<ConfigServerClientOptions>? configure, Func<HttpClientHandler>? createHttpClientHandler, ILoggerFactory loggerFactory)
+        Action<ConfigServerClientOptions>? configure, Func<HttpClientHandler>? createHttpClientHandler, TimeProvider timeProvider, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(clientOptions);
+        ArgumentNullException.ThrowIfNull(timeProvider);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
+        _timeProvider = timeProvider;
         _logger = loggerFactory.CreateLogger<ConfigServerConfigurationProvider>();
         _shutdownToken = _shutdownTokenSource.Token; // Don't inline: the token survives disposal, while the source does not.
         IConfiguration effectiveConfiguration = configuration ?? new ConfigurationBuilder().Build();
@@ -167,8 +170,8 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
         else if (_configurationReloadTimer == null)
         {
-            _configurationReloadTimer = new Timer(_ => ConfigurationReloadTimerTick(), null, skipDueTime ? TimeSpan.Zero : optionsSnapshot.PollingInterval,
-                optionsSnapshot.PollingInterval);
+            TimeSpan dueTime = skipDueTime ? TimeSpan.Zero : optionsSnapshot.PollingInterval;
+            _configurationReloadTimer = _timeProvider.CreateTimer(_ => ConfigurationReloadTimerTick(), null, dueTime, optionsSnapshot.PollingInterval);
         }
         else if (previousPollingInterval != optionsSnapshot.PollingInterval)
         {
@@ -187,7 +190,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         else if (_vaultRenewTimer == null)
         {
             TimeSpan refreshInterval = TimeSpan.FromMilliseconds(optionsSnapshot.TokenRenewRate);
-            _vaultRenewTimer = new Timer(_ => VaultRenewTimerTick(), null, skipDueTime ? TimeSpan.Zero : refreshInterval, refreshInterval);
+            _vaultRenewTimer = _timeProvider.CreateTimer(_ => VaultRenewTimerTick(), null, skipDueTime ? TimeSpan.Zero : refreshInterval, refreshInterval);
         }
         else if (previousTokenRenewRate != optionsSnapshot.TokenRenewRate)
         {
@@ -987,25 +990,16 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
     private void ShutdownTimers()
     {
+        // Disposing a timer does not stop a callback that is already running, so we wait for running callbacks to complete.
         // This is fast because in-flight timer callbacks terminate quickly: outstanding HTTP requests are canceled via shutdown token.
 
-        using var reloadTimerStopped = new ManualResetEvent(false);
-        using var vaultTimerStopped = new ManualResetEvent(false);
+        ValueTask reloadTimerStopped = _configurationReloadTimer?.DisposeAsync() ?? ValueTask.CompletedTask;
+        ValueTask vaultTimerStopped = _vaultRenewTimer?.DisposeAsync() ?? ValueTask.CompletedTask;
 
-        if (_configurationReloadTimer == null || !_configurationReloadTimer.Dispose(reloadTimerStopped))
-        {
-            reloadTimerStopped.Set();
-        }
-
-        if (_vaultRenewTimer == null || !_vaultRenewTimer.Dispose(vaultTimerStopped))
-        {
-            vaultTimerStopped.Set();
-        }
-
-        WaitHandle.WaitAll([
-            reloadTimerStopped,
-            vaultTimerStopped
-        ]);
+#pragma warning disable S4462 // Calls to "async" methods should not be blocking
+        // Justification: Dispose is synchronous, and waiting is the purpose of this call.
+        Task.WaitAll(reloadTimerStopped.AsTask(), vaultTimerStopped.AsTask());
+#pragma warning restore S4462 // Calls to "async" methods should not be blocking
 
         _configurationReloadTimer = null;
         _vaultRenewTimer = null;

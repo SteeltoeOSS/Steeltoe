@@ -5,9 +5,11 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
+using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Time.Testing;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
@@ -266,7 +268,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 """);
 
         // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
 
@@ -296,7 +298,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             .WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
         // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
         provider.Load();
 
         await provider.RefreshVaultTokenAsync(provider.ClientOptions, TestContext.Current.CancellationToken);
@@ -326,11 +328,127 @@ public sealed partial class ConfigServerConfigurationProviderTest
             .WithHeaders("Authorization", "Bearer secret").WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
         // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
 
         await provider.RefreshVaultTokenAsync(provider.ClientOptions, TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public void Token_renewal_runs_at_the_configured_rate()
+    {
+        var options = new ConfigServerClientOptions
+        {
+            Name = "foo",
+            Environment = "development",
+            Token = "MyVaultToken",
+            TokenRenewRate = 5_000
+        };
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        MockedRequest renewRequest = handler.Mock.When(HttpMethod.Post, "http://localhost:8888/vault/v1/auth/token/renew-self")
+            .WithHeaders("X-Vault-Token", "MyVaultToken").WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
+
+        var timeProvider = new FakeTimeProvider();
+
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, NullLoggerFactory.Instance);
+        provider.Load();
+
+        // Loading does not renew the token.
+        handler.Mock.GetMatchCount(renewRequest).Should().Be(0);
+
+        timeProvider.Advance(TimeSpan.FromMilliseconds(options.TokenRenewRate - 1));
+        handler.Mock.GetMatchCount(renewRequest).Should().Be(0);
+
+        timeProvider.Advance(TimeSpan.FromMilliseconds(1));
+        handler.Mock.GetMatchCount(renewRequest).Should().Be(1);
+
+        timeProvider.Advance(TimeSpan.FromMilliseconds(options.TokenRenewRate));
+        handler.Mock.GetMatchCount(renewRequest).Should().Be(2);
+    }
+
+    [Fact]
+    public void Token_renewal_continues_after_a_failed_renewal()
+    {
+        var options = new ConfigServerClientOptions
+        {
+            Name = "foo",
+            Environment = "development",
+            Token = "MyVaultToken",
+            TokenRenewRate = 5_000
+        };
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        MockedRequest renewRequest = handler.Mock.When(HttpMethod.Post, "http://localhost:8888/vault/v1/auth/token/renew-self")
+            .Respond(HttpStatusCode.InternalServerError);
+
+        var timeProvider = new FakeTimeProvider();
+
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, NullLoggerFactory.Instance);
+        provider.Load();
+
+        // A failing renewal must not throw from the timer callback.
+        Action failingRenewals = () =>
+        {
+            timeProvider.Advance(TimeSpan.FromMilliseconds(options.TokenRenewRate));
+            timeProvider.Advance(TimeSpan.FromMilliseconds(options.TokenRenewRate));
+        };
+
+        failingRenewals.Should().NotThrow();
+        handler.Mock.GetMatchCount(renewRequest).Should().Be(2);
+    }
+
+    [Fact]
+    public void Disposing_the_provider_stops_polling_and_token_renewal()
+    {
+        const string responseJson = """
+            {
+              "name": "foo",
+              "profiles": [
+                "development"
+              ],
+              "propertySources": []
+            }
+            """;
+
+        var options = new ConfigServerClientOptions
+        {
+            Name = "foo",
+            Environment = "development",
+            Token = "MyVaultToken",
+            TokenRenewRate = 5_000,
+            PollingInterval = TimeSpan.FromSeconds(10)
+        };
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        MockedRequest loadRequest = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/foo/development").Respond("application/json", responseJson);
+
+        MockedRequest renewRequest =
+            handler.Mock.When(HttpMethod.Post, "http://localhost:8888/vault/v1/auth/token/renew-self").Respond(HttpStatusCode.NoContent);
+
+        var timeProvider = new FakeTimeProvider();
+
+        // ReSharper disable once AccessToDisposedClosure
+        using (var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, NullLoggerFactory.Instance))
+        {
+            provider.Load();
+
+            timeProvider.Advance(options.PollingInterval);
+
+            // One request from loading and one from polling, and two renewals.
+            handler.Mock.GetMatchCount(loadRequest).Should().Be(2);
+            handler.Mock.GetMatchCount(renewRequest).Should().Be(2);
+        }
+
+        timeProvider.Advance(1.Hours());
+
+        handler.Mock.GetMatchCount(loadRequest).Should().Be(2);
+        handler.Mock.GetMatchCount(renewRequest).Should().Be(2);
     }
 
     [Fact]
@@ -492,7 +610,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
         // Used by tests that verify provider behavior other than loading, which would otherwise try to reach Config Server (slow when connecting fails).
 
         IConfigurationRoot configuration = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer).Build();
-        return new ConfigServerConfigurationProvider(options, configuration, null, null, NullLoggerFactory.Instance);
+        return new ConfigServerConfigurationProvider(options, configuration, null, null, TimeProvider.System, NullLoggerFactory.Instance);
     }
 
     private static string GetEncodedUserPassword(string user, string password)
