@@ -1,3 +1,4 @@
 #nullable enable
 *REMOVED*Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetLocalServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance?
 Steeltoe.Discovery.Consul.ConsulDiscoveryClient.GetLocalServiceInstance() -> Steeltoe.Common.Discovery.IServiceInstance!
+Steeltoe.Discovery.Consul.ConsulDiscoveryClient.ConsulDiscoveryClient(Consul.IConsulClient! client, Microsoft.Extensions.Options.IOptionsMonitor<Steeltoe.Discovery.Consul.Configuration.ConsulDiscoveryOptions!>! optionsMonitor, System.TimeProvider! timeProvider, Microsoft.Extensions.Logging.ILoggerFactory! loggerFactory) -> void

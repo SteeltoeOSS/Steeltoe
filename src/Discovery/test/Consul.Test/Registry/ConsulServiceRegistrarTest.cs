@@ -5,6 +5,7 @@
 using Consul;
 using FluentAssertions.Specialized;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
@@ -64,13 +65,7 @@ public sealed class ConsulServiceRegistrarTest
     [Fact]
     public async Task Start_WithTtlCheck_RegistersAndStartsHeartbeat()
     {
-        var appSettings = new Dictionary<string, string?>
-        {
-            // The shortest TTL that keeps the heartbeat interval at 1s, so the first heartbeat arrives quickly.
-            ["consul:discovery:heartbeat:ttlValue"] = "2"
-        };
-
-        await using var scope = new TestRegistrarScope(appSettings);
+        await using var scope = new TestRegistrarScope([]);
         var heartbeatSent = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
 
         scope.Agent.PassTTL(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(_ =>
@@ -90,11 +85,14 @@ public sealed class ConsulServiceRegistrarTest
         scope.Registrar.IsRunning.Should().BeTrue();
         scope.Registrar.Heartbeat.Should().NotBeNull();
         scope.Registrar.Heartbeat.CheckId.Should().Be($"service:{instanceId}");
-        scope.Registrar.Heartbeat.Interval.Should().Be(TimeSpan.FromSeconds(1));
+        scope.Registrar.Heartbeat.Interval.Should().Be(TimeSpan.FromSeconds(20));
         scope.OptionsMonitor.ListenerCount.Should().Be(1);
 
-        await heartbeatSent.Task.WaitAsync(TimeSpan.FromMinutes(2), TestContext.Current.CancellationToken);
+        // The heartbeat is sent on another thread. The timeout is only a safety net against hanging forever.
+        scope.TimeProvider.Advance(scope.Registrar.Heartbeat.Interval);
+        await heartbeatSent.Task.WaitAsync(TimeSpan.FromSeconds(30), TestContext.Current.CancellationToken);
         await scope.Agent.Received().PassTTL($"service:{instanceId}", "ttl", Arg.Any<CancellationToken>());
+
         scope.LoggerProvider.GetAll().Should().BeEmpty();
     }
 
@@ -428,6 +426,7 @@ public sealed class ConsulServiceRegistrarTest
         public IAgentEndpoint Agent { get; }
         public TestOptionsMonitor<ConsulDiscoveryOptions> OptionsMonitor { get; }
         public CapturingLoggerProvider LoggerProvider { get; } = new();
+        public FakeTimeProvider TimeProvider { get; } = new();
         public ConsulServiceRegistrar Registrar { get; }
 
         public TestRegistrarScope(Dictionary<string, string?> appSettings)
@@ -444,7 +443,7 @@ public sealed class ConsulServiceRegistrarTest
 
             _loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Warning).AddProvider(LoggerProvider));
 
-            Registrar = new ConsulServiceRegistrar(client, OptionsMonitor, _loggerFactory);
+            Registrar = new ConsulServiceRegistrar(client, OptionsMonitor, TimeProvider, _loggerFactory);
         }
 
         public async ValueTask DisposeAsync()

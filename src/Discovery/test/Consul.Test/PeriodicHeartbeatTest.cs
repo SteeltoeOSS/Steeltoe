@@ -6,6 +6,7 @@ using Consul;
 using FluentAssertions.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul.Configuration;
@@ -18,28 +19,79 @@ public sealed class PeriodicHeartbeatTest
     [Fact]
     public async Task Start_SendsPassTtlForConfiguredService()
     {
-        var heartbeatSent = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var heartbeatSent = new SemaphoreSlim(0);
         var agent = Substitute.For<IAgentEndpoint>();
 
+        // ReSharper disable once AccessToDisposedClosure
         agent.PassTTL("service:foobar", "ttl", Arg.Any<CancellationToken>()).Returns(_ =>
         {
-            heartbeatSent.TrySetResult();
+            heartbeatSent.Release();
             return Task.FromResult(new WriteResult());
         });
 
         var client = Substitute.For<IConsulClient>();
         client.Agent.Returns(agent);
 
-        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = CreateOptionsMonitor(2);
-        await using var heartbeat = new PeriodicHeartbeat("service:foobar", 1.Seconds(), optionsMonitor, client, NullLogger<PeriodicHeartbeat>.Instance);
+        var timeProvider = new FakeTimeProvider();
+
+        // The interval is longer than the timeouts below, so a heartbeat can only arrive by advancing the fake clock.
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = CreateOptionsMonitor(90);
+        TimeSpan interval = optionsMonitor.CurrentValue.Heartbeat!.ComputeHeartbeatInterval();
+
+        await using var heartbeat =
+            new PeriodicHeartbeat("service:foobar", interval, optionsMonitor, client, timeProvider, NullLogger<PeriodicHeartbeat>.Instance);
 
         heartbeat.Start();
 
-        // The timeout is only a safety net against hanging forever. Under CI pressure the tick may take much longer than the interval.
-        await heartbeatSent.Task.WaitAsync(2.Minutes(), TestContext.Current.CancellationToken);
+        // The heartbeats are sent on another thread. The timeout is only a safety net against hanging forever.
+        timeProvider.Advance(interval);
+        (await heartbeatSent.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
 
-        heartbeatSent.Task.IsCompletedSuccessfully.Should().BeTrue();
-        await agent.Received().PassTTL("service:foobar", "ttl", Arg.Any<CancellationToken>());
+        timeProvider.Advance(interval);
+        (await heartbeatSent.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
+
+        await agent.Received(2).PassTTL("service:foobar", "ttl", Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Failed_heartbeat_does_not_stop_sending_heartbeats()
+    {
+        var loggerProvider = new CapturingLoggerProvider();
+        using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Information).AddProvider(loggerProvider));
+
+        using var heartbeatAttempted = new SemaphoreSlim(0);
+        int attemptCount = 0;
+        var agent = Substitute.For<IAgentEndpoint>();
+
+        // ReSharper disable once AccessToDisposedClosure
+        agent.PassTTL("service:foobar", "ttl", Arg.Any<CancellationToken>()).Returns(_ =>
+        {
+            int attempt = Interlocked.Increment(ref attemptCount);
+            heartbeatAttempted.Release();
+
+            return attempt == 1 ? throw new HttpRequestException("Connection refused.") : Task.FromResult(new WriteResult());
+        });
+
+        var client = Substitute.For<IConsulClient>();
+        client.Agent.Returns(agent);
+
+        var timeProvider = new FakeTimeProvider();
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = CreateOptionsMonitor(90);
+        TimeSpan interval = optionsMonitor.CurrentValue.Heartbeat!.ComputeHeartbeatInterval();
+        ILogger<PeriodicHeartbeat> logger = loggerFactory.CreateLogger<PeriodicHeartbeat>();
+
+        await using var heartbeat = new PeriodicHeartbeat("service:foobar", interval, optionsMonitor, client, timeProvider, logger);
+
+        heartbeat.Start();
+
+        timeProvider.Advance(interval);
+        (await heartbeatAttempted.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
+
+        // The next heartbeat is sent even though the previous one failed.
+        timeProvider.Advance(interval);
+        (await heartbeatAttempted.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
+
+        loggerProvider.GetAsText().Should().Contain("Failed to send Consul heartbeat for 'service:foobar'");
     }
 
     [Fact]
@@ -71,28 +123,38 @@ public sealed class PeriodicHeartbeatTest
     }
 
     [Fact]
-    public async Task OptionsChange_WithUnchangedInterval_IsNotApplied()
+    public async Task OptionsChange_WithUnchangedInterval_DoesNotPostponeNextHeartbeat()
     {
-        var loggerProvider = new CapturingLoggerProvider();
-        using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Debug).AddProvider(loggerProvider));
+        using var heartbeatSent = new SemaphoreSlim(0);
+        var agent = Substitute.For<IAgentEndpoint>();
 
-        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = CreateOptionsMonitor(30);
+        // ReSharper disable once AccessToDisposedClosure
+        agent.PassTTL("service:foobar", "ttl", Arg.Any<CancellationToken>()).Returns(_ =>
+        {
+            heartbeatSent.Release();
+            return Task.FromResult(new WriteResult());
+        });
+
+        var client = Substitute.For<IConsulClient>();
+        client.Agent.Returns(agent);
+
+        var timeProvider = new FakeTimeProvider();
+        TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = CreateOptionsMonitor(90);
         TimeSpan interval = optionsMonitor.CurrentValue.Heartbeat!.ComputeHeartbeatInterval();
 
-        ILogger<PeriodicHeartbeat> logger = loggerFactory.CreateLogger<PeriodicHeartbeat>();
-        await using var heartbeat = new PeriodicHeartbeat("service:foobar", interval, optionsMonitor, Substitute.For<IConsulClient>(), logger);
+        await using var heartbeat =
+            new PeriodicHeartbeat("service:foobar", interval, optionsMonitor, client, timeProvider, NullLogger<PeriodicHeartbeat>.Instance);
 
         heartbeat.Start();
+        timeProvider.Advance(interval - 1.Seconds());
 
-        // Setting the timer period restarts its countdown, even to the same value. Every options reload raises a change, also when unrelated to the
-        // heartbeat, so unchanged intervals must not be applied (or reloads more frequent than the interval would postpone heartbeats forever).
-        optionsMonitor.Change(CreateOptions(30));
+        // Every options reload raises a change, also when unrelated to the heartbeat. Applying an unchanged interval would restart the countdown,
+        // so reloads that are more frequent than the interval would postpone the heartbeat forever.
+        optionsMonitor.Change(CreateOptions(90));
 
-        loggerProvider.GetAsText().Should().NotContain("interval for 'service:foobar' changed");
+        timeProvider.Advance(1.Seconds());
 
-        optionsMonitor.Change(CreateOptions(60));
-
-        loggerProvider.GetAsText().Should().Contain("interval for 'service:foobar' changed");
+        (await heartbeatSent.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
     }
 
     [Fact]
@@ -152,7 +214,8 @@ public sealed class PeriodicHeartbeatTest
         client.Agent.Returns(agent);
 
         TimeSpan interval = optionsMonitor.CurrentValue.Heartbeat!.ComputeHeartbeatInterval();
-        return new PeriodicHeartbeat("service:foobar", interval, optionsMonitor, client, NullLogger<PeriodicHeartbeat>.Instance);
+        var timeProvider = new FakeTimeProvider();
+        return new PeriodicHeartbeat("service:foobar", interval, optionsMonitor, client, timeProvider, NullLogger<PeriodicHeartbeat>.Instance);
     }
 
     private static TestOptionsMonitor<ConsulDiscoveryOptions> CreateOptionsMonitor(int ttlValue)

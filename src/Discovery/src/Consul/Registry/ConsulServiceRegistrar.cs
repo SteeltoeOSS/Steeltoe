@@ -19,6 +19,7 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
 {
     private readonly IConsulClient _client;
     private readonly IOptionsMonitor<ConsulDiscoveryOptions> _optionsMonitor;
+    private readonly TimeProvider _timeProvider;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger<ConsulServiceRegistrar> _logger;
 
@@ -45,17 +46,23 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
     /// <param name="optionsMonitor">
     /// Provides access to <see cref="ConsulDiscoveryOptions" />.
     /// </param>
+    /// <param name="timeProvider">
+    /// Provides access to the system time, which schedules the heartbeats.
+    /// </param>
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
-    public ConsulServiceRegistrar(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ILoggerFactory loggerFactory)
+    public ConsulServiceRegistrar(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, TimeProvider timeProvider,
+        ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(timeProvider);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _client = client;
         _optionsMonitor = optionsMonitor;
+        _timeProvider = timeProvider;
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<ConsulServiceRegistrar>();
         ServiceInstance = ConsulServiceInstance.FromOptions(optionsMonitor.CurrentValue);
@@ -135,7 +142,7 @@ internal sealed partial class ConsulServiceRegistrar : IAsyncDisposable
             TimeSpan interval = heartbeatOptions.ComputeHeartbeatInterval();
             ILogger<PeriodicHeartbeat> heartbeatLogger = _loggerFactory.CreateLogger<PeriodicHeartbeat>();
 
-            heartbeat = new PeriodicHeartbeat(checkId, interval, _optionsMonitor, _client, heartbeatLogger);
+            heartbeat = new PeriodicHeartbeat(checkId, interval, _optionsMonitor, _client, _timeProvider, heartbeatLogger);
         }
 
         return heartbeat;
