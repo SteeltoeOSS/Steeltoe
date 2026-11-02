@@ -55,7 +55,7 @@
 
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
     <ConsulVersion>1.8.*</ConsulVersion>
-    <DotnetGCDumpVersion>10.0.745401</DotnetGCDumpVersion>
+    <DotnetGCDumpVersion>10.0.750501</DotnetGCDumpVersion>
     <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
     <FoundationalVersion>
       <!--
@@ -64,8 +64,8 @@
       -->
       10.0.*
     </FoundationalVersion>
-    <MicrosoftDiagnosticsNETCoreClientVersion>0.2.745401</MicrosoftDiagnosticsNETCoreClientVersion>
-    <MicrosoftDiagnosticsTracingTraceEventVersion>3.2.6</MicrosoftDiagnosticsTracingTraceEventVersion>
+    <MicrosoftDiagnosticsNETCoreClientVersion>0.2.750501</MicrosoftDiagnosticsNETCoreClientVersion>
+    <MicrosoftDiagnosticsTracingTraceEventVersion>4.0.0</MicrosoftDiagnosticsTracingTraceEventVersion>
     <OpenTelemetryExporterPrometheusVersion>1.15.*-*</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryVersion>1.15.*</OpenTelemetryVersion>
     <SerilogExtensionsLoggingVersion>10.0.*</SerilogExtensionsLoggingVersion>
