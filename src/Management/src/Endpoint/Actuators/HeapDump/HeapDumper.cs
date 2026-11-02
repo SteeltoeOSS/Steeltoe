@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Reflection;
 using System.Runtime.InteropServices;
 using Graphs;
 using Microsoft.Diagnostics.NETCore.Client;
@@ -104,19 +103,8 @@ internal sealed partial class HeapDumper : IHeapDumper
             var heapInfo = new DotNetHeapInfo();
             var memoryGraph = new MemoryGraph(50_000);
 
-            ResetEventPipeDotNetHeapDumperStaticState();
-
             if (EventPipeDotNetHeapDumper.DumpFromEventPipe(cancellationToken, processId, null, memoryGraph, logWriter, timeoutInSeconds, heapInfo))
             {
-                // Workaround for https://github.com/dotnet/diagnostics/issues/6048: DumpFromEventPipe can return true
-                // without the memory graph having a root, when an exception was thrown (and swallowed) after the GC
-                // stop event was observed but before the graph was fully built. Calling AllowReading() in that case
-                // throws "RootIndex not set.", so treat it as a failed dump instead.
-                if (memoryGraph.RootIndex == NodeIndex.Invalid)
-                {
-                    return false;
-                }
-
                 memoryGraph.AllowReading();
                 GCHeapDump.WriteMemoryGraph(memoryGraph, outputPath, "dotnet-gcdump");
                 return true;
@@ -124,28 +112,6 @@ internal sealed partial class HeapDumper : IHeapDumper
 
             return false;
         }, dumpDescription);
-    }
-
-    private static void ResetEventPipeDotNetHeapDumperStaticState()
-    {
-        // Workaround for https://github.com/dotnet/diagnostics/issues/6048: EventPipeDotNetHeapDumper tracks
-        // completion using "internal static volatile" fields (eventPipeDataPresent, dumpComplete) that are never
-        // reset between calls. A dump that follows a successful one can then observe stale completion state left
-        // behind by the previous call and return a false "success". We don't control that assembly, so reset the
-        // fields via reflection before every call. This is temporary: remove once diagnostics ships a fix that uses
-        // invocation-local state instead. Safe to skip silently if the fields are renamed or removed upstream,
-        // since that only means the original (pre-workaround) risk of this specific issue remains.
-        Type dumperType = typeof(EventPipeDotNetHeapDumper);
-
-        foreach (string fieldName in new[]
-        {
-            "eventPipeDataPresent",
-            "dumpComplete"
-        })
-        {
-            FieldInfo? field = dumperType.GetField(fieldName, BindingFlags.NonPublic | BindingFlags.Static);
-            field?.SetValue(null, false);
-        }
     }
 
     private static void CreateHeapDump(HeapDumpType? heapDumpType, int processId, string outputPath)

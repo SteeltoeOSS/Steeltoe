@@ -121,7 +121,7 @@ public sealed class DumpPackagingTest(DumpPackagingTest.PackSteeltoeLibrariesOnc
         return hostVersion.Major == highestTargetFrameworkVersion.Major && hostVersion.Minor == highestTargetFrameworkVersion.Minor
             ? null
             // The InlineData entries already cover every supported TFM, so running tests on all target frameworks would just repeat identical work.
-            : $"net{hostVersion.Major}.{hostVersion.Minor}";
+            : $"net{highestTargetFrameworkVersion.Major}.{highestTargetFrameworkVersion.Minor}";
     }
 
     private static Version GetHighestTestTargetFrameworkVersion()
