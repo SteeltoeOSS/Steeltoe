@@ -36,6 +36,9 @@ public sealed class RecordingFakeTimeProvider : FakeTimeProvider
 
     public override ITimer CreateTimer(TimerCallback callback, object? state, TimeSpan dueTime, TimeSpan period)
     {
+        // The timer must exist before a waiting test is notified, because that test may advance the clock right away.
+        ITimer timer = base.CreateTimer(callback, state, dueTime, period);
+
         lock (_dueTimes)
         {
             _dueTimes.Add(dueTime);
@@ -43,7 +46,7 @@ public sealed class RecordingFakeTimeProvider : FakeTimeProvider
 
         _timerCreated.Release();
 
-        return base.CreateTimer(callback, state, dueTime, period);
+        return timer;
     }
 
     /// <summary>
