@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
@@ -41,7 +42,7 @@ public sealed class HeapDumpActuatorConcurrencyTest
         using HttpClient httpClient = host.GetTestClient();
 
         Task<HttpResponseMessage> requestTask1 = httpClient.GetAsync(new Uri("http://localhost/actuator/heapdump"), TestContext.Current.CancellationToken);
-        await dumper.Started.WaitAsync(TestContext.Current.CancellationToken);
+        await dumper.Started.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken);
 
         using HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/heapdump"), TestContext.Current.CancellationToken);
         response2.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
@@ -50,7 +51,7 @@ public sealed class HeapDumpActuatorConcurrencyTest
         responseBody2.Should().Be("Another memory dump is currently in progress, please try again later.");
 
         dumper.AllowToFinish();
-        using HttpResponseMessage response1 = await requestTask1;
+        using HttpResponseMessage response1 = await requestTask1.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -73,7 +74,7 @@ public sealed class HeapDumpActuatorConcurrencyTest
         public string DumpHeapToFile(CancellationToken cancellationToken)
         {
             _startedSource.TrySetResult();
-            _canFinish.Wait(cancellationToken);
+            _canFinish.Wait(30.Seconds(), cancellationToken);
 
             _fileCreated = new TempFile();
             File.WriteAllBytes(_fileCreated.FullPath, "FAKEDUMP"u8.ToArray());
