@@ -56,8 +56,8 @@ public sealed class PeriodicHeartbeatTest
     [Fact]
     public async Task Failed_heartbeat_does_not_stop_sending_heartbeats()
     {
-        var loggerProvider = new CapturingLoggerProvider();
-        using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Information).AddProvider(loggerProvider));
+        var loggerProvider = new CapturingLoggerProvider((_, level) => level == LogLevel.Error);
+        using ILoggerFactory loggerFactory = LoggerFactory.Create(builder => builder.AddProvider(loggerProvider));
 
         using var heartbeatAttempted = new SemaphoreSlim(0);
         int attemptCount = 0;
@@ -91,7 +91,8 @@ public sealed class PeriodicHeartbeatTest
         timeProvider.Advance(interval);
         (await heartbeatAttempted.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
 
-        loggerProvider.GetAsText().Should().Contain("Failed to send Consul heartbeat for 'service:foobar'");
+        loggerProvider.GetAll().Should().ContainSingle().Which.Should().Be(
+            $"FAIL {typeof(PeriodicHeartbeat)}: Failed to send Consul heartbeat for 'service:foobar'.");
     }
 
     [Fact]
