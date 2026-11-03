@@ -15,6 +15,9 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class ConfigServerHostBuilderExtensionsTest
 {
+    // Nothing listens on this port, so requests to it fail immediately and can never reach a real Config Server.
+    private const string UnreachableUri = "http://127.0.0.1:1";
+
     [Fact]
     public void AddConfigServer_WebHost_AddsConfigServer()
     {
@@ -87,6 +90,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString(),
+            ["spring:cloud:config:uri"] = UnreachableUri,
             ["spring:cloud:config:timeout"] = "10"
         };
 
@@ -112,6 +116,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString(),
+            ["spring:cloud:config:uri"] = UnreachableUri,
             ["spring:cloud:config:timeout"] = "10"
         };
 
@@ -137,6 +142,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString(),
+            ["spring:cloud:config:uri"] = UnreachableUri,
             ["spring:cloud:config:timeout"] = "10"
         };
 
@@ -162,6 +168,7 @@ public sealed class ConfigServerHostBuilderExtensionsTest
         var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString(),
+            ["spring:cloud:config:uri"] = UnreachableUri,
             ["spring:cloud:config:timeout"] = "10"
         };
 
