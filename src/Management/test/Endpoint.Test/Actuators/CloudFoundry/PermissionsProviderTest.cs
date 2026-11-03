@@ -22,6 +22,9 @@ public sealed class PermissionsProviderTest
     {
         PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplication").Should().BeTrue();
         PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplication/badpath").Should().BeTrue();
+        PermissionsProvider.IsCloudFoundryRequest("/actuator").Should().BeFalse();
+        PermissionsProvider.IsCloudFoundryRequest("/").Should().BeFalse();
+        PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplicationother").Should().BeFalse();
     }
 
     [Fact]

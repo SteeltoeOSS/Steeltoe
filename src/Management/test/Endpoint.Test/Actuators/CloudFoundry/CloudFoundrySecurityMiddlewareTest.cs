@@ -248,6 +248,22 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
     }
 
     [Fact]
+    public async Task SkipsSecurityCheckForRequestsOutsideCloudFoundryPath()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Services.AddCloudFoundryActuator();
+        builder.Services.AddInfoActuator();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
+
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using HttpClient client = host.GetTestClient();
+
+        using HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/info"), TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
     public async Task DoesNotSkipSecurityCheckIfCloudFoundryActuatorDisabled()
     {
         var appSettings = new Dictionary<string, string?>
