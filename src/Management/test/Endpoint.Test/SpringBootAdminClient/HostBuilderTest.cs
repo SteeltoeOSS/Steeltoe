@@ -58,7 +58,11 @@ public sealed class HostBuilderTest
 
         await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
+
         await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -94,7 +98,11 @@ public sealed class HostBuilderTest
 
         await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
+
         await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
