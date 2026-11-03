@@ -118,4 +118,21 @@ public sealed class WindowsNetworkFileShareTest
 
         action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Original error.");
     }
+
+    [Fact]
+    public void Dispose_throws_when_disconnecting_fails_for_another_reason()
+    {
+        const int errorBadDevice = 1200;
+
+        var router = new FakeMultipleProviderRouter
+        {
+            CancelConnectionResult = errorBadDevice
+        };
+
+        var share = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), router);
+
+        Action action = share.Dispose;
+
+        action.Should().ThrowExactly<IOException>().WithMessage("Failed to disconnect from network share.").WithInnerExceptionExactly<Win32Exception>();
+    }
 }
