@@ -242,7 +242,7 @@ public sealed class CloudFoundryConfigurationProviderTest
     [InlineData(false)]
     public async Task ForwardedHeadersOptions_unrestricted_when_running_on_CloudFoundry(bool isRunningOnCloudFoundry)
     {
-        using IDisposable? scope = isRunningOnCloudFoundry ? new EnvironmentVariableScope("VCAP_APPLICATION", "{}") : null;
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", isRunningOnCloudFoundry ? "{}" : null);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         builder.AddCloudFoundryConfiguration();
@@ -279,7 +279,7 @@ public sealed class CloudFoundryConfigurationProviderTest
     [InlineData(false)]
     public async Task ForwardedHeadersMiddleware_updates_connection_details_when_running_on_CloudFoundry(bool isRunningOnCloudFoundry)
     {
-        using IDisposable? scope = isRunningOnCloudFoundry ? new EnvironmentVariableScope("VCAP_APPLICATION", "{}") : null;
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", isRunningOnCloudFoundry ? "{}" : null);
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseKestrel().UseUrls("http://127.0.0.1:0");

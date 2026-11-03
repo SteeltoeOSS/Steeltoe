@@ -221,12 +221,13 @@ public sealed class CloudFoundryActuatorTest
     [Fact]
     public async Task Returns_error_when_not_running_on_Cloud_Foundry()
     {
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", null);
+
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddCloudFoundry();
         builder.Services.AddCloudFoundryActuator();
         await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
-        host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
