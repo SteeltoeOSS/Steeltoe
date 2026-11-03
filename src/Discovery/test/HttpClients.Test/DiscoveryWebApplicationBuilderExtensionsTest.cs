@@ -112,7 +112,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         builder.Services.AddTransient<ResolvingHttpDelegatingHandler>();
         builder.Services.ConfigureHttpClientDefaults(action => action.AddHttpMessageHandler<ResolvingHttpDelegatingHandler>());
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", "{}");
 
         await using WebApplication host = builder.Build();

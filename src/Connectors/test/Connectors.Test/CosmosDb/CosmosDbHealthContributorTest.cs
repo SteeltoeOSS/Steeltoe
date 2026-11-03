@@ -23,12 +23,13 @@ public sealed class CosmosDbHealthContributorTest
         const string serviceName = "Example";
         const string connectionString = "AccountEndpoint=https://localhost:8081;AccountKey=IA==";
 
-        DelegateToMockHttpClientHandler httpMessageHandler = new DelegateToMockHttpClientHandler().Setup(mockHttp =>
+        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().Setup(mockHttp =>
             mockHttp.When("*").Throw(new HttpRequestException("No connection could be made because ...")));
 
         var cosmosClient = new CosmosClient(connectionString, new CosmosClientOptions
         {
-            HttpClientFactory = () => new HttpClient(httpMessageHandler)
+            // ReSharper disable once AccessToDisposedClosure
+            HttpClientFactory = () => new HttpClient(handler)
         });
 
         await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, cosmosClient);

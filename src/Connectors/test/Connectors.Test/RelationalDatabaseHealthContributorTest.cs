@@ -97,9 +97,9 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact]
     public async Task SQLServer_Not_Connected_Returns_Down_Status()
     {
-        // Using a known host/port, so running this test doesn't take 15 seconds (the Connect Timeout only kicks in *after* establishing the socket connection).
         var healthContributor = new RelationalDatabaseHealthContributor(
-            () => new SqlConnection("Server=tcp:steeltoe.io,80;Connect Timeout=1;Connect Retry Count=0"), "SQL Server", "localhost",
+            // Nothing listens on this loopback port, so the connection is refused without any network access.
+            () => new SqlConnection("Server=tcp:127.0.0.1,9999;Connect Timeout=1;Connect Retry Count=0"), "SQL Server", "localhost",
             NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"

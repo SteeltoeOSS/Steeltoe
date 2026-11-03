@@ -86,7 +86,8 @@ public sealed class PermissionsProviderTest
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        serviceProvider.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
+        using DelegateToMockHttpClientHandler permissionsHandler = CloudControllerPermissionsMock.GetHttpMessageHandler();
+        serviceProvider.GetRequiredService<HttpClientHandlerFactory>().Using(permissionsHandler);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
         var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
 

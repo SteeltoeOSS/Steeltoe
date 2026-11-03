@@ -246,6 +246,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
+        // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(options, configureOptions, () => handler, NullLoggerFactory.Instance);
         using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 

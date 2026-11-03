@@ -36,6 +36,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         handler.RespondToAnyRequest(HttpStatusCode.NotFound);
 
         var configurationBuilder = new ConfigurationBuilder();
+        // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, loggerFactory);
         using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
@@ -434,6 +435,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapapp.json");
         configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapservices.json");
+        // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
         using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
@@ -539,6 +541,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapapp.json");
         configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapservices.json");
+        // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
         using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 

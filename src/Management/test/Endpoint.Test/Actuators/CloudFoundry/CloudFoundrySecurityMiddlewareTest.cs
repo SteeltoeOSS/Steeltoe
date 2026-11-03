@@ -367,7 +367,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         builder.Services.AddCloudFoundryActuator();
         await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
-        app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
+        using DelegateToMockHttpClientHandler permissionsHandler = CloudControllerPermissionsMock.GetHttpMessageHandler();
+        app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(permissionsHandler);
         await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
 
@@ -401,7 +402,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         builder.Configuration.AddInMemoryCollection(appSettings);
 
         await using HostWrapper host = HostWrapper.Wrap(builder.Build());
-        host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
+        using DelegateToMockHttpClientHandler permissionsHandler = CloudControllerPermissionsMock.GetHttpMessageHandler();
+        host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(permissionsHandler);
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         // ReSharper disable once ShortLivedHttpClient

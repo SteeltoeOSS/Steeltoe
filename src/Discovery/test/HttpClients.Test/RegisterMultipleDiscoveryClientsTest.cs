@@ -120,7 +120,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         builder.Services.AddOptions();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", "{}");
 
         builder.Services.AddEurekaDiscoveryClient();
@@ -152,7 +152,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         builder.Services.AddOptions();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", "{}");
 
         builder.Services.AddEurekaDiscoveryClient();
@@ -547,7 +547,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
 
         handler.Mock.Expect(HttpMethod.Post, "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token")
             .WithHeaders("Authorization", "Basic cC1zZXJ2aWNlLXJlZ2lzdHJ5LTA2ZTI4ZWZkLTI0YmUtNGNlMy05Nzg0LTg1NGVkOGQyYWNiZTpkQ3Nkb2l1a2xpY1M=")
@@ -620,7 +620,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
 
         handler.Mock.Expect(HttpMethod.Get, "https://api.eureka-server.com/eureka/apps").WithHeaders("Authorization", "Basic dSRlcj8sTkBtZTo6cEBzcyx3MHJkPQ==")
             .WithHeaders("X-Discovery-AllowRedirect", "false").Respond("application/json", applicationsResponse);

@@ -55,7 +55,12 @@ public sealed class DiscoveryHttpClientHandlerTest
     public async Task TracksStatistics_WhenRequestsGoWrong_WithProvidedLoadBalancer()
     {
         using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replace-me/api"));
-        var loadBalancer = new FakeLoadBalancer();
+
+        var loadBalancer = new FakeLoadBalancer
+        {
+            // Nothing listens on this port, so sending the request fails immediately, without a DNS lookup or any network access.
+            ReplacementHost = "localhost:1"
+        };
 
         var handler = new DiscoveryHttpClientHandler(loadBalancer, TimeProvider.System);
         using var invoker = new HttpMessageInvoker(handler);
