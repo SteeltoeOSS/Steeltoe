@@ -146,6 +146,8 @@ public sealed class EnvironmentActuatorTest
     [InlineData(HostBuilderType.WebApplication)]
     public async Task Endpoint_returns_expected_data(HostBuilderType hostBuilderType)
     {
+        using var environmentScope = new EnvironmentVariableScope("ASPNETCORE_ENVIRONMENT", null);
+
         var appSettings = new Dictionary<string, string?>(AppSettings)
         {
             ["App:ShippingDatabaseQueue"] = "amqp://user:pass@shipping.db.com",
