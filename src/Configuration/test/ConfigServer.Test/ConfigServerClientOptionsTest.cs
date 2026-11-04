@@ -28,7 +28,7 @@ public sealed class ConfigServerClientOptionsTest
     [Fact]
     public async Task ConfigureConfigServerClientOptions_WithDefaults()
     {
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.RespondToAnyRequest(HttpStatusCode.NotFound);
 
         var builder = new ConfigurationBuilder();

@@ -35,7 +35,7 @@ public sealed class ConfigServerHostedServiceTest
     [Fact]
     public async Task Stopping_shuts_down_temporary_discovery_clients()
     {
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.RespondToAnyRequest(HttpStatusCode.NotFound);
 
         // ReSharper disable once AccessToDisposedClosure

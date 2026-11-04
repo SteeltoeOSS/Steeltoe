@@ -70,7 +70,7 @@ public sealed class EurekaServiceCollectionExtensionsTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.RespondToAnyRequest(HttpStatusCode.OK, "{}");
         await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
