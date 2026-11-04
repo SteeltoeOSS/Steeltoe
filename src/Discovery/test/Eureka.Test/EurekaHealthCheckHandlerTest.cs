@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -164,7 +163,7 @@ public sealed class EurekaHealthCheckHandlerTest
 
     private static async Task WaitForHeartbeatCycleAsync(EurekaDiscoveryClient discoveryClient)
     {
-        using var timeoutSource = new CancellationTokenSource(30.Seconds());
+        using var timeoutSource = new CancellationTokenSource(Timeouts.Safety);
         using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken, timeoutSource.Token);
 
         using var signal = new SemaphoreSlim(0);

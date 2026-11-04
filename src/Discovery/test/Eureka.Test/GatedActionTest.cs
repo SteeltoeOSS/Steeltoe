@@ -2,7 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using FluentAssertions.Extensions;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Discovery.Eureka.Test;
 
@@ -29,7 +29,7 @@ public sealed class GatedActionTest
         });
 
         Task firstRun = Task.Run(gatedAction.Run, CancellationToken.None);
-        firstRunStarted.Wait(30.Seconds(), TestContext.Current.CancellationToken).Should().BeTrue();
+        firstRunStarted.Wait(Timeouts.Safety, TestContext.Current.CancellationToken).Should().BeTrue();
 
         // Calls that arrive while the action is running return immediately without running it.
         gatedAction.Run();

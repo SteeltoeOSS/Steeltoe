@@ -4,7 +4,6 @@
 
 using System.Net;
 using System.Runtime.InteropServices;
-using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -89,8 +88,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         // ReSharper disable once AccessToDisposedClosure
         Task<EurekaDiscoveryClient> resolveTask = Task.Run(() => _ = host.Services.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().Single());
 
-        // Resolving takes milliseconds. The timeout only detects a deadlock, and is generous because a loaded machine can be slow.
-        Func<Task> action = async () => await resolveTask.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await resolveTask.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
 
         await action.Should().NotThrowAsync();
 

@@ -43,12 +43,11 @@ public sealed class PeriodicHeartbeatTest
 
         heartbeat.Start();
 
-        // The heartbeats are sent on another thread. The timeout is only a safety net against hanging forever.
         timeProvider.Advance(interval);
-        (await heartbeatSent.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
+        (await heartbeatSent.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken)).Should().BeTrue();
 
         timeProvider.Advance(interval);
-        (await heartbeatSent.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
+        (await heartbeatSent.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken)).Should().BeTrue();
 
         await agent.Received(2).PassTTL("service:foobar", "ttl", Arg.Any<CancellationToken>());
     }
@@ -85,11 +84,11 @@ public sealed class PeriodicHeartbeatTest
         heartbeat.Start();
 
         timeProvider.Advance(interval);
-        (await heartbeatAttempted.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
+        (await heartbeatAttempted.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken)).Should().BeTrue();
 
         // The next heartbeat is sent even though the previous one failed.
         timeProvider.Advance(interval);
-        (await heartbeatAttempted.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
+        (await heartbeatAttempted.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken)).Should().BeTrue();
 
         loggerProvider.GetAll().Should().ContainSingle().Which.Should().Be(
             $"FAIL {typeof(PeriodicHeartbeat)}: Failed to send Consul heartbeat for 'service:foobar'.");
@@ -155,7 +154,7 @@ public sealed class PeriodicHeartbeatTest
 
         timeProvider.Advance(1.Seconds());
 
-        (await heartbeatSent.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
+        (await heartbeatSent.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken)).Should().BeTrue();
     }
 
     [Fact]

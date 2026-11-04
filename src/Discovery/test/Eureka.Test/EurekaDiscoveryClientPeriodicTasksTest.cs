@@ -192,7 +192,6 @@ public sealed class EurekaDiscoveryClientPeriodicTasksTest
 
     private static async Task WaitForAsync(TaskCompletionSource source)
     {
-        // The timeout is only a safety net against hanging forever. Under CI pressure the timers may take much longer than their interval.
-        await source.Task.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken);
+        await source.Task.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
     }
 }

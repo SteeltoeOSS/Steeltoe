@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
@@ -41,7 +40,7 @@ public sealed class ThreadDumpActuatorConcurrencyTest
         using HttpClient httpClient = host.GetTestClient();
 
         Task<HttpResponseMessage> requestTask1 = httpClient.GetAsync(new Uri("http://localhost/actuator/threaddump"), TestContext.Current.CancellationToken);
-        await dumper.Started.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken);
+        await dumper.Started.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
 
         using HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/threaddump"), TestContext.Current.CancellationToken);
         response2.StatusCode.Should().Be(HttpStatusCode.TooManyRequests);
@@ -50,7 +49,7 @@ public sealed class ThreadDumpActuatorConcurrencyTest
         responseBody2.Should().Be("Another memory dump is currently in progress, please try again later.");
 
         dumper.AllowToFinish();
-        using HttpResponseMessage response1 = await requestTask1.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response1 = await requestTask1.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 
@@ -72,7 +71,7 @@ public sealed class ThreadDumpActuatorConcurrencyTest
         public Task<IList<ThreadInfo>> DumpThreadsAsync(CancellationToken cancellationToken)
         {
             _startedSource.TrySetResult();
-            _canFinish.Wait(30.Seconds(), cancellationToken);
+            _canFinish.Wait(Timeouts.Safety, cancellationToken);
 
             IList<ThreadInfo> result = [];
             return Task.FromResult(result);

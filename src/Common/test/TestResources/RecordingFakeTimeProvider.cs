@@ -50,15 +50,14 @@ public sealed class RecordingFakeTimeProvider : FakeTimeProvider
     }
 
     /// <summary>
-    /// Waits until a timer has been created that this method did not return yet, and returns its due time. The timeout is only a safety net against hanging
-    /// forever.
+    /// Waits until a timer has been created that this method did not return yet, and returns its due time.
     /// </summary>
     /// <param name="cancellationToken">
     /// The token to monitor for cancellation requests.
     /// </param>
     public async Task<TimeSpan> WaitForNextTimerAsync(CancellationToken cancellationToken)
     {
-        if (!await _timerCreated.WaitAsync(TimeSpan.FromSeconds(30), cancellationToken))
+        if (!await _timerCreated.WaitAsync(Timeouts.Safety, cancellationToken))
         {
             throw new TimeoutException("Timed out waiting for a timer to be created.");
         }

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -281,8 +280,7 @@ public sealed class ConfigurationDiscoveryClientTest
 
         fileProvider.NotifyChanged();
 
-        // The event is raised on another thread. The timeout is only a safety net against hanging forever.
-        DiscoveryInstancesFetchedEventArgs eventArgs = await eventFetched.Task.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken);
+        DiscoveryInstancesFetchedEventArgs eventArgs = await eventFetched.Task.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
 
         eventArgs.InstancesByServiceId.Should().HaveCount(2);
         eventArgs.InstancesByServiceId.Should().ContainKey("ServiceA").WhoseValue.Should().HaveCount(1);

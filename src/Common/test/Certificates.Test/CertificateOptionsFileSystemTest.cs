@@ -152,8 +152,7 @@ public sealed class CertificateOptionsFileSystemTest
     }
 
     /// <summary>
-    /// Runs the specified action, then waits until the options monitor reports options with the expected certificate. The timeout is only a safety net
-    /// against hanging forever.
+    /// Runs the specified action, then waits until the options monitor reports options with the expected certificate.
     /// </summary>
     private static async Task WaitUntilCertificateChangedAsync(string certificateName, IOptionsMonitor<CertificateOptions> optionsMonitor,
         X509Certificate2 expectedCertificate, Func<Task> triggerAction)
@@ -169,7 +168,7 @@ public sealed class CertificateOptionsFileSystemTest
         });
 
         await triggerAction();
-        await certificateChanged.Task.WaitAsync(TimeSpan.FromSeconds(30), TestContext.Current.CancellationToken);
+        await certificateChanged.Task.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
     }
 
     private static async Task RotateFileAsync(string path, string rotatedContentPath, bool useAtomicFileMove)

@@ -87,9 +87,8 @@ public sealed class ConsulServiceRegistrarTest
         scope.Registrar.Heartbeat.Interval.Should().Be(TimeSpan.FromSeconds(20));
         scope.OptionsMonitor.ListenerCount.Should().Be(1);
 
-        // The heartbeat is sent on another thread. The timeout is only a safety net against hanging forever.
         scope.TimeProvider.Advance(scope.Registrar.Heartbeat.Interval);
-        await heartbeatSent.Task.WaitAsync(TimeSpan.FromSeconds(30), TestContext.Current.CancellationToken);
+        await heartbeatSent.Task.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
         await scope.Agent.Received().PassTTL($"service:{instanceId}", "ttl", Arg.Any<CancellationToken>());
 
         scope.LoggerProvider.GetAll().Should().BeEmpty();

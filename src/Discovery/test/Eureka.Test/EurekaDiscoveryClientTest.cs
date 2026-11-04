@@ -4,7 +4,6 @@
 
 using System.Globalization;
 using System.Net;
-using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -831,8 +830,7 @@ public sealed class EurekaDiscoveryClientTest
 
         await discoveryClient.FetchRegistryAsync(true, TestContext.Current.CancellationToken);
 
-        // The event is raised on another thread. The timeout is only a safety net against hanging forever.
-        DiscoveryInstancesFetchedEventArgs eventArgs = await eventFetched.Task.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken);
+        DiscoveryInstancesFetchedEventArgs eventArgs = await eventFetched.Task.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
 
         IList<IServiceInstance> instancesFromGet = await discoveryClient.GetInstancesAsync("vapp1", TestContext.Current.CancellationToken);
         IReadOnlyList<IServiceInstance> instancesFromEvent = eventArgs.InstancesByServiceId.Should().ContainKey("vapp1").WhoseValue;
@@ -846,9 +844,8 @@ public sealed class EurekaDiscoveryClientTest
 
     private static async Task WaitForBothEventsAsync(SemaphoreSlim applicationsFetched, SemaphoreSlim instancesFetched)
     {
-        // The events are raised on another thread. The timeout is only a safety net against hanging forever.
-        (await applicationsFetched.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
-        (await instancesFetched.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken)).Should().BeTrue();
+        (await applicationsFetched.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken)).Should().BeTrue();
+        (await instancesFetched.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken)).Should().BeTrue();
     }
 
     private sealed class ExtraRequestHeadersDelegatingHandler : DelegatingHandler

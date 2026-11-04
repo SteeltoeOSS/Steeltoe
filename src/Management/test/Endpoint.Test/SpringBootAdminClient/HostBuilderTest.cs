@@ -651,7 +651,7 @@ public sealed class HostBuilderTest
 
         public async Task WaitForCyclesAsync(int count)
         {
-            using var timeoutSource = new CancellationTokenSource(30.Seconds());
+            using var timeoutSource = new CancellationTokenSource(Timeouts.Safety);
             using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken, timeoutSource.Token);
 
             try

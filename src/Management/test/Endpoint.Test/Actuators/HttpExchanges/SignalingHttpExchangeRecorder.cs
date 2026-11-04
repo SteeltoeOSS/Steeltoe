@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.HttpExchanges.Diagnostics;
 
@@ -30,7 +31,7 @@ internal sealed class SignalingHttpExchangeRecorder(IEnumerable<DiagnosticObserv
     }
 
     /// <summary>
-    /// Waits until the specified number of exchanges has been recorded since the last call. The timeout is only a safety net against hanging forever.
+    /// Waits until the specified number of exchanges has been recorded since the last call.
     /// </summary>
     /// <param name="count">
     /// The number of exchanges to wait for.
@@ -42,7 +43,7 @@ internal sealed class SignalingHttpExchangeRecorder(IEnumerable<DiagnosticObserv
     {
         for (int index = 0; index < count; index++)
         {
-            if (!await _recorded.WaitAsync(TimeSpan.FromSeconds(30), cancellationToken))
+            if (!await _recorded.WaitAsync(Timeouts.Safety, cancellationToken))
             {
                 throw new TimeoutException($"Timed out waiting for {count} HTTP exchange(s) to be recorded.");
             }

@@ -458,8 +458,7 @@ public sealed class HealthAggregationTest
         await timeProvider.WaitForNextTimerAsync(TestContext.Current.CancellationToken);
         await source.CancelAsync();
 
-        // The time limit makes a regression fail instead of hang.
-        Func<Task> action = async () => await aggregateTask.WaitAsync(30.Seconds(), TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await aggregateTask.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<TaskCanceledException>();
     }
