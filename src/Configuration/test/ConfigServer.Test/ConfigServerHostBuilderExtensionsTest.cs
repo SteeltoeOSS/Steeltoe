@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using System.Net.Sockets;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,9 +17,6 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class ConfigServerHostBuilderExtensionsTest
 {
-    // Nothing listens on this port, so requests to it fail immediately and can never reach a real Config Server.
-    private const string UnreachableUri = "http://127.0.0.1:1";
-
     [Fact]
     public void AddConfigServer_WebHost_AddsConfigServer()
     {
@@ -87,10 +86,12 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_HostBuilder_DisposesTimer()
     {
+        using var server = new UnresponsiveServer();
+
         var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString(),
-            ["spring:cloud:config:uri"] = UnreachableUri,
+            ["spring:cloud:config:uri"] = server.Uri,
             ["spring:cloud:config:timeout"] = "10"
         };
 
@@ -113,10 +114,12 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_WebHostBuilder_DisposesTimer()
     {
+        using var server = new UnresponsiveServer();
+
         var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString(),
-            ["spring:cloud:config:uri"] = UnreachableUri,
+            ["spring:cloud:config:uri"] = server.Uri,
             ["spring:cloud:config:timeout"] = "10"
         };
 
@@ -139,10 +142,12 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public async Task AddConfigServer_WebApplicationBuilder_DisposesTimer()
     {
+        using var server = new UnresponsiveServer();
+
         var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString(),
-            ["spring:cloud:config:uri"] = UnreachableUri,
+            ["spring:cloud:config:uri"] = server.Uri,
             ["spring:cloud:config:timeout"] = "10"
         };
 
@@ -165,10 +170,12 @@ public sealed class ConfigServerHostBuilderExtensionsTest
     [Fact]
     public void AddConfigServer_HostApplicationBuilder_DisposesTimer()
     {
+        using var server = new UnresponsiveServer();
+
         var appSettings = new Dictionary<string, string?>
         {
             ["spring:cloud:config:pollingInterval"] = 1.Seconds().ToString(),
-            ["spring:cloud:config:uri"] = UnreachableUri,
+            ["spring:cloud:config:uri"] = server.Uri,
             ["spring:cloud:config:timeout"] = "10"
         };
 
@@ -316,5 +323,28 @@ public sealed class ConfigServerHostBuilderExtensionsTest
 
         provider.Should().NotBeNull();
         provider.ClientOptions.Environment.Should().Be("TestEnv");
+    }
+
+    /// <summary>
+    /// A local server that accepts connections but never responds. Requests to it always end in a timeout, which makes the outcome independent of timing:
+    /// against a closed port, a short request timeout races with the immediate connection refusal on Linux, and the exception that loses that race is not
+    /// handled as a failed fetch. It can never reach a real Config Server.
+    /// </summary>
+    private sealed class UnresponsiveServer : IDisposable
+    {
+        private readonly TcpListener _listener = new(IPAddress.Loopback, 0);
+
+        public string Uri { get; }
+
+        public UnresponsiveServer()
+        {
+            _listener.Start();
+            Uri = $"http://127.0.0.1:{((IPEndPoint)_listener.LocalEndpoint).Port}";
+        }
+
+        public void Dispose()
+        {
+            _listener.Stop();
+        }
     }
 }
