@@ -108,6 +108,15 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest : IDispos
         using var expectedCertificate = X509Certificate2.CreateFromPem(instanceCertificatePem);
         receivedCertificate.Should().NotBeNull();
         receivedCertificate.Thumbprint.Should().Be(expectedCertificate.Thumbprint);
+
+        // On Windows, the library imports the certificate with UserKeySet, which stores its private key in the user's key store
+        // (%APPDATA%\Microsoft\Crypto\Keys). After a TLS handshake has used the certificate, disposing it does not remove that key file, because the
+        // runtime keeps a handle to the key until it is finalized, which does not happen at process exit (https://github.com/dotnet/runtime/issues/101090).
+        // Without the explicit deletion below, every run of this test leaves a key file behind, so they pile up on developer machines.
+        if (OperatingSystem.IsWindows() && appInstanceCertificate?.GetRSAPrivateKey() is RSACng clientKey)
+        {
+            clientKey.Key.Delete();
+        }
     }
 
     [Fact]
