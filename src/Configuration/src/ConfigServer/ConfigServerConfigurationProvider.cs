@@ -272,7 +272,17 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         // A listener may even be disposing this provider, which would otherwise wait for itself.
         if (hasDataChanged && !_shutdownToken.IsCancellationRequested)
         {
-            OnReload();
+            try
+            {
+                OnReload();
+            }
+            catch (Exception exception)
+            {
+                if (!_shutdownToken.IsCancellationRequested)
+                {
+                    LogConfigurationReloadCycleFailed(exception);
+                }
+            }
         }
     }
 
