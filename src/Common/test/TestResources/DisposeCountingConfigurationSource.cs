@@ -17,9 +17,20 @@ public sealed class DisposeCountingConfigurationSource : IConfigurationSource
     /// </summary>
     public List<DisposeCountingConfigurationProvider> Providers { get; } = [];
 
+    /// <summary>
+    /// Gets the maximum number of providers this source creates. Exceeding it throws, which turns code that keeps rebuilding the configuration (and would
+    /// otherwise overflow the stack and crash the test run) into a test failure.
+    /// </summary>
+    public int MaxProvidersCreated { get; init; } = 100;
+
     /// <inheritdoc />
     public IConfigurationProvider Build(IConfigurationBuilder builder)
     {
+        if (Providers.Count >= MaxProvidersCreated)
+        {
+            throw new InvalidOperationException($"Infinite recursion detected: more than {MaxProvidersCreated} providers were created.");
+        }
+
         var provider = new DisposeCountingConfigurationProvider();
         Providers.Add(provider);
         return provider;

@@ -22,6 +22,20 @@ internal sealed class ConnectionStringPostProcessorConfigurationProvider : PostP
     private ConfigurationRoot? _lastParentConfiguration;
     private bool _isDisposed;
 
+    /// <summary>
+    /// Gets the temporary copy of the parent configuration whose changes are currently being observed, if any.
+    /// </summary>
+    internal ConfigurationRoot? LastParentConfiguration
+    {
+        get
+        {
+            lock (_parentConfigurationLock)
+            {
+                return _lastParentConfiguration;
+            }
+        }
+    }
+
     public ConnectionStringPostProcessorConfigurationProvider(PostProcessorConfigurationSource source, bool detectConfigurationChanges)
         : base(source)
     {

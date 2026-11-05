@@ -4,10 +4,9 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Configuration.Memory;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -105,28 +104,29 @@ public sealed class ConfigServerConfigurationSourceTest
     public void Config_Server_provider_does_not_dispose_post_processors_that_are_shared_with_the_actual_configuration()
     {
         var processor = new DisposeCountingPostProcessor();
+        var countingSource = new DisposeCountingConfigurationSource();
 
-        // Like the Cloud Foundry and Kubernetes service binding sources, which are also built in the nested configuration.
-        var postProcessorSource = new TestPostProcessorConfigurationSource
-        {
-            SkipsOwnParentConfiguration = false
-        };
+        // The service binding sources are also built in the nested configuration that Config Server creates from the same sources.
+        var bindingsSource =
+            new CloudFoundryServiceBindingConfigurationSource(new StringServiceBindingsReader(string.Empty), CloudFoundryServiceBrokerTypes.All);
 
-        postProcessorSource.RegisterPostProcessor(processor);
+        bindingsSource.RegisterPostProcessor(processor);
 
         var builder = new ConfigurationBuilder();
-        builder.Add(postProcessorSource);
+        builder.Add(countingSource);
+        builder.Add(bindingsSource);
 
         builder.AddConfigServer(new ConfigServerClientOptions
         {
             Enabled = false
         });
 
-        using (builder.BuildAsRoot())
+        using (ConfigurationRoot configurationRoot = builder.BuildAsRoot())
         {
             // One provider for the actual configuration, and one in the nested configuration that Config Server builds from the same sources.
-            postProcessorSource.ProvidersCreated.Should().HaveCount(2);
-            postProcessorSource.ProvidersCreated.Count(provider => provider.DisposesPostProcessors).Should().Be(1);
+            countingSource.Providers.Should().HaveCount(2);
+            configurationRoot.Providers.OfType<CloudFoundryServiceBindingConfigurationProvider>().Should().ContainSingle();
+            processor.DisposeCount.Should().Be(0);
         }
 
         // Both providers have been disposed, but only the one in the actual configuration is responsible for disposing the shared post-processor.
@@ -136,10 +136,11 @@ public sealed class ConfigServerConfigurationSourceTest
     [Fact]
     public void Config_Server_nested_configuration_does_not_replace_captured_parent_configuration()
     {
-        var postProcessorSource = new TestPostProcessorConfigurationSource();
+        var bindingsSource =
+            new CloudFoundryServiceBindingConfigurationSource(new StringServiceBindingsReader(string.Empty), CloudFoundryServiceBrokerTypes.All);
 
         var builder = new ConfigurationBuilder();
-        builder.Add(postProcessorSource);
+        builder.Add(bindingsSource);
 
         builder.AddConfigServer(new ConfigServerClientOptions
         {
@@ -153,116 +154,10 @@ public sealed class ConfigServerConfigurationSourceTest
 
         using (builder.BuildAsRoot())
         {
-            using ConfigurationRoot parentConfigurationRoot = postProcessorSource.GetParentConfiguration();
+            using ConfigurationRoot parentConfigurationRoot = bindingsSource.GetParentConfiguration();
 
             parentConfigurationRoot["AddedAfterConfigServer"].Should().Be("value");
         }
-    }
-
-    [Fact]
-    public void Post_processor_source_is_skipped_in_Config_Server_nested_configuration_to_prevent_infinite_recursion()
-    {
-        var postProcessorSource = new TestPostProcessorConfigurationSource
-        {
-            LoadBuildsParentConfiguration = true
-        };
-
-        var builder = new ConfigurationBuilder();
-        builder.Add(postProcessorSource);
-
-        builder.AddConfigServer(new ConfigServerClientOptions
-        {
-            Enabled = false
-        });
-
-        using (builder.BuildAsRoot())
-        {
-            // Only the actual configuration contains a provider. Loading it builds the parent configuration, which contains Config Server, which builds
-            // a nested configuration from the same sources. Without skipping the source there, this would never end.
-            postProcessorSource.ProvidersCreated.Should().ContainSingle();
-        }
-    }
-
-    [Theory]
-    [InlineData(false)]
-    [InlineData(true)]
-    public void Does_not_dispose_chained_host_configuration_when_connector_builds_parent_configuration_containing_Config_Server(bool addConfigServerFirst)
-    {
-        var hostSource = new DisposeCountingConfigurationSource();
-
-        // HostBuilder chains the host configuration into the app configuration, taking ownership of it.
-        HostBuilder builder = TestHostBuilderFactory.Create();
-        builder.ConfigureHostConfiguration(configurationBuilder => configurationBuilder.Add(hostSource));
-
-        builder.ConfigureAppConfiguration(configurationBuilder =>
-        {
-            // Behaves like a connector: building its parent configuration rebuilds Config Server, which builds a nested configuration from its sources,
-            // including the chained host configuration.
-            var postProcessorSource = new TestPostProcessorConfigurationSource
-            {
-                LoadBuildsParentConfiguration = true
-            };
-
-            if (addConfigServerFirst)
-            {
-                configurationBuilder.AddConfigServer(new ConfigServerClientOptions
-                {
-                    Enabled = false
-                });
-
-                configurationBuilder.Add(postProcessorSource);
-            }
-            else
-            {
-                configurationBuilder.Add(postProcessorSource);
-
-                configurationBuilder.AddConfigServer(new ConfigServerClientOptions
-                {
-                    Enabled = false
-                });
-            }
-        });
-
-        using (builder.Build())
-        {
-            hostSource.Providers.Should().ContainSingle();
-            hostSource.Providers[0].DisposeCount.Should().Be(0);
-        }
-
-        hostSource.Providers[0].DisposeCount.Should().Be(1);
-    }
-
-    [Fact]
-    public void Host_configuration_keeps_reloading_after_connector_builds_parent_configuration_containing_Config_Server()
-    {
-        var fileProvider = new MemoryFileProvider();
-        fileProvider.IncludeAppSettingsJsonFile("""{ "Example": { "Value": "initial" } }""");
-
-        HostBuilder builder = TestHostBuilderFactory.Create();
-        builder.ConfigureHostConfiguration(configurationBuilder => configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider));
-
-        builder.ConfigureAppConfiguration(configurationBuilder =>
-        {
-            configurationBuilder.AddConfigServer(new ConfigServerClientOptions
-            {
-                Enabled = false
-            });
-
-            configurationBuilder.Add(new TestPostProcessorConfigurationSource
-            {
-                LoadBuildsParentConfiguration = true
-            });
-        });
-
-        using IHost host = builder.Build();
-        var configuration = host.Services.GetRequiredService<IConfiguration>();
-
-        configuration["Example:Value"].Should().Be("initial");
-
-        fileProvider.ReplaceAppSettingsJsonFile("""{ "Example": { "Value": "changed" } }""");
-        fileProvider.NotifyChanged();
-
-        configuration["Example:Value"].Should().Be("changed");
     }
 
     private static void AddConfigurationSource(IConfigurationBuilder builder, IConfigurationSource source)
@@ -283,59 +178,6 @@ public sealed class ConfigServerConfigurationSourceTest
         public void Dispose()
         {
             Interlocked.Increment(ref _disposeCount);
-        }
-    }
-
-    /// <summary>
-    /// Behaves like the connector source (or, when <see cref="SkipsOwnParentConfiguration" /> is turned off, like the service binding sources): captures the
-    /// builder, optionally skips itself in the temporary parent configuration, and optionally builds the parent configuration when loading, like connectors
-    /// do to post-process connection strings.
-    /// </summary>
-    private sealed class TestPostProcessorConfigurationSource : PostProcessorConfigurationSource, IConfigurationSource
-    {
-        private const int MaxProvidersCreated = 10;
-
-        public List<TestPostProcessorConfigurationProvider> ProvidersCreated { get; } = [];
-        public bool LoadBuildsParentConfiguration { get; init; }
-        public bool SkipsOwnParentConfiguration { get; init; } = true;
-
-        public IConfigurationProvider Build(IConfigurationBuilder builder)
-        {
-            if (SkipsOwnParentConfiguration && IsBuildingOwnParentConfiguration(builder))
-            {
-                return new MemoryConfigurationProvider(new MemoryConfigurationSource());
-            }
-
-            CaptureConfigurationBuilder(builder);
-
-            // Fail instead of overflowing the stack when the source keeps building its own parent configuration.
-            if (ProvidersCreated.Count >= MaxProvidersCreated)
-            {
-                throw new InvalidOperationException("Infinite recursion detected.");
-            }
-
-            var provider = new TestPostProcessorConfigurationProvider(this)
-            {
-                DisposesPostProcessors = !IsBuildingParentConfiguration(builder)
-            };
-
-            ProvidersCreated.Add(provider);
-            return provider;
-        }
-    }
-
-    private sealed class TestPostProcessorConfigurationProvider(TestPostProcessorConfigurationSource source)
-        : PostProcessorConfigurationProvider(source)
-    {
-        private readonly TestPostProcessorConfigurationSource _source = source;
-
-        public override void Load()
-        {
-            if (_source.LoadBuildsParentConfiguration)
-            {
-                using ConfigurationRoot parentConfigurationRoot = _source.GetParentConfiguration();
-                PostProcessConfiguration();
-            }
         }
     }
 }

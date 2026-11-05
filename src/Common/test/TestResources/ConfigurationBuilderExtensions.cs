@@ -41,4 +41,18 @@ public static class ConfigurationBuilderExtensions
 
         return (ConfigurationRoot)builder.Build();
     }
+
+    /// <summary>
+    /// Adds a source that is part of every build of the configuration and fails once it has been built too often. Use this in tests where a regression would
+    /// make the configuration rebuild itself endlessly, which would otherwise overflow the stack and crash the test run instead of failing the test.
+    /// </summary>
+    /// <param name="builder">
+    /// The configuration builder.
+    /// </param>
+    public static void SetRecursionGuard(this IConfigurationBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+
+        builder.Add(new DisposeCountingConfigurationSource());
+    }
 }
