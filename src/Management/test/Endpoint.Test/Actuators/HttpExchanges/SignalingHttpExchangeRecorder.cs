@@ -6,15 +6,15 @@ using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.HttpExchanges.Diagnostics;
 
-// Justification: SemaphoreSlim only allocates a wait handle when AvailableWaitHandle is accessed, which is never done here.
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
-
 namespace Steeltoe.Management.Endpoint.Test.Actuators.HttpExchanges;
 
 /// <summary>
 /// Wraps the real recorder, so tests can wait until exchanges have been handed to the repository, instead of guessing how long that takes.
 /// </summary>
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+// Justification: SemaphoreSlim only allocates a wait handle when AvailableWaitHandle is accessed, which is never done here.
 internal sealed class SignalingHttpExchangeRecorder(IEnumerable<DiagnosticObserver> observers) : IHttpExchangeRecorder
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
 {
     private readonly DiagnosticObserverHttpExchangeRecorder _recorder = observers.OfType<DiagnosticObserverHttpExchangeRecorder>().Single();
     private readonly SemaphoreSlim _recorded = new(0);

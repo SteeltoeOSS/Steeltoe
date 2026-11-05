@@ -14,12 +14,12 @@ using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
 
-// Justification: SemaphoreSlim only allocates a wait handle when AvailableWaitHandle is accessed, which is never done here.
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
-
 namespace Steeltoe.Configuration.ConfigServer;
 
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+// Justification: SemaphoreSlim only allocates a wait handle when AvailableWaitHandle is accessed, which is never done here.
 internal sealed partial class ConfigServerDiscoveryService
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
 {
     private static readonly AssemblyLoader AssemblyLoader = new();
     private readonly IConfiguration _configuration;

@@ -4,9 +4,6 @@
 
 using Microsoft.Extensions.Time.Testing;
 
-// Justification: SemaphoreSlim only allocates a wait handle when AvailableWaitHandle is accessed, which is never done here.
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
-
 namespace Steeltoe.Common.TestResources;
 
 /// <summary>
@@ -14,7 +11,10 @@ namespace Steeltoe.Common.TestResources;
 /// <see cref="Task.Delay(TimeSpan, TimeProvider, CancellationToken)" />. This makes it possible to assert on the delays that code asks for, and to wait
 /// until the code under test has started a delay before advancing the clock by exactly that delay.
 /// </summary>
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+// Justification: SemaphoreSlim only allocates a wait handle when AvailableWaitHandle is accessed, which is never done here.
 public sealed class RecordingFakeTimeProvider : FakeTimeProvider
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
 {
     private readonly SemaphoreSlim _timerCreated = new(0);
     private readonly List<TimeSpan> _dueTimes = [];
