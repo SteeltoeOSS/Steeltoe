@@ -254,46 +254,44 @@ internal sealed partial class ConfigServerDiscoveryService
     {
         ServiceProvider? temporaryServiceProvider = _temporaryServiceProviderForDiscoveryClients;
 
-        if (temporaryServiceProvider == null)
+        if (temporaryServiceProvider != null)
         {
-            return;
-        }
+            List<Exception> exceptions = [];
 
-        List<Exception> exceptions = [];
+            foreach (IDiscoveryClient discoveryClient in _discoveryClients ?? [])
+            {
+                try
+                {
+                    await discoveryClient.ShutdownAsync(cancellationToken);
+                }
+                catch (Exception exception)
+                {
+                    exceptions.Add(exception);
+                }
+            }
 
-        foreach (IDiscoveryClient discoveryClient in _discoveryClients ?? [])
-        {
             try
             {
-                await discoveryClient.ShutdownAsync(cancellationToken);
+                await temporaryServiceProvider.DisposeAsync();
             }
             catch (Exception exception)
             {
                 exceptions.Add(exception);
             }
-        }
+            finally
+            {
+                _temporaryServiceProviderForDiscoveryClients = null;
+            }
 
-        try
-        {
-            await temporaryServiceProvider.DisposeAsync();
-        }
-        catch (Exception exception)
-        {
-            exceptions.Add(exception);
-        }
-        finally
-        {
-            _temporaryServiceProviderForDiscoveryClients = null;
-        }
+            if (exceptions.Count == 1)
+            {
+                ExceptionDispatchInfo.Capture(exceptions[0]).Throw();
+            }
 
-        if (exceptions.Count == 1)
-        {
-            ExceptionDispatchInfo.Capture(exceptions[0]).Throw();
-        }
-
-        if (exceptions.Count > 1)
-        {
-            throw new AggregateException(exceptions);
+            if (exceptions.Count > 1)
+            {
+                throw new AggregateException(exceptions);
+            }
         }
     }
 
