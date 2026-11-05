@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -1125,35 +1126,38 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
         using ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
 
+        const int minimumReloadCount = 20;
         int changeCount = 0;
+        // ReSharper disable once AccessToModifiedClosure
         using IDisposable changeRegistration = ChangeToken.OnChange(configurationRoot.GetReloadToken, () => Interlocked.Increment(ref changeCount));
 
-        TestOptions? testOptions = null;
-        using var tokenSource = new CancellationTokenSource(250.Milliseconds());
+        TestOptions? testOptions;
+        using var stopSource = new CancellationTokenSource();
 
         // Not passing the token to Task.Run: the loop observes it itself, and the task must always start so it can be awaited below.
-        Task<int> reloadTask = Task.Run(() =>
+        Task reloadTask = Task.Run(() =>
         {
-            int reloadCount = 0;
-
-            while (!tokenSource.IsCancellationRequested)
+            while (!stopSource.IsCancellationRequested)
             {
                 configurationRoot.Reload();
-                reloadCount++;
             }
-
-            return reloadCount;
         }, CancellationToken.None);
 
-        while (!tokenSource.IsCancellationRequested)
+        var stopwatch = Stopwatch.StartNew();
+
+        do
         {
             testOptions = configurationRoot.Get<TestOptions>();
         }
+        while (Volatile.Read(ref changeCount) < minimumReloadCount && stopwatch.Elapsed < Timeouts.Safety);
 
-        // Surfaces any exception thrown while reloading in the background, and proves that reloading actually happened.
-        int reloadsCompleted = await reloadTask;
-        reloadsCompleted.Should().BeGreaterThan(0);
-        changeCount.Should().BeGreaterThan(0);
+        await stopSource.CancelAsync();
+
+        // Surfaces any exception thrown while reloading in the background.
+        await reloadTask;
+
+        // Proves that reloading actually happened while the options were being read.
+        changeCount.Should().BeGreaterThanOrEqualTo(minimumReloadCount);
 
         testOptions.Should().NotBeNull();
         testOptions.Name.Should().Be("my-app");

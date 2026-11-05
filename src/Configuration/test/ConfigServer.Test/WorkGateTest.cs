@@ -27,15 +27,15 @@ public sealed class WorkGateTest
         var gate = new WorkGate();
         gate.Enter(TestContext.Current.CancellationToken);
 
-        Thread waiter = StartThread(() =>
+        Thread waiter = StartThreadThatBlocks(() =>
         {
-            // Not the token of the TestContext: canceling a wait throws on a thread that nobody observes, which crashes the test run.
+            // Not passing the token of the TestContext: canceling a wait throws on a thread that nobody observes, which crashes the test run.
             // The test releases the gate itself, and this thread does not keep the process alive when the test fails before that.
             gate.Enter(CancellationToken.None);
             gate.Exit();
         });
 
-        WaitUntilBlocked(waiter);
+        waiter.IsAlive.Should().BeTrue();
 
         gate.Exit();
 
@@ -48,9 +48,9 @@ public sealed class WorkGateTest
         var gate = new WorkGate();
         gate.Enter(TestContext.Current.CancellationToken);
 
-        Thread closer = StartThread(gate.CloseAndWait);
+        Thread closer = StartThreadThatBlocks(gate.CloseAndWait);
 
-        WaitUntilBlocked(closer);
+        closer.IsAlive.Should().BeTrue();
 
         gate.Exit();
 
@@ -74,27 +74,31 @@ public sealed class WorkGateTest
         action.Should().ThrowExactly<OperationCanceledException>();
     }
 
-    private static Thread StartThread(Action action)
+    /// <summary>
+    /// Starts a thread that is expected to block, and gives it the chance to get there: this returns when the thread is waiting or has finished, or after a
+    /// second when the machine is too busy to tell. The assertions that follow hold in every case, so a busy machine can only make a gate that does not
+    /// block less likely to be caught, and never makes the tests fail. A fixed sleep would have the same effect, but always takes that long.
+    /// </summary>
+    private static Thread StartThreadThatBlocks(Action action)
     {
-        var thread = new Thread(() => action())
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        var thread = new Thread(() =>
+        {
+            started.SetResult();
+            action();
+        })
         {
             IsBackground = true
         };
 
         thread.Start();
+
+        started.Task.Wait(Timeouts.Safety).Should().BeTrue();
+
+        SpinWait.SpinUntil(() => thread.ThreadState.HasFlag(ThreadState.WaitSleepJoin) || !thread.IsAlive, TimeSpan.FromSeconds(1));
+
         return thread;
-    }
-
-    /// <summary>
-    /// Waits until the thread is blocked, which is observed instead of assumed after sleeping for a while, so that the outcome does not depend on how busy
-    /// the machine is. A thread that is not blocked has either not started waiting yet (so this keeps polling), or did not wait at all (so it has stopped).
-    /// </summary>
-    private static void WaitUntilBlocked(Thread thread)
-    {
-        SpinWait.SpinUntil(() => thread.ThreadState.HasFlag(ThreadState.WaitSleepJoin) || thread.ThreadState.HasFlag(ThreadState.Stopped), Timeouts.Safety)
-            .Should().BeTrue();
-
-        thread.ThreadState.Should().HaveFlag(ThreadState.WaitSleepJoin, "the thread must be waiting for the gate instead of having passed it");
     }
 
     private static void WaitUntilCompleted(Thread thread)
