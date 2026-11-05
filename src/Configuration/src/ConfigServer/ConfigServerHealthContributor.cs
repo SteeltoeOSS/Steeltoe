@@ -104,7 +104,7 @@ internal sealed partial class ConfigServerHealthContributor : IHealthContributor
 
             try
             {
-                Cached = await provider.LoadInternalAsync(optionsSnapshot, false, cancellationToken);
+                Cached = await provider.LoadInternalAsync(optionsSnapshot, cancellationToken);
             }
             catch (ConfigServerException exception)
             {

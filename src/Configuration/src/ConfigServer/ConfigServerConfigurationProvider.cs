@@ -47,9 +47,9 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private readonly bool _disposeHttpClientHandler;
     private readonly ConfigureConfigServerClientOptions _configurer;
     private readonly ConfigServerClientOptions _defaultOptions;
-    private readonly LockPrimitive _lifecycleLock = new();
-    private readonly LockPrimitive _configurationReloadTickLock = new();
-    private readonly LockPrimitive _vaultRenewTickLock = new();
+    private readonly LockPrimitive _stateLock = new();
+    private readonly WorkGate _configurationReloadGate = new();
+    private readonly WorkGate _vaultRenewGate = new();
     private readonly ConfigServerDiscoveryService _configServerDiscoveryService;
     private readonly IDisposable _changeTokenRegistration;
     private readonly IDisposable? _sourceConfiguration;
@@ -61,7 +61,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private ITimer? _vaultRenewTimer;
     private volatile DiscoveryLookupResult? _lastDiscoveryLookupResult;
     private volatile ConfigServerClientOptions _clientOptions;
-    private long _isReload;
+    private bool _isInitialized;
 
     internal static JsonSerializerOptions SerializerOptions { get; } = new()
     {
@@ -71,8 +71,29 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     };
 
     internal IDictionary<string, string?> InnerData => Data;
-    internal ITimer? InnerConfigurationReloadTimer => Volatile.Read(ref _configurationReloadTimer);
-    internal ITimer? InnerVaultRenewTimer => Volatile.Read(ref _vaultRenewTimer);
+
+    internal ITimer? InnerConfigurationReloadTimer
+    {
+        get
+        {
+            lock (_stateLock)
+            {
+                return _configurationReloadTimer;
+            }
+        }
+    }
+
+    internal ITimer? InnerVaultRenewTimer
+    {
+        get
+        {
+            lock (_stateLock)
+            {
+                return _vaultRenewTimer;
+            }
+        }
+    }
+
     internal bool HasTemporaryDiscoveryClients => _configServerDiscoveryService.HasTemporaryDiscoveryClients;
 
     /// <summary>
@@ -144,7 +165,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             throw;
         }
 
-        lock (_lifecycleLock)
+        lock (_stateLock)
         {
             if (_shutdownToken.IsCancellationRequested)
             {
@@ -206,15 +227,17 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     {
         LogEnteringConfigurationReloadCycle();
 
-#if NET10_0_OR_GREATER
-        bool lockTaken = _configurationReloadTickLock.TryEnter();
-#else
-        bool lockTaken = Monitor.TryEnter(_configurationReloadTickLock);
-#endif
+        if (!_configurationReloadGate.TryEnter())
+        {
+            LogSkippingConfigurationReloadCycle();
+            return;
+        }
+
+        bool hasDataChanged = false;
 
         try
         {
-            if (!lockTaken || _shutdownToken.IsCancellationRequested)
+            if (_shutdownToken.IsCancellationRequested)
             {
                 LogSkippingConfigurationReloadCycle();
                 return;
@@ -226,8 +249,10 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
             // Justification: Configuration sources and providers don't support async.
             UpdateDiscoveryAsync(optionsSnapshot, false, _shutdownToken).GetAwaiter().GetResult();
-            DoLoadAsync(optionsSnapshot, true, _shutdownToken).GetAwaiter().GetResult();
+            ConfigEnvironment? env = DoLoadAsync(optionsSnapshot, _shutdownToken).GetAwaiter().GetResult();
 #pragma warning restore S4462 // Calls to "async" methods should not be blocking
+
+            hasDataChanged = env != null && UpdateData(env, optionsSnapshot.Discovery.Enabled);
 
             LogConfigurationReloadCycleCompleted();
         }
@@ -240,14 +265,14 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
         finally
         {
-            if (lockTaken)
-            {
-#if NET10_0_OR_GREATER
-                _configurationReloadTickLock.Exit();
-#else
-                Monitor.Exit(_configurationReloadTickLock);
-#endif
-            }
+            _configurationReloadGate.Exit();
+        }
+
+        // Raised after leaving the gate, because listeners run arbitrary code, which disposing this provider must not wait for.
+        // A listener may even be disposing this provider, which would otherwise wait for itself.
+        if (hasDataChanged && !_shutdownToken.IsCancellationRequested)
+        {
+            OnReload();
         }
     }
 
@@ -258,15 +283,15 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     {
         LogEnteringVaultRenewCycle();
 
-#if NET10_0_OR_GREATER
-        bool lockTaken = _vaultRenewTickLock.TryEnter();
-#else
-        bool lockTaken = Monitor.TryEnter(_vaultRenewTickLock);
-#endif
+        if (!_vaultRenewGate.TryEnter())
+        {
+            LogSkippingVaultRenewCycle();
+            return;
+        }
 
         try
         {
-            if (!lockTaken || _shutdownToken.IsCancellationRequested)
+            if (_shutdownToken.IsCancellationRequested)
             {
                 LogSkippingVaultRenewCycle();
                 return;
@@ -290,14 +315,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
         finally
         {
-            if (lockTaken)
-            {
-#if NET10_0_OR_GREATER
-                _vaultRenewTickLock.Exit();
-#else
-                Monitor.Exit(_vaultRenewTickLock);
-#endif
-            }
+            _vaultRenewGate.Exit();
         }
     }
 
@@ -306,9 +324,15 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     /// </summary>
     public override void Load()
     {
-        long previousIsReload = Interlocked.CompareExchange(ref _isReload, 1, 0);
+        bool isFirstLoad;
 
-        if (previousIsReload == 0)
+        lock (_stateLock)
+        {
+            isFirstLoad = !_isInitialized;
+            _isInitialized = true;
+        }
+
+        if (isFirstLoad)
         {
             OnSettingsChanged(false);
         }
@@ -317,10 +341,34 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
         try
         {
+            bool hasDataChanged;
+
+            // Loading and the reload timer share the gate, so only one of them replaces the data at a time.
+            _configurationReloadGate.Enter(_shutdownToken);
+
+            try
+            {
 #pragma warning disable S4462 // Calls to "async" methods should not be blocking
-            // Justification: Configuration sources and providers don't support async.
-            LoadInternalAsync(optionsSnapshot, true, _shutdownToken).GetAwaiter().GetResult();
+                // Justification: Configuration sources and providers don't support async.
+                ConfigEnvironment? env = LoadInternalAsync(optionsSnapshot, _shutdownToken).GetAwaiter().GetResult();
 #pragma warning restore S4462 // Calls to "async" methods should not be blocking
+
+                hasDataChanged = env != null && UpdateData(env, optionsSnapshot.Discovery.Enabled);
+            }
+            catch (Exception exception) when (exception is not ConfigServerException && !exception.IsCancellation())
+            {
+                throw new ConfigServerException("Failed fetching remote configuration from server(s).", exception);
+            }
+            finally
+            {
+                _configurationReloadGate.Exit();
+            }
+
+            if (hasDataChanged)
+            {
+                // Raised after leaving the gate, because listeners run arbitrary code, which disposing this provider must not wait for.
+                OnReload();
+            }
         }
         catch (OperationCanceledException) when (_shutdownToken.IsCancellationRequested)
         {
@@ -337,8 +385,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
     }
 
-    internal async Task<ConfigEnvironment?> LoadInternalAsync(ConfigServerClientOptions optionsSnapshot, bool updateDictionary,
-        CancellationToken cancellationToken)
+    internal async Task<ConfigEnvironment?> LoadInternalAsync(ConfigServerClientOptions optionsSnapshot, CancellationToken cancellationToken)
     {
         if (!optionsSnapshot.Enabled)
         {
@@ -358,7 +405,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             {
                 try
                 {
-                    return await DoLoadAsync(optionsSnapshot, updateDictionary, cancellationToken);
+                    return await DoLoadAsync(optionsSnapshot, cancellationToken);
                 }
                 catch (ConfigServerException exception)
                 {
@@ -381,10 +428,10 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             while (true);
         }
 
-        return await DoLoadAsync(optionsSnapshot, updateDictionary, cancellationToken);
+        return await DoLoadAsync(optionsSnapshot, cancellationToken);
     }
 
-    private async Task<ConfigEnvironment?> DoLoadAsync(ConfigServerClientOptions optionsSnapshot, bool updateDictionary, CancellationToken cancellationToken)
+    private async Task<ConfigEnvironment?> DoLoadAsync(ConfigServerClientOptions optionsSnapshot, CancellationToken cancellationToken)
     {
         LogFetchingRemoteConfiguration();
 
@@ -409,16 +456,9 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
                 // Invoke Config Servers
                 ConfigEnvironment? env = await RemoteLoadAsync(optionsSnapshot, uris, label, cancellationToken);
 
-                // Update configuration Data dictionary with any results
                 if (env != null)
                 {
                     ExpensiveLogEnvironmentLocated(env);
-
-                    if (updateDictionary)
-                    {
-                        UpdateData(env, optionsSnapshot.Discovery.Enabled);
-                    }
-
                     return env;
                 }
             }
@@ -440,7 +480,14 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
         }
     }
 
-    private void UpdateData(ConfigEnvironment env, bool isDiscoveryEnabled)
+    /// <summary>
+    /// Replaces the data with the specified environment. The caller must be in the reload gate, and must call <see cref="ConfigurationProvider.OnReload" />
+    /// when this returns <c>true</c>, after leaving the gate.
+    /// </summary>
+    /// <returns>
+    /// <c>true</c> if the data changed; otherwise, <c>false</c>.
+    /// </returns>
+    private bool UpdateData(ConfigEnvironment env, bool isDiscoveryEnabled)
     {
         var data = new Dictionary<string, string?>(StringComparer.OrdinalIgnoreCase);
         CopyLastDiscoveryLookupResultToData(data, isDiscoveryEnabled);
@@ -462,16 +509,15 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             AddPropertySource(sources[index], data);
         }
 
-        if (!AreDictionariesEqual(Data, data))
-        {
-            LogDataChanged();
-            Data = data;
-            OnReload();
-        }
-        else
+        if (AreDictionariesEqual(Data, data))
         {
             LogDataNotChanged();
+            return false;
         }
+
+        LogDataChanged();
+        Data = data;
+        return true;
     }
 
     internal void ApplyLastDiscoveryLookupResultToClientOptions(ConfigServerClientOptions optionsSnapshot)
@@ -971,38 +1017,35 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
     public void Dispose()
     {
-        lock (_lifecycleLock)
+        lock (_stateLock)
         {
             if (_shutdownToken.IsCancellationRequested)
             {
+                // A second call returns immediately, while the first call is still completing.
                 return;
             }
 
             LogDisposing();
             _shutdownTokenSource.Cancel();
-            _changeTokenRegistration.Dispose();
-            ShutdownTimers();
-            _shutdownTokenSource.Dispose();
-            ShutdownDiscoveryClients();
-            _sourceConfiguration?.Dispose();
+
+            // Disposing a timer does not wait for a callback that is already running. That is intended: the work of running callbacks is awaited below.
+            _configurationReloadTimer?.Dispose();
+            _configurationReloadTimer = null;
+            _vaultRenewTimer?.Dispose();
+            _vaultRenewTimer = null;
         }
-    }
 
-    private void ShutdownTimers()
-    {
-        // Disposing a timer does not stop a callback that is already running, so we wait for running callbacks to complete.
-        // This is fast because in-flight timer callbacks terminate quickly: outstanding HTTP requests are canceled via shutdown token.
+        // The steps below wait for work that is running, which may be waiting for the state lock, so they must not hold it.
+        _changeTokenRegistration.Dispose();
 
-        ValueTask reloadTimerStopped = _configurationReloadTimer?.DisposeAsync() ?? ValueTask.CompletedTask;
-        ValueTask vaultTimerStopped = _vaultRenewTimer?.DisposeAsync() ?? ValueTask.CompletedTask;
+        // This waits only for the work of this provider, which is cancelled through the shutdown token. It never waits for the listeners of change
+        // notifications: they run arbitrary code, and may be what is disposing this provider.
+        _configurationReloadGate.CloseAndWait();
+        _vaultRenewGate.CloseAndWait();
 
-#pragma warning disable S4462 // Calls to "async" methods should not be blocking
-        // Justification: Dispose is synchronous, and waiting is the purpose of this call.
-        Task.WaitAll(reloadTimerStopped.AsTask(), vaultTimerStopped.AsTask());
-#pragma warning restore S4462 // Calls to "async" methods should not be blocking
-
-        _configurationReloadTimer = null;
-        _vaultRenewTimer = null;
+        _shutdownTokenSource.Dispose();
+        ShutdownDiscoveryClients();
+        _sourceConfiguration?.Dispose();
     }
 
     private void ShutdownDiscoveryClients()

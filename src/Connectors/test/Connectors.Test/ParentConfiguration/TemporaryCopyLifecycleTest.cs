@@ -3,8 +3,11 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Net.Http.Json;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Primitives;
+using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration;
 using Steeltoe.Configuration.ConfigServer;
@@ -192,6 +195,65 @@ public sealed class TemporaryCopyLifecycleTest
         }
 
         configServerProviders.Should().OnlyContain(provider => !provider.HasTemporaryDiscoveryClients);
+    }
+
+    [Fact]
+    public async Task Replacing_temporary_copy_of_parent_configuration_does_not_deadlock_when_Config_Server_poll_returns_changed_data()
+    {
+        // Each poll of Config Server returns different data. The temporary copy of the parent configuration contains its own Config Server provider, which
+        // polls too. When that provider reports changed data, the connector reacts to the notification, which runs in that provider's polling callback, by
+        // replacing the copy. That disposes the previous copy, which contains the very provider that is still running the notification. Disposing a Config
+        // Server provider must not wait for the polling callback that raised the notification, because that callback cannot complete before the connector
+        // is done reacting.
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.When("*").Respond(_ => new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = JsonContent.Create(new
+            {
+                propertySources = new[]
+                {
+                    new
+                    {
+                        name = "source",
+                        source = new
+                        {
+                            key = Guid.NewGuid()
+                        }
+                    }
+                }
+            })
+        });
+
+        var options = new ConfigServerClientOptions
+        {
+            PollingInterval = TimeSpan.FromMilliseconds(100)
+        };
+
+        var builder = new ConfigurationBuilder();
+
+        // ReSharper disable once AccessToDisposedClosure
+        builder.AddConfigServer(options, null, () => handler, NullLoggerFactory.Instance);
+
+        builder.AddSilentConnector(true);
+
+        ConfigurationRoot configurationRoot = builder.BuildAsRoot();
+
+        ConnectionStringPostProcessorConfigurationProvider connectorProvider =
+            configurationRoot.Providers.OfType<ConnectionStringPostProcessorConfigurationProvider>().Single();
+
+        // The connector reloads after it has replaced the temporary copy in response to a change.
+        var connectorReloaded = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using IDisposable changeRegistration = ChangeToken.OnChange(connectorProvider.GetReloadToken, () => connectorReloaded.TrySetResult());
+
+        // A deadlock must fail the test instead of hanging it, so waiting and disposal happen with a timeout, and disposal runs on another thread.
+        Func<Task> action = async () =>
+        {
+            await connectorReloaded.Task.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
+            await Task.Run(configurationRoot.Dispose, CancellationToken.None).WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
+        };
+
+        await action.Should().NotThrowAsync<TimeoutException>();
     }
 
     private static ConfigServerConfigurationProvider GetObservedConfigServerProvider(ConnectionStringPostProcessorConfigurationProvider connectorProvider)
