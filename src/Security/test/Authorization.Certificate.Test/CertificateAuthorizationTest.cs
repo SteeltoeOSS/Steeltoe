@@ -32,7 +32,7 @@ public sealed partial class CertificateAuthorizationTest : IDisposable
         var requestUri = new Uri($"http://localhost/{CertificateAuthorizationPolicies.SameSpace}");
         await using HostWrapper host = HostWrapper.Wrap(GetHostBuilder().Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
         using HttpClient httpClient = host.GetTestClient();
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -77,7 +77,7 @@ public sealed partial class CertificateAuthorizationTest : IDisposable
         using X509Certificate2 clientCertificate = CreateClientCertificateFromLocalAuthority(Guid.NewGuid(), Certificates.ServerSpaceId);
         await using HostWrapper host = HostWrapper.Wrap(GetHostBuilder().Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
         using HttpClient httpClient = AddOutboundCertificateToHttpClient(host.GetTestClient(), clientCertificate);
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -92,7 +92,7 @@ public sealed partial class CertificateAuthorizationTest : IDisposable
         using X509Certificate2 clientCertificate = CreateClientCertificateFromLocalAuthority(Certificates.ServerOrgId, Guid.NewGuid());
         await using HostWrapper host = HostWrapper.Wrap(GetHostBuilder().Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
         using HttpClient httpClient = AddOutboundCertificateToHttpClient(host.GetTestClient(), clientCertificate);
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -110,7 +110,7 @@ public sealed partial class CertificateAuthorizationTest : IDisposable
         using var caScope = new EnvironmentVariableScope("CF_SYSTEM_CERT_PATH", Path.Join(LocalCertificateWriter.AppBasePath, "root_certificates"));
         await using HostWrapper host = HostWrapper.Wrap(GetHostBuilder().Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
         using HttpClient httpClient = AddOutboundCertificateToHttpClient(host.GetTestClient(), Certificates.FromDiego);
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -128,7 +128,7 @@ public sealed partial class CertificateAuthorizationTest : IDisposable
         using var caScope = new EnvironmentVariableScope("CF_SYSTEM_CERT_PATH", Path.Join(LocalCertificateWriter.AppBasePath, "root_certificates"));
         await using HostWrapper host = HostWrapper.Wrap(GetHostBuilder().Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
         using HttpClient httpClient = AddOutboundCertificateToHttpClient(host.GetTestClient(), Certificates.FromDiego);
 
         using HttpResponseMessage response = await httpClient.GetAsync(requestUri, TestContext.Current.CancellationToken);
@@ -205,7 +205,7 @@ public sealed partial class CertificateAuthorizationTest : IDisposable
         using var certPathScope = new EnvironmentVariableScope("CF_SYSTEM_CERT_PATH", sandbox.FullPath);
 
         await host.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
         var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<CertificateAuthenticationOptions>>();
 
         // PostConfigure should not fire for unrelated scheme names.

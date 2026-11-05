@@ -35,7 +35,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest : IDispos
         HostBuilder hostBuilder = GetHostBuilder();
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -88,7 +88,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest : IDispos
         HostBuilder clientHostBuilder = GetHostBuilder();
         await using HostWrapper clientHost = HostWrapper.Wrap(clientHostBuilder.Build());
         await clientHost.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = clientHost.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = clientHost.Services.GetAppInstanceIdentityCertificate();
         var handlerFactory = clientHost.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
         SocketsHttpHandler socketsHandler = GetInnerHandler(handler).Should().BeOfType<SocketsHttpHandler>().Which;
@@ -113,7 +113,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest : IDispos
         // (%APPDATA%\Microsoft\Crypto\Keys). After a TLS handshake has used the certificate, disposing it does not remove that key file, because the
         // runtime keeps a handle to the key until it is finalized, which does not happen at process exit (https://github.com/dotnet/runtime/issues/101090).
         // Without the explicit deletion below, every run of this test leaves a key file behind, so they pile up on developer machines.
-        if (OperatingSystem.IsWindows() && appInstanceCertificate?.GetRSAPrivateKey() is RSACng clientKey)
+        if (OperatingSystem.IsWindows() && appInstanceCertificateToDispose?.GetRSAPrivateKey() is RSACng clientKey)
         {
             clientKey.Key.Delete();
         }
@@ -140,7 +140,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest : IDispos
 
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -176,7 +176,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest : IDispos
 
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -239,7 +239,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest : IDispos
 
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         Action action = () => handlerFactory.CreateHandler("test");
@@ -273,7 +273,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest : IDispos
 
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");

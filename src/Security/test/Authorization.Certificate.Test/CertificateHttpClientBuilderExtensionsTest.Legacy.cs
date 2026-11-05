@@ -37,7 +37,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
 
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var clientFactory = host.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = clientFactory.CreateClient("test");
@@ -88,7 +88,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
         HostBuilder hostBuilder = GetHostBuilderWithCustomHeader(customCertificateHeader);
         await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = host.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var clientFactory = host.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = clientFactory.CreateClient("test");
@@ -153,7 +153,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
 
         await using HostWrapper clientHost = HostWrapper.Wrap(clientHostBuilder.Build());
         await clientHost.StartAsync(TestContext.Current.CancellationToken);
-        using X509Certificate2? appInstanceCertificate = clientHost.Services.GetAppInstanceIdentityCertificate();
+        using X509Certificate2? appInstanceCertificateToDispose = clientHost.Services.GetAppInstanceIdentityCertificate();
         var clientFactory = clientHost.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient httpClient = clientFactory.CreateClient("test");
         using HttpResponseMessage response = await httpClient.GetAsync(new Uri($"https://localhost:{port}/"), TestContext.Current.CancellationToken);
