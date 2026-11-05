@@ -19,7 +19,7 @@ internal sealed class BrokenLoadBalancer : ILoadBalancer
     /// </summary>
     public Task<Uri> ResolveServiceInstanceAsync(Uri requestUri, CancellationToken cancellationToken)
     {
-        throw new DataException("Failed to resolve.");
+        throw new DataException("(╯°□°）╯︵ ┻━┻");
     }
 
     public Task UpdateStatisticsAsync(Uri requestUri, Uri serviceInstanceUri, TimeSpan? responseTime, Exception? exception, CancellationToken cancellationToken)
