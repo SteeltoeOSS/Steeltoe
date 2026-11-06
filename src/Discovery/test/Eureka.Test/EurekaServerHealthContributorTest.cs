@@ -121,7 +121,13 @@ public sealed class EurekaServerHealthContributorTest
     [Fact]
     public void AddHeartbeatStatus_AddsExpected()
     {
-        using ServiceProvider serviceProvider = BuildServiceProvider();
+        var appSettings = new Dictionary<string, string?>
+        {
+            // Different from the default (30), so the contributor must use the configured value.
+            ["Eureka:Instance:LeaseRenewalIntervalInSeconds"] = "5"
+        };
+
+        using ServiceProvider serviceProvider = BuildServiceProvider(appSettings);
         EurekaServerHealthContributor contributor = GetContributor(serviceProvider);
         EurekaClientOptions clientOptions = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaClientOptions>>().CurrentValue;
 
@@ -134,7 +140,7 @@ public sealed class EurekaServerHealthContributorTest
 
         clientOptions.ShouldRegisterWithEureka = true;
 
-        var instanceOptions = new EurekaInstanceOptions();
+        EurekaInstanceOptions instanceOptions = serviceProvider.GetRequiredService<IOptionsMonitor<EurekaInstanceOptions>>().CurrentValue;
         contributor.AddHeartbeatStatus(results, null);
 
         results.Details.Should().ContainKey("heartbeat").WhoseValue.Should().BeOfType<string>().Which.Should().Contain("Not yet successfully connected");

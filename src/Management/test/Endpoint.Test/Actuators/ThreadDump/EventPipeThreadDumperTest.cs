@@ -26,57 +26,63 @@ public sealed class EventPipeThreadDumperTest
         };
 
         backgroundThread.Start((backgroundCancellationSource.Token, threadStarted));
-        threadStarted.Wait(TestContext.Current.CancellationToken);
 
-        using var loggerProvider = new CapturingLoggerProvider();
-        using var loggerFactory = new LoggerFactory([loggerProvider]);
-        ILogger<EventPipeThreadDumper> logger = loggerFactory.CreateLogger<EventPipeThreadDumper>();
-
-        var optionsMonitor = TestOptionsMonitor.Create(new ThreadDumpEndpointOptions
+        try
         {
-            // For testing, sampling accuracy is more important than app pauses.
-            Duration = 100
-        });
+            threadStarted.Wait(TestContext.Current.CancellationToken);
 
-        var dumper = new EventPipeThreadDumper(optionsMonitor, logger);
+            using var loggerProvider = new CapturingLoggerProvider();
+            using var loggerFactory = new LoggerFactory([loggerProvider]);
+            ILogger<EventPipeThreadDumper> logger = loggerFactory.CreateLogger<EventPipeThreadDumper>();
 
-        StackTraceElement? callbackFrame = null;
+            var optionsMonitor = TestOptionsMonitor.Create(new ThreadDumpEndpointOptions
+            {
+                // For testing, sampling accuracy is more important than app pauses.
+                Duration = 100
+            });
 
-        // A sampled instruction pointer occasionally lands inside a tiny CLR-injected sliver of the method (such as its GC-poll/safe-point check)
-        // that has no direct IL-to-line mapping. The resolved source location then reports the correct file but line/column 0, instead of null,
-        // because the lookup found the enclosing method but no matching line. Each dump takes an entirely new first sample, so a few retries make
-        // this reliable without weakening what is actually being verified.
-        for (int attempt = 0; attempt < 5 && callbackFrame?.LineNumber is null or 0; attempt++)
-        {
-            IList<ThreadInfo> results = await dumper.DumpThreadsAsync(TestContext.Current.CancellationToken);
+            var dumper = new EventPipeThreadDumper(optionsMonitor, logger);
 
-            callbackFrame = results.SelectMany(thread => thread.StackTrace)
-                .FirstOrDefault(frame => frame.MethodName == "BackgroundThreadCallback(class System.Object)");
+            StackTraceElement? callbackFrame = null;
+
+            // A sampled instruction pointer occasionally lands inside a tiny CLR-injected sliver of the method (such as its GC-poll/safe-point check)
+            // that has no direct IL-to-line mapping. The resolved source location then reports the correct file but line/column 0, instead of null,
+            // because the lookup found the enclosing method but no matching line. Each dump takes an entirely new first sample, so a few retries make
+            // this reliable without weakening what is actually being verified.
+            for (int attempt = 0; attempt < 5 && callbackFrame?.LineNumber is null or 0; attempt++)
+            {
+                IList<ThreadInfo> results = await dumper.DumpThreadsAsync(TestContext.Current.CancellationToken);
+
+                callbackFrame = results.SelectMany(thread => thread.StackTrace)
+                    .FirstOrDefault(frame => frame.MethodName == "BackgroundThreadCallback(class System.Object)");
+            }
+
+            if (callbackFrame == null)
+            {
+                string log = loggerProvider.GetAsText();
+                throw new InvalidOperationException($"Failed to find expected stack frame. Captured log:{System.Environment.NewLine}{log}");
+            }
+
+            callbackFrame.IsNativeMethod.Should().BeFalse();
+            callbackFrame.ModuleName.Should().Be(GetType().Assembly.GetName().Name);
+            callbackFrame.ClassName.Should().Be(typeof(NestedType).FullName);
+            callbackFrame.FileName.Should().EndWith($"{nameof(EventPipeThreadDumperTest)}.cs");
+            callbackFrame.LineNumber.Should().BePositive();
+            callbackFrame.ColumnNumber.Should().BePositive();
+
+            IList<string> logLines = loggerProvider.GetAll();
+            logLines.Should().Contain($"INFO {typeof(EventPipeThreadDumper)}: Attempting to create a thread dump.");
+            logLines.Should().Contain($"INFO {typeof(EventPipeThreadDumper)}: Successfully created a thread dump.");
+
+            string logText = loggerProvider.GetAsText();
+            logText.Should().Contain($"TRCE {typeof(EventPipeThreadDumper)}: Captured log from thread dump:");
+            logText.Should().Contain("Created SymbolReader with SymbolPath");
         }
-
-        if (callbackFrame == null)
+        finally
         {
-            string log = loggerProvider.GetAsText();
-            throw new InvalidOperationException($"Failed to find expected stack frame. Captured log:{System.Environment.NewLine}{log}");
+            await backgroundCancellationSource.CancelAsync();
+            backgroundThread.Join();
         }
-
-        callbackFrame.IsNativeMethod.Should().BeFalse();
-        callbackFrame.ModuleName.Should().Be(GetType().Assembly.GetName().Name);
-        callbackFrame.ClassName.Should().Be(typeof(NestedType).FullName);
-        callbackFrame.FileName.Should().EndWith($"{nameof(EventPipeThreadDumperTest)}.cs");
-        callbackFrame.LineNumber.Should().BePositive();
-        callbackFrame.ColumnNumber.Should().BePositive();
-
-        await backgroundCancellationSource.CancelAsync();
-        backgroundThread.Join();
-
-        IList<string> logLines = loggerProvider.GetAll();
-        logLines.Should().Contain($"INFO {typeof(EventPipeThreadDumper)}: Attempting to create a thread dump.");
-        logLines.Should().Contain($"INFO {typeof(EventPipeThreadDumper)}: Successfully created a thread dump.");
-
-        string logText = loggerProvider.GetAsText();
-        logText.Should().Contain($"TRCE {typeof(EventPipeThreadDumper)}: Captured log from thread dump:");
-        logText.Should().Contain("Created SymbolReader with SymbolPath");
     }
 
     [Fact]

@@ -32,7 +32,9 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
         using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         string? value = configurationRoot["random:string"];
 
-        value.Should().NotBeNull();
+        value.Should().MatchRegex("^[0-9A-F]{32}$");
+
+        configurationRoot["random:string"].Should().NotBe(value);
     }
 
     [Fact]
@@ -42,7 +44,10 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
         using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         string? value = configurationRoot["random:uuid"];
 
-        value.Should().NotBeNull();
+        Guid.TryParse(value, out Guid guid).Should().BeTrue();
+        guid.Should().NotBe(Guid.Empty);
+
+        configurationRoot["random:uuid"].Should().NotBe(value);
     }
 
     [Fact]
@@ -52,7 +57,8 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
         using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         string? value = configurationRoot["random:int"];
 
-        value.Should().NotBeNull();
+        int.TryParse(value, CultureInfo.InvariantCulture, out int number).Should().BeTrue();
+        number.Should().BeGreaterThanOrEqualTo(0);
     }
 
     [Fact]
@@ -89,7 +95,8 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
         using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
         string? value = configurationRoot["random:long"];
 
-        value.Should().NotBeNull();
+        long.TryParse(value, CultureInfo.InvariantCulture, out long number).Should().BeTrue();
+        number.Should().BeGreaterThanOrEqualTo(0);
     }
 
     [Fact]
@@ -101,7 +108,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
 
         value.Should().NotBeNull();
 
-        int number = int.Parse(value, CultureInfo.InvariantCulture);
+        long number = long.Parse(value, CultureInfo.InvariantCulture);
 
         number.Should().BeInRange(4, 10);
     }
@@ -115,7 +122,7 @@ public sealed class RandomValueConfigurationBuilderExtensionsTest
 
         value.Should().NotBeNull();
 
-        int number = int.Parse(value, CultureInfo.InvariantCulture);
+        long number = long.Parse(value, CultureInfo.InvariantCulture);
 
         number.Should().BeInRange(0, 10);
     }

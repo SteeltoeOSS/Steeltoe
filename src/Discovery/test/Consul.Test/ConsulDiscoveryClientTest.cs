@@ -71,7 +71,7 @@ public sealed class ConsulDiscoveryClientTest
         client.Health.Returns(health);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, NullLoggerFactory.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
 
         List<IServiceInstance> serviceInstances = [];
 
@@ -143,7 +143,7 @@ public sealed class ConsulDiscoveryClientTest
         client.Catalog.Returns(catalog);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, NullLoggerFactory.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
         ISet<string> serviceIds = await discoveryClient.GetServiceIdsAsync(TestContext.Current.CancellationToken);
 
         serviceIds.Should().HaveCount(2);
@@ -227,7 +227,7 @@ public sealed class ConsulDiscoveryClientTest
             .Returns(Task.FromResult(queryResult2));
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, NullLoggerFactory.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
         IList<IServiceInstance> serviceInstances = await discoveryClient.GetAllInstancesAsync(QueryOptions.Default, TestContext.Current.CancellationToken);
 
         serviceInstances.Should().HaveCount(2);
@@ -283,7 +283,7 @@ public sealed class ConsulDiscoveryClientTest
         client.Agent.Returns(agent);
 
         TestOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, NullLoggerFactory.Instance);
+        var discoveryClient = new ConsulDiscoveryClient(client, optionsMonitor, TimeProvider.System, NullLoggerFactory.Instance);
 
         IServiceInstance instance = discoveryClient.GetLocalServiceInstance();
 
@@ -292,6 +292,26 @@ public sealed class ConsulDiscoveryClientTest
         instance.Host.Should().Be("this.host.com");
         instance.Port.Should().Be(8888);
 
+        bool isRegistered = enabled && register;
+
+        if (isRegistered)
+        {
+            await agent.Received(1).ServiceRegister(Arg.Is<AgentServiceRegistration>(payload => payload.ID == "this-instance"), Arg.Any<CancellationToken>());
+        }
+        else
+        {
+            await agent.DidNotReceive().ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>());
+        }
+
         await discoveryClient.ShutdownAsync(TestContext.Current.CancellationToken);
+
+        if (isRegistered)
+        {
+            await agent.Received(1).ServiceDeregister("this-instance", Arg.Any<CancellationToken>());
+        }
+        else
+        {
+            await agent.DidNotReceive().ServiceDeregister(Arg.Any<string>(), Arg.Any<CancellationToken>());
+        }
     }
 }

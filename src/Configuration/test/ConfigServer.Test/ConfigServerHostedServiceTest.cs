@@ -13,12 +13,12 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 public sealed class ConfigServerHostedServiceTest
 {
     [Fact]
-    public async Task ServiceConstructsAndOperatesWithConfigurationRoot()
+    public async Task Starting_and_stopping_does_not_throw_with_ConfigurationRoot_when_Config_Server_is_disabled()
     {
         var provider = new ConfigServerConfigurationProvider(new ConfigServerClientOptions
         {
             Enabled = false
-        }, null, null, null, NullLoggerFactory.Instance);
+        }, null, null, null, TimeProvider.System, NullLoggerFactory.Instance);
 
         provider.Load();
 
@@ -35,7 +35,7 @@ public sealed class ConfigServerHostedServiceTest
     }
 
     [Fact]
-    public async Task ServiceConstructsAndOperatesWithConfigurationManager()
+    public async Task Starting_and_stopping_does_not_throw_with_ConfigurationManager_when_Config_Server_is_disabled()
     {
         using var configurationManager = new ConfigurationManager();
         configurationManager.Add(FastTestConfigurations.ConfigServer);
@@ -66,6 +66,7 @@ public sealed class ConfigServerHostedServiceTest
     public void FindsConfigServerProviderInPlaceholderProviderInDecryptionProvider()
     {
         var builder = new ConfigurationBuilder();
+        builder.Add(FastTestConfigurations.ConfigServer);
         builder.AddConfigServer();
         builder.AddPlaceholderResolver();
         builder.AddDecryption();

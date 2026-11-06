@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using System.Net;
-using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -194,7 +194,7 @@ public sealed class CloudFoundryConfigurationProviderTest
     }
 
     [Fact]
-    public void Load_VCAP_APPLICATION_Allows_Reload_Without_Throwing_Exception()
+    public async Task Load_VCAP_APPLICATION_Allows_Reload_Without_Throwing_Exception()
     {
         const string environment = """
             {
@@ -209,24 +209,40 @@ public sealed class CloudFoundryConfigurationProviderTest
         configurationBuilder.AddCloudFoundry();
         using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        CloudFoundryApplicationOptions? options = null;
+        const int minimumReloadCount = 20;
+        CloudFoundryApplicationOptions? options;
+        int reloadCount = 0;
 
-        using var tokenSource = new CancellationTokenSource(250.Milliseconds());
+        using var stopSource = new CancellationTokenSource();
 
-        _ = Task.Run(() =>
+        // Not passing the token to Task.Run: the loop observes it itself, and the task must always start so it can be awaited below.
+        Task reloadTask = Task.Run(() =>
         {
             // ReSharper disable once AccessToDisposedClosure
-            while (!tokenSource.IsCancellationRequested)
+            while (!stopSource.IsCancellationRequested)
             {
                 // ReSharper disable once AccessToDisposedClosure
                 configurationRoot.Reload();
+                // ReSharper disable once AccessToModifiedClosure
+                Interlocked.Increment(ref reloadCount);
             }
-        }, tokenSource.Token);
+        }, CancellationToken.None);
 
-        while (!tokenSource.IsCancellationRequested)
+        var stopwatch = Stopwatch.StartNew();
+
+        do
         {
             options = configurationRoot.GetSection("vcap:application").Get<CloudFoundryApplicationOptions>();
         }
+        while (Volatile.Read(ref reloadCount) < minimumReloadCount && stopwatch.Elapsed < Timeouts.Safety);
+
+        await stopSource.CancelAsync();
+
+        // Wait for the background reloads to stop before disposing, and surface any exception they threw.
+        await reloadTask;
+
+        // Proves that reloading actually happened while the options were being read.
+        reloadCount.Should().BeGreaterThanOrEqualTo(minimumReloadCount);
 
         options.Should().NotBeNull();
         options.ApplicationVersion.Should().Be("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca");
@@ -238,7 +254,7 @@ public sealed class CloudFoundryConfigurationProviderTest
     [InlineData(false)]
     public async Task ForwardedHeadersOptions_unrestricted_when_running_on_CloudFoundry(bool isRunningOnCloudFoundry)
     {
-        using IDisposable? scope = isRunningOnCloudFoundry ? new EnvironmentVariableScope("VCAP_APPLICATION", "{}") : null;
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", isRunningOnCloudFoundry ? "{}" : null);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         builder.AddCloudFoundryConfiguration();
@@ -275,7 +291,7 @@ public sealed class CloudFoundryConfigurationProviderTest
     [InlineData(false)]
     public async Task ForwardedHeadersMiddleware_updates_connection_details_when_running_on_CloudFoundry(bool isRunningOnCloudFoundry)
     {
-        using IDisposable? scope = isRunningOnCloudFoundry ? new EnvironmentVariableScope("VCAP_APPLICATION", "{}") : null;
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", isRunningOnCloudFoundry ? "{}" : null);
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseKestrel().UseUrls("http://127.0.0.1:0");

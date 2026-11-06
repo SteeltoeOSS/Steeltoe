@@ -11,6 +11,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using NSubstitute;
+using StackExchange.Redis;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Connectors.Redis;
 
@@ -31,6 +33,8 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         builder.Configuration.AddInMemoryCollection(appSettings);
 
+        IConnectionMultiplexer? connectionMultiplexer = null;
+
         builder.AddRedis(null, addOptions =>
         {
             addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
@@ -38,7 +42,8 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 RedisOptions options = optionsMonitor.Get(serviceBindingName);
 
-                return GetMockedConnectionMultiplexer(options.ConnectionString);
+                connectionMultiplexer = GetMockedConnectionMultiplexer(options.ConnectionString);
+                return connectionMultiplexer;
             };
         });
 
@@ -95,5 +100,12 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
         string responseContent = await response2.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseContent.Should().Be("example-value");
+
+        // The data protection keys that encrypt the session cookie must be stored in Redis, so that all app instances share them.
+        connectionMultiplexer.Should().NotBeNull();
+        IDatabase database = connectionMultiplexer.GetDatabase();
+
+        database.ReceivedCalls().Where(call => call.GetMethodInfo().Name == nameof(IDatabase.ListRightPush)).Select(call => call.GetArguments()[0]).Should()
+            .Contain(key => (RedisKey)key! == "DataProtection-Keys");
     }
 }

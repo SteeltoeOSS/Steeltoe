@@ -65,6 +65,14 @@ public sealed class ConsulServiceRegistrarTest
     public async Task Start_WithTtlCheck_RegistersAndStartsHeartbeat()
     {
         await using var scope = new TestRegistrarScope([]);
+        var heartbeatSent = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+
+        scope.Agent.PassTTL(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<CancellationToken>()).Returns(_ =>
+        {
+            heartbeatSent.TrySetResult();
+            return Task.FromResult(DefaultWriteResult);
+        });
+
         await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
 
         string instanceId = scope.Registrar.ServiceInstance.InstanceId;
@@ -78,6 +86,11 @@ public sealed class ConsulServiceRegistrarTest
         scope.Registrar.Heartbeat.CheckId.Should().Be($"service:{instanceId}");
         scope.Registrar.Heartbeat.Interval.Should().Be(TimeSpan.FromSeconds(20));
         scope.OptionsMonitor.ListenerCount.Should().Be(1);
+
+        scope.TimeProvider.Advance(scope.Registrar.Heartbeat.Interval);
+        await heartbeatSent.Task.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
+        await scope.Agent.Received().PassTTL($"service:{instanceId}", "ttl", Arg.Any<CancellationToken>());
+
         scope.LoggerProvider.GetAll().Should().BeEmpty();
     }
 
@@ -214,10 +227,15 @@ public sealed class ConsulServiceRegistrarTest
             return attempts < 3 ? throw failure : Task.FromResult(DefaultWriteResult);
         });
 
-        await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+        Task start = scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+        await AdvanceThroughRetryDelaysAsync(scope, 2);
+        await start;
 
         attempts.Should().Be(3);
         scope.Registrar.Heartbeat.Should().NotBeNull();
+
+        // The delay doubles, but is limited to the maximum. The timer after those is the heartbeat.
+        scope.TimeProvider.DueTimes.Take(2).Select(delay => (int)delay.TotalMilliseconds).Should().Equal(100, 150);
 
         string serviceId = scope.Registrar.ServiceInstance.ServiceId;
         IList<string> logMessages = scope.LoggerProvider.GetAll();
@@ -238,14 +256,19 @@ public sealed class ConsulServiceRegistrarTest
         await using var scope = new TestRegistrarScope(CreateRetrySettings());
         scope.Agent.ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>()).Returns<Task<WriteResult>>(_ => throw failure);
 
-        // ReSharper disable once AccessToDisposedClosure
-        Func<Task> action = async () => await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+        Task start = scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
+        await AdvanceThroughRetryDelaysAsync(scope, 2);
+
+        Func<Task> action = async () => await start;
 
         ExceptionAssertions<Exception> assertion = await action.Should().ThrowAsync<Exception>();
         assertion.Which.Should().BeSameAs(failure);
 
         await scope.Agent.Received(3).ServiceRegister(Arg.Any<AgentServiceRegistration>(), Arg.Any<CancellationToken>());
         scope.Registrar.Heartbeat.Should().BeNull();
+
+        // The delay doubles, but is limited to the maximum.
+        scope.TimeProvider.DueTimes.Select(delay => (int)delay.TotalMilliseconds).Should().Equal(100, 150);
 
         string serviceId = scope.Registrar.ServiceInstance.ServiceId;
         IList<string> logMessages = scope.LoggerProvider.GetAll();
@@ -270,7 +293,7 @@ public sealed class ConsulServiceRegistrarTest
         await scope.Registrar.StartAsync(TestContext.Current.CancellationToken);
 
         PeriodicHeartbeat heartbeat = scope.Registrar.Heartbeat!;
-        TimeSpan beforeInterval = heartbeat.Interval;
+        heartbeat.Interval.Should().BeCloseTo(TimeSpan.FromSeconds(3.33), TimeSpan.FromMilliseconds(10));
 
         var changedSettings = new Dictionary<string, string?>
         {
@@ -284,7 +307,7 @@ public sealed class ConsulServiceRegistrarTest
         scope.OptionsMonitor.Change(changedOptions);
 
         scope.Registrar.Heartbeat.Should().BeSameAs(heartbeat);
-        heartbeat.Interval.Should().NotBe(beforeInterval);
+        heartbeat.Interval.Should().BeCloseTo(TimeSpan.FromSeconds(6.67), TimeSpan.FromMilliseconds(10));
         scope.OptionsMonitor.ListenerCount.Should().Be(1);
     }
 
@@ -398,10 +421,21 @@ public sealed class ConsulServiceRegistrarTest
         {
             ["consul:discovery:failFast"] = "true",
             ["consul:discovery:retry:enabled"] = "true",
-            ["consul:discovery:retry:initialInterval"] = "1",
-            ["consul:discovery:retry:maxInterval"] = "1",
+            ["consul:discovery:retry:initialInterval"] = "100",
+            ["consul:discovery:retry:multiplier"] = "2",
+            ["consul:discovery:retry:maxInterval"] = "150",
             ["consul:discovery:retry:maxAttempts"] = "3"
         };
+    }
+
+    private static async Task AdvanceThroughRetryDelaysAsync(TestRegistrarScope scope, int delayCount)
+    {
+        // Each retry waits first. Advancing the clock by exactly that delay lets the next attempt start.
+        for (int index = 0; index < delayCount; index++)
+        {
+            TimeSpan delay = await scope.TimeProvider.WaitForNextTimerAsync(TestContext.Current.CancellationToken);
+            scope.TimeProvider.Advance(delay);
+        }
     }
 
     private sealed class TestRegistrarScope : IAsyncDisposable
@@ -411,6 +445,7 @@ public sealed class ConsulServiceRegistrarTest
         public IAgentEndpoint Agent { get; }
         public TestOptionsMonitor<ConsulDiscoveryOptions> OptionsMonitor { get; }
         public CapturingLoggerProvider LoggerProvider { get; } = new();
+        public RecordingFakeTimeProvider TimeProvider { get; } = new();
         public ConsulServiceRegistrar Registrar { get; }
 
         public TestRegistrarScope(Dictionary<string, string?> appSettings)
@@ -424,10 +459,8 @@ public sealed class ConsulServiceRegistrarTest
             client.Agent.Returns(Agent);
 
             OptionsMonitor = TestRegistrationFactory.CreateOptionsMonitor(appSettings);
-
             _loggerFactory = LoggerFactory.Create(builder => builder.SetMinimumLevel(LogLevel.Warning).AddProvider(LoggerProvider));
-
-            Registrar = new ConsulServiceRegistrar(client, OptionsMonitor, _loggerFactory);
+            Registrar = new ConsulServiceRegistrar(client, OptionsMonitor, TimeProvider, _loggerFactory);
         }
 
         public async ValueTask DisposeAsync()

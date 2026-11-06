@@ -15,9 +15,11 @@ public sealed class ConfigServerDiscoveryServiceTest
     {
         using ConfigurationRoot configurationRoot = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer).BuildAsRoot();
 
-        var service = new ConfigServerDiscoveryService(configurationRoot, NullLoggerFactory.Instance);
+        var service = new ConfigServerDiscoveryService(configurationRoot, TimeProvider.System, NullLoggerFactory.Instance);
         await service.GetConfigServerInstancesAsync(new ConfigServerClientOptions(), TestContext.Current.CancellationToken);
 
         service.DiscoveryClients.Should().BeEmpty();
+
+        await service.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 }

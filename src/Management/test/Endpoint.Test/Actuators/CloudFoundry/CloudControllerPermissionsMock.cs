@@ -10,6 +10,9 @@ namespace Steeltoe.Management.Endpoint.Test.Actuators.CloudFoundry;
 
 internal static class CloudControllerPermissionsMock
 {
+    /// <summary>
+    /// Creates a handler that fakes the Cloud Controller permissions API. The caller owns the returned handler and must dispose it.
+    /// </summary>
     internal static DelegateToMockHttpClientHandler GetHttpMessageHandler()
     {
         var httpClientHandler = new DelegateToMockHttpClientHandler();

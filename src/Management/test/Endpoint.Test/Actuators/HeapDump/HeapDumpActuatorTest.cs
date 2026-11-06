@@ -91,31 +91,14 @@ public sealed class HeapDumpActuatorTest
     }
 
     [Theory]
-    [InlineData(HostBuilderType.Host, HeapDumpType.Full)]
-    [InlineData(HostBuilderType.Host, HeapDumpType.Heap)]
-    [InlineData(HostBuilderType.Host, HeapDumpType.Mini)]
-    [InlineData(HostBuilderType.Host, HeapDumpType.Triage)]
-    [InlineData(HostBuilderType.Host, HeapDumpType.GCDump)]
-    [InlineData(HostBuilderType.WebHost, HeapDumpType.Full)]
-    [InlineData(HostBuilderType.WebHost, HeapDumpType.Heap)]
-    [InlineData(HostBuilderType.WebHost, HeapDumpType.Mini)]
-    [InlineData(HostBuilderType.WebHost, HeapDumpType.Triage)]
-    [InlineData(HostBuilderType.WebHost, HeapDumpType.GCDump)]
-    [InlineData(HostBuilderType.WebApplication, HeapDumpType.Full)]
-    [InlineData(HostBuilderType.WebApplication, HeapDumpType.Heap)]
-    [InlineData(HostBuilderType.WebApplication, HeapDumpType.Mini)]
-    [InlineData(HostBuilderType.WebApplication, HeapDumpType.Triage)]
-    [InlineData(HostBuilderType.WebApplication, HeapDumpType.GCDump)]
-    public async Task Endpoint_returns_expected_data(HostBuilderType hostBuilderType, HeapDumpType heapDumpType)
+    [InlineData(HostBuilderType.Host)]
+    [InlineData(HostBuilderType.WebHost)]
+    [InlineData(HostBuilderType.WebApplication)]
+    public async Task Endpoint_returns_expected_data(HostBuilderType hostBuilderType)
     {
-        var appSettings = new Dictionary<string, string?>(AppSettings)
-        {
-            ["Management:Endpoints:HeapDump:HeapDumpType"] = heapDumpType.ToString()
-        };
-
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
 
             builder.ConfigureServices(services =>
             {

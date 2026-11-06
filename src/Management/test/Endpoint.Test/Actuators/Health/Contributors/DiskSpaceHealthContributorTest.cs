@@ -363,7 +363,7 @@ public sealed class DiskSpaceHealthContributorTest
     [InlineData("/dev/shm-some", "/dev", PlatformID.Unix, PlatformID.MacOSX)]
     [InlineData("/dev/SHM", "/dev", PlatformID.Unix)]
     [InlineData("/dev/SHM", "/dev/shm", PlatformID.MacOSX)]
-    public void Selects_correct_local_volume(string path, string? expected, params PlatformID[] platforms)
+    public void Selects_correct_local_volume(string path, string expected, params PlatformID[] platforms)
     {
         if (OperatingSystem.IsWindows() && !platforms.Contains(PlatformID.Win32NT))
         {
@@ -395,14 +395,7 @@ public sealed class DiskSpaceHealthContributorTest
 
         IDriveInfoWrapper? drive = DiskSpaceHealthContributor.FindVolume(path, systemDrives);
 
-        if (expected == null)
-        {
-            drive.Should().BeNull();
-        }
-        else
-        {
-            drive.Should().NotBeNull();
-            drive.RootDirectory.FullName.Should().Be(expected);
-        }
+        drive.Should().NotBeNull();
+        drive.RootDirectory.FullName.Should().Be(expected);
     }
 }

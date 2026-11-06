@@ -30,6 +30,7 @@ public sealed class SpringBootAdminRefreshRunnerTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddSpringBootAdminClient();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -255,6 +256,37 @@ public sealed class SpringBootAdminRefreshRunnerTest
         runner.LastGoodOptions.Should().NotBeNull();
 
         handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public async Task SkipsStaleRefreshCycleWhenPeriodicRefreshWasTurnedOff()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Spring:Boot:Admin:Client:Url"] = "http://spring-boot-admin-server.com:9090",
+            ["Spring:Boot:Admin:Client:RefreshInterval"] = "0"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.Services.AddSingleton<IServer, FakeServer>();
+        builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
+        builder.Services.AddSpringBootAdminClient();
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        MockedRequest registerMock = handler.Mock.When(HttpMethod.Post, "http://spring-boot-admin-server.com:9090/instances")
+            .Respond("application/json", """{"Id":"1234567"}""");
+
+        await using WebApplication app = builder.Build();
+        app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+
+        // A refresh cycle that was scheduled before periodic refresh got turned off is not the first cycle, so it must not register.
+        await runner.RunAsync(false, TestContext.Current.CancellationToken);
+
+        handler.Mock.GetMatchCount(registerMock).Should().Be(0);
+        runner.LastRegistrationId.Should().BeNull();
     }
 
     [Fact]

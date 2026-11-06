@@ -248,6 +248,22 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
     }
 
     [Fact]
+    public async Task SkipsSecurityCheckForRequestsOutsideCloudFoundryPath()
+    {
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Services.AddCloudFoundryActuator();
+        builder.Services.AddInfoActuator();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
+
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using HttpClient client = host.GetTestClient();
+
+        using HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/info"), TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+    }
+
+    [Fact]
     public async Task DoesNotSkipSecurityCheckIfCloudFoundryActuatorDisabled()
     {
         var appSettings = new Dictionary<string, string?>
@@ -274,6 +290,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
     public async Task GetAccessTokenReturnsExpected()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -299,6 +316,7 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
     public async Task GetPermissionsReturnsExpected()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -349,7 +367,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         builder.Services.AddCloudFoundryActuator();
         await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
-        app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
+        using DelegateToMockHttpClientHandler permissionsHandler = CloudControllerPermissionsMock.GetHttpMessageHandler();
+        app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(permissionsHandler);
         await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
 
@@ -383,7 +402,8 @@ public sealed class CloudFoundrySecurityMiddlewareTest : IDisposable
         builder.Configuration.AddInMemoryCollection(appSettings);
 
         await using HostWrapper host = HostWrapper.Wrap(builder.Build());
-        host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
+        using DelegateToMockHttpClientHandler permissionsHandler = CloudControllerPermissionsMock.GetHttpMessageHandler();
+        host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(permissionsHandler);
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         // ReSharper disable once ShortLivedHttpClient

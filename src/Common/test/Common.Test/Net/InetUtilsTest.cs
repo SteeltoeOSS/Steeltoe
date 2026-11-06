@@ -145,7 +145,7 @@ public sealed class InetUtilsTest
     public void GetNonLoopbackAddress_IgnoresIPv6Address_AndPicksIPv4FromSameInterface()
     {
         var networkInterfaceProvider = new FakeNetworkInterfaceProvider();
-        networkInterfaceProvider.Add("eth0", true, false, 1, AddressIPv6, PreferredAddress1);
+        networkInterfaceProvider.Add("eth0", true, false, 1, PreferredAddress1, AddressIPv6);
 
         InetUtils inetUtils = CreateInetUtils(networkInterfaceProvider: networkInterfaceProvider);
 

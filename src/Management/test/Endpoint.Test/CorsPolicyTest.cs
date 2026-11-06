@@ -171,13 +171,7 @@ public sealed class CorsPolicyTest
             }
             """);
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundry();
-        builder.Services.AddInfoActuator();
-        builder.Services.AddCloudFoundryActuator();
-        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
-
-        DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().Setup(mock =>
+        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().Setup(mock =>
         {
             mock.Expect(HttpMethod.Get, "https://api.cloud.com/v2/apps/798c2495-fe75-49b1-88da-b81197f2bf06/permissions")
                 .WithHeaders("Authorization", $"bearer {token}").Respond("application/json", """
@@ -187,6 +181,12 @@ public sealed class CorsPolicyTest
                     }
                     """);
         });
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddCloudFoundry();
+        builder.Services.AddInfoActuator();
+        builder.Services.AddCloudFoundryActuator();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 

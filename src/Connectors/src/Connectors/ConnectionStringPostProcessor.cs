@@ -29,7 +29,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
     {
-        IConfigurationRoot parentConfiguration = provider.Source.GetParentConfiguration();
+        using ConfigurationRoot parentConfiguration = provider.Source.GetParentConfiguration();
 
         Dictionary<string, BindingInfo> bindingsByName = GetBindingsByName(parentConfiguration);
 

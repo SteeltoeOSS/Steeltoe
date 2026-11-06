@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Runtime.CompilerServices;
+using System.Runtime.ExceptionServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -12,23 +13,21 @@ using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
-using LockPrimitive =
-#if NET10_0_OR_GREATER
-    System.Threading.Lock
-#else
-    object
-#endif
-    ;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+// Justification: SemaphoreSlim only allocates a wait handle when AvailableWaitHandle is accessed, which is never done here.
 internal sealed partial class ConfigServerDiscoveryService
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
 {
     private static readonly AssemblyLoader AssemblyLoader = new();
     private readonly IConfiguration _configuration;
+    private readonly TimeProvider _timeProvider;
     private readonly ILoggerFactory _loggerFactory;
     private readonly ILogger _logger;
-    private readonly LockPrimitive _initLock = new();
+    private readonly SemaphoreSlim _initLock = new(1, 1);
+    private Action<IServiceCollection>? _configureTemporaryServices;
     private ServiceProvider? _temporaryServiceProviderForDiscoveryClients;
     private volatile ICollection<IDiscoveryClient>? _discoveryClients;
 
@@ -38,31 +37,59 @@ internal sealed partial class ConfigServerDiscoveryService
         private set => _discoveryClients = value;
     }
 
-    public ConfigServerDiscoveryService(IConfiguration configuration, ILoggerFactory loggerFactory)
+    /// <summary>
+    /// Gets a value indicating whether the discovery clients used to locate Config Server are still active. They are active until they get replaced (when
+    /// the application starts) or shut down.
+    /// </summary>
+    internal bool HasTemporaryDiscoveryClients => _temporaryServiceProviderForDiscoveryClients != null;
+
+    public ConfigServerDiscoveryService(IConfiguration configuration, TimeProvider timeProvider, ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(configuration);
+        ArgumentNullException.ThrowIfNull(timeProvider);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
         _configuration = configuration;
+        _timeProvider = timeProvider;
         _loggerFactory = loggerFactory;
         _logger = loggerFactory.CreateLogger<ConfigServerDiscoveryService>();
     }
 
-    private void EnsureInitialized()
+    /// <summary>
+    /// Allows tests to add services (such as fake discovery clients) to the temporary container that the discovery clients are created in. Must be called
+    /// before the first lookup.
+    /// </summary>
+    /// <param name="configureServices">
+    /// Adds services to the temporary container.
+    /// </param>
+    internal void ConfigureTemporaryServicesForTest(Action<IServiceCollection> configureServices)
+    {
+        ArgumentNullException.ThrowIfNull(configureServices);
+
+        _configureTemporaryServices = configureServices;
+    }
+
+    private async Task EnsureInitializedAsync(CancellationToken cancellationToken)
     {
         if (_discoveryClients == null)
         {
-            lock (_initLock)
+            await _initLock.WaitAsync(cancellationToken);
+
+            try
             {
                 if (_discoveryClients == null)
                 {
-                    SetupDiscoveryClients();
+                    await SetupDiscoveryClientsAsync();
                 }
+            }
+            finally
+            {
+                _initLock.Release();
             }
         }
     }
 
-    private void SetupDiscoveryClients()
+    private async Task SetupDiscoveryClientsAsync()
     {
         var tempServices = new ServiceCollection();
         tempServices.AddSingleton(_loggerFactory);
@@ -94,7 +121,9 @@ internal sealed partial class ConfigServerDiscoveryService
             WireEurekaDiscoveryClient(tempServices);
         }
 
-        _discoveryClients = GetDiscoveryClientsFromServiceCollection(tempServices);
+        _configureTemporaryServices?.Invoke(tempServices);
+
+        _discoveryClients = await GetDiscoveryClientsFromServiceCollectionAsync(tempServices);
     }
 
     [MethodImpl(MethodImplOptions.NoInlining)]
@@ -115,25 +144,42 @@ internal sealed partial class ConfigServerDiscoveryService
         tempServices.AddEurekaDiscoveryClient();
     }
 
-    private IDiscoveryClient[] GetDiscoveryClientsFromServiceCollection(ServiceCollection services)
+    private async Task<IDiscoveryClient[]> GetDiscoveryClientsFromServiceCollectionAsync(ServiceCollection services)
     {
-        _temporaryServiceProviderForDiscoveryClients = services.BuildServiceProvider();
+        ServiceProvider temporaryServiceProvider = services.BuildServiceProvider();
 
-        IDiscoveryClient[] discoveryClients = _temporaryServiceProviderForDiscoveryClients.GetServices<IDiscoveryClient>().ToArray();
-
-        foreach (IDiscoveryClient discoveryClient in discoveryClients)
+        try
         {
-            LogDiscoveryClientFound(discoveryClient.GetType());
-        }
+            IDiscoveryClient[] discoveryClients = temporaryServiceProvider.GetServices<IDiscoveryClient>().ToArray();
 
-        return discoveryClients;
+            foreach (IDiscoveryClient discoveryClient in discoveryClients)
+            {
+                LogDiscoveryClientFound(discoveryClient.GetType());
+            }
+
+            _temporaryServiceProviderForDiscoveryClients = temporaryServiceProvider;
+            return discoveryClients;
+        }
+        catch
+        {
+            try
+            {
+                await temporaryServiceProvider.DisposeAsync();
+            }
+            catch
+            {
+                // Intentionally left empty: the original exception is more useful.
+            }
+
+            throw;
+        }
     }
 
     internal async Task<List<IServiceInstance>> GetConfigServerInstancesAsync(ConfigServerClientOptions optionsSnapshot, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(optionsSnapshot);
 
-        EnsureInitialized();
+        await EnsureInitializedAsync(cancellationToken);
 
         int attempts = 0;
         int backOff = optionsSnapshot.Retry.InitialInterval;
@@ -157,7 +203,7 @@ internal sealed partial class ConfigServerDiscoveryService
 
             if (attempts <= optionsSnapshot.Retry.MaxAttempts)
             {
-                await Task.Delay(backOff, cancellationToken);
+                await Task.Delay(TimeSpan.FromMilliseconds(backOff), _timeProvider, cancellationToken);
                 int nextBackOff = (int)(backOff * optionsSnapshot.Retry.Multiplier);
                 backOff = Math.Min(nextBackOff, optionsSnapshot.Retry.MaxInterval);
             }
@@ -193,22 +239,59 @@ internal sealed partial class ConfigServerDiscoveryService
 
         LogReplacingDiscoveryClients();
 
-        await ShutdownAsync(cancellationToken);
-
-        DiscoveryClients = discoveryClientsFromServiceProvider;
+        try
+        {
+            await ShutdownAsync(cancellationToken);
+        }
+        finally
+        {
+            // Even when shutting down the temporary discovery clients failed, the replacements must become active.
+            DiscoveryClients = discoveryClientsFromServiceProvider;
+        }
     }
 
     internal async Task ShutdownAsync(CancellationToken cancellationToken)
     {
-        if (_temporaryServiceProviderForDiscoveryClients != null)
+        ServiceProvider? temporaryServiceProvider = _temporaryServiceProviderForDiscoveryClients;
+
+        if (temporaryServiceProvider != null)
         {
+            List<Exception> exceptions = [];
+
             foreach (IDiscoveryClient discoveryClient in _discoveryClients ?? [])
             {
-                await discoveryClient.ShutdownAsync(cancellationToken);
+                try
+                {
+                    await discoveryClient.ShutdownAsync(cancellationToken);
+                }
+                catch (Exception exception)
+                {
+                    exceptions.Add(exception);
+                }
             }
 
-            await _temporaryServiceProviderForDiscoveryClients.DisposeAsync();
-            _temporaryServiceProviderForDiscoveryClients = null;
+            try
+            {
+                await temporaryServiceProvider.DisposeAsync();
+            }
+            catch (Exception exception)
+            {
+                exceptions.Add(exception);
+            }
+            finally
+            {
+                _temporaryServiceProviderForDiscoveryClients = null;
+            }
+
+            if (exceptions.Count == 1)
+            {
+                ExceptionDispatchInfo.Capture(exceptions[0]).Throw();
+            }
+
+            if (exceptions.Count > 1)
+            {
+                throw new AggregateException(exceptions);
+            }
         }
     }
 

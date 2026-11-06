@@ -14,7 +14,7 @@ namespace Steeltoe.Configuration.ConfigServer.Discovery.Test;
 public sealed class ConfigServerClientOptionsTest
 {
     [Fact]
-    public void Config_Server_URI_is_resolved_from_discovery_and_survives_changes_in_IConfiguration()
+    public async Task Config_Server_URI_is_resolved_from_discovery_and_survives_changes_in_IConfiguration()
     {
         const string configServerResponseJson = """
             {
@@ -102,7 +102,7 @@ public sealed class ConfigServerClientOptionsTest
         services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions(configureOptions);
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
         provider.ClientOptions.Uri.Should().Be("http://overridden-by-discovery");
@@ -228,10 +228,12 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
         configurationRoot["example-server-key"].Should().Be("example-server-value");
+
+        await provider.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public void Updates_discovered_Config_Server_URI_on_provider_reload()
+    public async Task Updates_discovered_Config_Server_URI_on_provider_reload()
     {
         const string configServerResponseJson = """
             {
@@ -319,7 +321,7 @@ public sealed class ConfigServerClientOptionsTest
         services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions(configureOptions);
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
         provider.ClientOptions.Uri.Should().Be("http://overridden-by-discovery");
@@ -426,5 +428,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
         configurationRoot["example-server-key"].Should().Be("example-server-value");
+
+        await provider.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 }

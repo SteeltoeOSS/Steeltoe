@@ -48,13 +48,36 @@ public sealed class ConsulDiscoveryClient : IDiscoveryClient
     /// <param name="loggerFactory">
     /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
     /// </param>
+    [Obsolete("This constructor will be removed in a future release. Use the constructor that takes a TimeProvider instead.")]
     public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, ILoggerFactory loggerFactory)
+        : this(client, optionsMonitor, TimeProvider.System, loggerFactory)
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="ConsulDiscoveryClient" /> class.
+    /// </summary>
+    /// <param name="client">
+    /// The Consul client.
+    /// </param>
+    /// <param name="optionsMonitor">
+    /// Provides access to <see cref="ConsulDiscoveryOptions" />.
+    /// </param>
+    /// <param name="timeProvider">
+    /// Provides access to the system time, which schedules the heartbeats.
+    /// </param>
+    /// <param name="loggerFactory">
+    /// Used for internal logging. Pass <see cref="NullLoggerFactory.Instance" /> to disable logging.
+    /// </param>
+    public ConsulDiscoveryClient(IConsulClient client, IOptionsMonitor<ConsulDiscoveryOptions> optionsMonitor, TimeProvider timeProvider,
+        ILoggerFactory loggerFactory)
     {
         ArgumentNullException.ThrowIfNull(client);
         ArgumentNullException.ThrowIfNull(optionsMonitor);
+        ArgumentNullException.ThrowIfNull(timeProvider);
         ArgumentNullException.ThrowIfNull(loggerFactory);
 
-        var registrar = new ConsulServiceRegistrar(client, optionsMonitor, loggerFactory);
+        var registrar = new ConsulServiceRegistrar(client, optionsMonitor, timeProvider, loggerFactory);
 
         _client = client;
         _optionsMonitor = optionsMonitor;

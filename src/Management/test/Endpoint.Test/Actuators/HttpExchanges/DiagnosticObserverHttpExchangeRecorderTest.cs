@@ -45,6 +45,8 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddSingleton(timeProvider);
+        builder.Services.AddSingleton<SignalingHttpExchangeRecorder>();
+        builder.Services.AddSingleton<IHttpExchangeRecorder>(serviceProvider => serviceProvider.GetRequiredService<SignalingHttpExchangeRecorder>());
         builder.Services.AddHttpExchangesActuator();
         builder.Services.PostConfigure<HttpExchangesEndpointOptions>(options => options.ResponseHeaders.Remove(HeaderNames.Date));
         WebApplication app = builder.Build();
@@ -57,7 +59,7 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
         // ReSharper disable once ShortLivedHttpClient
         using var httpClient = new HttpClient();
 
-        HttpResponseMessage helloResponse =
+        using HttpResponseMessage helloResponse =
             await httpClient.GetAsync(new Uri("http://127.0.0.1:5000/hello?someQuery=value"), TestContext.Current.CancellationToken);
 
         helloResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -65,9 +67,11 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
         using HttpResponseMessage errorResponse =
             await httpClient.GetAsync(new Uri("http://127.0.0.1:5000/does/not/exist"), TestContext.Current.CancellationToken);
 
-        await Task.Delay(250.Milliseconds(), TestContext.Current.CancellationToken);
+        // Recording happens after the response is sent, so wait for both requests to be recorded instead of assuming they are.
+        var recorder = host.Services.GetRequiredService<SignalingHttpExchangeRecorder>();
+        await recorder.WaitForExchangesAsync(2, TestContext.Current.CancellationToken);
 
-        HttpResponseMessage actuatorResponse =
+        using HttpResponseMessage actuatorResponse =
             await httpClient.GetAsync(new Uri("http://127.0.0.1:5000/actuator/httpexchanges"), TestContext.Current.CancellationToken);
 
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);

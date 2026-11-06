@@ -11,6 +11,7 @@ internal sealed class FakeMultipleProviderRouter(bool shouldConnect = true) : IM
     internal string? Username { get; private set; }
     internal string? Password { get; private set; }
     internal string? NetworkPath { get; private set; }
+    internal int CancelConnectionResult { get; init; }
 
     public int UseConnection(IntPtr hwndOwner, NativeMethods.NetResource netResource, string? password, string? username, int flags, string? lpAccessName,
         string? lpBufferSize, string? lpResult)
@@ -30,6 +31,6 @@ internal sealed class FakeMultipleProviderRouter(bool shouldConnect = true) : IM
 
     public int CancelConnection(string name, int flags, bool force)
     {
-        return -1;
+        return CancelConnectionResult;
     }
 }

@@ -9,6 +9,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Http.HttpClientPooling;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 
@@ -21,6 +22,9 @@ public sealed class PermissionsProviderTest
     {
         PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplication").Should().BeTrue();
         PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplication/badpath").Should().BeTrue();
+        PermissionsProvider.IsCloudFoundryRequest("/actuator").Should().BeFalse();
+        PermissionsProvider.IsCloudFoundryRequest("/").Should().BeFalse();
+        PermissionsProvider.IsCloudFoundryRequest("/cloudfoundryapplicationother").Should().BeFalse();
     }
 
     [Fact]
@@ -44,14 +48,13 @@ public sealed class PermissionsProviderTest
         await using ServiceProvider serviceProvider = BuildServiceProvider();
         PermissionsProvider permissionsProvider = CreatePermissionsProvider(serviceProvider);
 
-        var cloudControllerResponse = new HttpResponseMessage(HttpStatusCode.OK)
+        using var cloudControllerResponse = new HttpResponseMessage(HttpStatusCode.OK);
+
+        cloudControllerResponse.Content = JsonContent.Create(new Dictionary<string, bool>
         {
-            Content = JsonContent.Create(new Dictionary<string, bool>
-            {
-                ["read_sensitive_data"] = readSensitive,
-                ["read_basic_data"] = readBasic
-            })
-        };
+            ["read_sensitive_data"] = readSensitive,
+            ["read_basic_data"] = readBasic
+        });
 
         EndpointPermissions? result = await permissionsProvider.ParsePermissionsResponseAsync(cloudControllerResponse, TestContext.Current.CancellationToken);
         result.Should().Be(expectedPermissions);
@@ -78,11 +81,13 @@ public sealed class PermissionsProviderTest
         };
 
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddCloudFoundryActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        serviceProvider.GetRequiredService<HttpClientHandlerFactory>().Using(CloudControllerPermissionsMock.GetHttpMessageHandler());
+        using DelegateToMockHttpClientHandler permissionsHandler = CloudControllerPermissionsMock.GetHttpMessageHandler();
+        serviceProvider.GetRequiredService<HttpClientHandlerFactory>().Using(permissionsHandler);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<CloudFoundryEndpointOptions>>();
         var httpClientFactory = serviceProvider.GetRequiredService<IHttpClientFactory>();
 
@@ -109,6 +114,7 @@ public sealed class PermissionsProviderTest
     private static ServiceProvider BuildServiceProvider()
     {
         var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
         services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddCloudFoundryActuator();
         return services.BuildServiceProvider(true);
