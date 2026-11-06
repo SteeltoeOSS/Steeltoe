@@ -12,6 +12,7 @@ using Microsoft.Diagnostics.Tracing.Etlx;
 using Microsoft.Diagnostics.Tracing.Stacks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 
@@ -61,6 +62,8 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
     {
         return await CaptureLogOutputAsync(async logWriter =>
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             try
             {
                 LogStart();
@@ -83,55 +86,27 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
 
                 LogTotalMemory(memoryInBytes);
             }
-        }, cancellationToken);
+        });
     }
 
-    internal async Task<TResult> CaptureLogOutputAsync<TResult>(Func<TextWriter, Task<TResult>> action, CancellationToken cancellationToken)
+    internal async Task<TResult> CaptureLogOutputAsync<TResult>(Func<TextWriter, Task<TResult>> action)
     {
-        bool isTraceLogEnabled = _logger.IsEnabled(LogLevel.Trace);
-        using var logStream = new MemoryStream();
-        Exception? error = null;
-        TResult? result = default;
+        var logWriter = new ConcurrentTextWriter();
+        TResult? result;
 
-        await using (TextWriter logWriter = isTraceLogEnabled ? new StreamWriter(logStream, leaveOpen: true) : TextWriter.Null)
+        try
         {
-            try
-            {
-                result = await action(logWriter);
-                await logWriter.FlushAsync(cancellationToken);
-            }
-            catch (Exception exception)
-            {
-                error = exception;
-            }
+            result = await action(logWriter);
+        }
+        catch (Exception exception) when (!exception.IsCancellation())
+        {
+            string message = $"Failed to create a thread dump. Captured log:{System.Environment.NewLine}{logWriter}";
+            throw new InvalidOperationException(message, exception);
         }
 
-        string? logOutput = null;
+        LogDumpLogCaptured(System.Environment.NewLine, logWriter);
 
-        if (isTraceLogEnabled)
-        {
-            logStream.Seek(0, SeekOrigin.Begin);
-            using var logReader = new StreamReader(logStream);
-            logOutput = await logReader.ReadToEndAsync(cancellationToken);
-        }
-
-        if (error != null)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            string message = isTraceLogEnabled
-                ? $"Failed to create a thread dump. Captured log:{System.Environment.NewLine}{logOutput}"
-                : "Failed to create a thread dump.";
-
-            throw new InvalidOperationException(message, error);
-        }
-
-        if (isTraceLogEnabled)
-        {
-            LogDumpLogCaptured(System.Environment.NewLine, logOutput);
-        }
-
-        return result!;
+        return result;
     }
 
     private async Task<List<ThreadInfo>> GetThreadsFromEventPipeSessionAsync(EventPipeSession session, TextWriter logWriter,
@@ -311,9 +286,12 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
         while (!frameName.StartsWith(ThreadIdTemplate, StringComparison.Ordinal))
         {
             SourceLocation? sourceLocation = stackSource.GetSourceLine(frameIndex, symbolReader);
-            StackTraceElement stackElement = GetStackTraceElement(frameName, sourceLocation);
+            StackTraceElement? stackElement = GetStackTraceElement(frameName, sourceLocation);
 
-            yield return stackElement;
+            if (stackElement != null)
+            {
+                yield return stackElement;
+            }
 
             stackIndex = stackSource.GetCallerIndex(stackIndex);
             frameIndex = stackSource.GetFrameIndex(stackIndex);
@@ -321,14 +299,24 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
         }
     }
 
-    private static StackTraceElement GetStackTraceElement(string frameName, SourceLocation? sourceLocation)
+    private static StackTraceElement? GetStackTraceElement(string frameName, SourceLocation? sourceLocation)
     {
         if (string.IsNullOrEmpty(frameName))
         {
             return UnknownStackTraceElement;
         }
 
-        if (frameName.Contains("UNMANAGED_CODE_TIME", StringComparison.OrdinalIgnoreCase) || frameName.Contains("CPU_TIME", StringComparison.OrdinalIgnoreCase))
+        // The leaf frame of every sample taken by the SampleProfiler is always a synthetic bookkeeping frame:
+        // either CPU_TIME (the thread was actually executing managed/JIT-compiled code) or UNMANAGED_CODE_TIME
+        // (the thread was executing unmanaged code, such as being blocked in a native wait). Only the latter
+        // reflects a genuinely native thread, so CPU_TIME must not be turned into a fake "native" frame: it is
+        // dropped here, leaving the real managed frame that follows it as the top of the stack.
+        if (frameName.Contains("CPU_TIME", StringComparison.OrdinalIgnoreCase))
+        {
+            return null;
+        }
+
+        if (frameName.Contains("UNMANAGED_CODE_TIME", StringComparison.OrdinalIgnoreCase))
         {
             return NativeStackTraceElement;
         }
@@ -375,7 +363,7 @@ internal sealed partial class EventPipeThreadDumper : IThreadDumper
     private partial void LogTotalMemory(long memoryInBytes);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Captured log from thread dump:{LineBreak}{DumpLog}")]
-    private partial void LogDumpLogCaptured(string lineBreak, string? dumpLog);
+    private partial void LogDumpLogCaptured(string lineBreak, ConcurrentTextWriter dumpLog);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Finished thread walk, found {Count} results.")]
     private partial void LogThreadWalkFinished(int count);

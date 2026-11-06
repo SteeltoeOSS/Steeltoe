@@ -502,6 +502,9 @@ Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.UseNetworkInterfaces.set -> void
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.get -> bool
 Steeltoe.Management.Endpoint.SpringBootAdminClient.SpringBootAdminClientOptions.ValidateCertificates.set -> void
+Steeltoe.Management.Endpoint.TooManyActuatorRequestsException
+Steeltoe.Management.Endpoint.TooManyActuatorRequestsException.TooManyActuatorRequestsException(string? message, System.Exception? innerException) -> void
+Steeltoe.Management.Endpoint.TooManyActuatorRequestsException.TooManyActuatorRequestsException(string? message) -> void
 virtual Steeltoe.Management.Endpoint.Configuration.ConfigureEndpointOptions<TOptions>.Configure(TOptions! options) -> void
 virtual Steeltoe.Management.Endpoint.Middleware.ActuatorMetadataProvider.GetMetadata(string! httpMethod) -> Microsoft.AspNetCore.Http.EndpointMetadataCollection!
 virtual Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware<TRequest, TResponse>.CanInvoke(Microsoft.AspNetCore.Http.PathString requestPath) -> bool

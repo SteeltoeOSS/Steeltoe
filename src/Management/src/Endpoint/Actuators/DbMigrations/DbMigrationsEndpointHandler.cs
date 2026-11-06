@@ -67,24 +67,22 @@ internal sealed partial class DbMigrationsEndpointHandler : IDbMigrationsEndpoin
             {
                 object? dbContext = scope.ServiceProvider.GetService(contextType);
 
-                if (dbContext == null)
+                if (dbContext != null)
                 {
-                    continue;
-                }
+                    var descriptor = new DbMigrationsDescriptor();
+                    string contextName = dbContext.GetType().Name;
+                    result.Add(contextName, descriptor);
 
-                var descriptor = new DbMigrationsDescriptor();
-                string contextName = dbContext.GetType().Name;
-                result.Add(contextName, descriptor);
-
-                try
-                {
-                    AddRange(descriptor.PendingMigrations, _scanner.GetPendingMigrations(dbContext));
-                    AddRange(descriptor.AppliedMigrations, _scanner.GetAppliedMigrations(dbContext));
-                }
-                catch (DbException exception) when (exception.Message.Contains("exist", StringComparison.Ordinal))
-                {
-                    LogFailedToLoadMigrations(exception);
-                    AddRange(descriptor.PendingMigrations, _scanner.GetMigrations(dbContext));
+                    try
+                    {
+                        AddRange(descriptor.PendingMigrations, _scanner.GetPendingMigrations(dbContext));
+                        AddRange(descriptor.AppliedMigrations, _scanner.GetAppliedMigrations(dbContext));
+                    }
+                    catch (DbException exception) when (exception.Message.Contains("exist", StringComparison.Ordinal))
+                    {
+                        LogFailedToLoadMigrations(exception);
+                        AddRange(descriptor.PendingMigrations, _scanner.GetMigrations(dbContext));
+                    }
                 }
             }
         }

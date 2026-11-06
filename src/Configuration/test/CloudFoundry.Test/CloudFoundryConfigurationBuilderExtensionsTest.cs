@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Configuration.CloudFoundry.Test;
 
@@ -78,19 +79,21 @@ public sealed class CloudFoundryConfigurationBuilderExtensionsTest
             InstancePort = "8888"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddCloudFoundry(reader).Build();
+        var builder = new ConfigurationBuilder();
+        builder.AddCloudFoundry(reader);
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        configuration["vcap:application:application_id"].Should().Be("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3");
-        configuration["vcap:application:limits:disk"].Should().Be("1024");
-        configuration["vcap:application:uris:0"].Should().Be("my-app.10.244.0.34.xip.io");
-        configuration["vcap:application:uris:1"].Should().Be("my-app2.10.244.0.34.xip.io");
-        configuration["vcap:services:elephantsql:0:name"].Should().Be("elephantsql-c6c60");
-        configuration["vcap:services:sendgrid:0:name"].Should().Be("mysendgrid");
+        configurationRoot["vcap:application:application_id"].Should().Be("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3");
+        configurationRoot["vcap:application:limits:disk"].Should().Be("1024");
+        configurationRoot["vcap:application:uris:0"].Should().Be("my-app.10.244.0.34.xip.io");
+        configurationRoot["vcap:application:uris:1"].Should().Be("my-app2.10.244.0.34.xip.io");
+        configurationRoot["vcap:services:elephantsql:0:name"].Should().Be("elephantsql-c6c60");
+        configurationRoot["vcap:services:sendgrid:0:name"].Should().Be("mysendgrid");
 
-        configuration["vcap:application:instance_id"].Should().Be("7c19d892-21c2-496b-a42a-946bbaa0775e");
-        configuration["vcap:application:instance_index"].Should().Be("0");
-        configuration["vcap:application:internal_ip"].Should().Be("127.0.0.1");
-        configuration["vcap:application:instance_ip"].Should().Be("10.41.1.1");
-        configuration["vcap:application:port"].Should().Be("8888");
+        configurationRoot["vcap:application:instance_id"].Should().Be("7c19d892-21c2-496b-a42a-946bbaa0775e");
+        configurationRoot["vcap:application:instance_index"].Should().Be("0");
+        configurationRoot["vcap:application:internal_ip"].Should().Be("127.0.0.1");
+        configurationRoot["vcap:application:instance_ip"].Should().Be("10.41.1.1");
+        configurationRoot["vcap:application:port"].Should().Be("8888");
     }
 }

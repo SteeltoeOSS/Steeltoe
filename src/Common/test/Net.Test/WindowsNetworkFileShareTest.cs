@@ -57,7 +57,7 @@ public sealed class WindowsNetworkFileShareTest
     {
         var router = new FakeMultipleProviderRouter();
 
-        _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), router);
+        using var share = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), router);
 
         router.Username.Should().Be("user");
         router.Password.Should().Be("password");
@@ -69,7 +69,7 @@ public sealed class WindowsNetworkFileShareTest
     {
         var router = new FakeMultipleProviderRouter();
 
-        _ = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), router);
+        using var share = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password", "domain"), router);
 
         router.Username.Should().Be(@"domain\user");
         router.Password.Should().Be("password");
@@ -98,5 +98,41 @@ public sealed class WindowsNetworkFileShareTest
         }
 
         exception.InnerException.Message.Should().Be(message);
+    }
+
+    [Fact]
+    public void Dispose_does_not_mask_earlier_exception_when_share_is_already_disconnected()
+    {
+        const int errorNotConnected = 2250;
+
+        var router = new FakeMultipleProviderRouter
+        {
+            CancelConnectionResult = errorNotConnected
+        };
+
+        Action action = () =>
+        {
+            using var share = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), router);
+            throw new InvalidOperationException("Original error.");
+        };
+
+        action.Should().ThrowExactly<InvalidOperationException>().WithMessage("Original error.");
+    }
+
+    [Fact]
+    public void Dispose_throws_when_disconnecting_fails_for_another_reason()
+    {
+        const int errorBadDevice = 1200;
+
+        var router = new FakeMultipleProviderRouter
+        {
+            CancelConnectionResult = errorBadDevice
+        };
+
+        var share = new WindowsNetworkFileShare(@"\\server\path", new NetworkCredential("user", "password"), router);
+
+        Action action = share.Dispose;
+
+        action.Should().ThrowExactly<IOException>().WithMessage("Failed to disconnect from network share.").WithInnerExceptionExactly<Win32Exception>();
     }
 }

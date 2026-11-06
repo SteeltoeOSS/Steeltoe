@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.HealthChecks;
@@ -27,7 +28,7 @@ public sealed class ConfigServerHealthContributorTest
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
         builder.AddPlaceholderResolver();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         contributor.Provider.Should().NotBeNull();
@@ -47,7 +48,7 @@ public sealed class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         contributor.Provider.Should().NotBeNull();
@@ -69,7 +70,7 @@ public sealed class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         ConfigServerClientOptions optionsSnapshot = contributor.Provider!.ClientOptions;
@@ -84,8 +85,8 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public async Task GetPropertySources_ReturnsExpected()
     {
-        // this test does NOT expect to find a running Config Server
-        var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
+        // Config Server is enabled, but every request to it fails, which makes loading throw.
+        var values = new Dictionary<string, string?>
         {
             ["spring:cloud:config:uri"] = "http://localhost:8887/",
             ["spring:cloud:config:name"] = "myName",
@@ -95,10 +96,14 @@ public sealed class ConfigServerHealthContributorTest
             ["spring:cloud:config:timeout"] = "1"
         };
 
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.InternalServerError);
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        builder.AddConfigServer();
-        IConfigurationRoot configurationRoot = builder.Build();
+        // ReSharper disable once AccessToDisposedClosure
+        builder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance)
         {
@@ -130,7 +135,7 @@ public sealed class ConfigServerHealthContributorTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         contributor.Provider.Should().BeNull();
@@ -156,7 +161,7 @@ public sealed class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         contributor.Provider.Should().NotBeNull();
@@ -167,8 +172,8 @@ public sealed class ConfigServerHealthContributorTest
     [Fact]
     public async Task Health_NoPropertySources_ReturnsExpected()
     {
-        // this test does NOT expect to find a running Config Server
-        var values = new Dictionary<string, string?>(TestSettingsFactory.Get(FastTestConfigurations.ConfigServer))
+        // Config Server is enabled, but every request to it fails, which makes loading throw.
+        var values = new Dictionary<string, string?>
         {
             ["spring:cloud:config:uri"] = "http://localhost:8887/",
             ["spring:cloud:config:name"] = "myName",
@@ -178,10 +183,14 @@ public sealed class ConfigServerHealthContributorTest
             ["spring:cloud:config:timeout"] = "10"
         };
 
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.InternalServerError);
+
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
-        builder.AddConfigServer();
-        IConfigurationRoot configurationRoot = builder.Build();
+        // ReSharper disable once AccessToDisposedClosure
+        builder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         contributor.Provider.Should().NotBeNull();
@@ -207,7 +216,7 @@ public sealed class ConfigServerHealthContributorTest
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(values);
         builder.AddConfigServer();
-        IConfigurationRoot configurationRoot = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var contributor = new ConfigServerHealthContributor(configurationRoot, TimeProvider.System, NullLogger<ConfigServerHealthContributor>.Instance);
         var health = new HealthCheckResult();

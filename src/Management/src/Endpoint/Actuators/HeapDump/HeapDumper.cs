@@ -8,6 +8,7 @@ using Microsoft.Diagnostics.NETCore.Client;
 using Microsoft.Diagnostics.Tools.GCDump;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Steeltoe.Common.Extensions;
 
 namespace Steeltoe.Management.Endpoint.Actuators.HeapDump;
 
@@ -97,6 +98,8 @@ internal sealed partial class HeapDumper : IHeapDumper
     {
         CaptureLogOutput(logWriter =>
         {
+            cancellationToken.ThrowIfCancellationRequested();
+
             var heapInfo = new DotNetHeapInfo();
             var memoryGraph = new MemoryGraph(50_000);
 
@@ -108,7 +111,7 @@ internal sealed partial class HeapDumper : IHeapDumper
             }
 
             return false;
-        }, dumpDescription, cancellationToken);
+        }, dumpDescription);
     }
 
     private static void CreateHeapDump(HeapDumpType? heapDumpType, int processId, string outputPath)
@@ -131,35 +134,28 @@ internal sealed partial class HeapDumper : IHeapDumper
         client.WriteDump(dumpType, outputPath, flags);
     }
 
-    internal void CaptureLogOutput(Func<TextWriter, bool> action, string dumpDescription, CancellationToken cancellationToken)
+    internal void CaptureLogOutput(Func<TextWriter, bool> action, string dumpDescription)
     {
-        using var logStream = new MemoryStream();
+        var logWriter = new ConcurrentTextWriter();
         Exception? error = null;
         bool succeeded = false;
 
-        using (TextWriter logWriter = new StreamWriter(logStream, leaveOpen: true))
+        try
         {
-            try
-            {
-                succeeded = action(logWriter);
-            }
-            catch (Exception exception)
-            {
-                error = exception;
-            }
+            succeeded = action(logWriter);
         }
-
-        logStream.Seek(0, SeekOrigin.Begin);
-        using var logReader = new StreamReader(logStream);
-        string logOutput = logReader.ReadToEnd();
+        catch (Exception exception) when (!exception.IsCancellation())
+        {
+            error = exception;
+        }
 
         if (error != null || !succeeded)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            throw new InvalidOperationException($"Failed to create a {dumpDescription}. Captured log:{System.Environment.NewLine}{logOutput}", error);
+            string message = $"Failed to create a {dumpDescription}. Captured log:{System.Environment.NewLine}{logWriter}";
+            throw new InvalidOperationException(message, error);
         }
 
-        LogDumpLogCaptured(dumpDescription, System.Environment.NewLine, logOutput);
+        LogDumpLogCaptured(dumpDescription, System.Environment.NewLine, logWriter);
     }
 
     private static void SafeDelete(string? outputPath)
@@ -187,5 +183,5 @@ internal sealed partial class HeapDumper : IHeapDumper
     private partial void LogSucceeded(string dumpType);
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Captured log from {DumpType}:{LineBreak}{DumpLog}")]
-    private partial void LogDumpLogCaptured(string dumpType, string lineBreak, string dumpLog);
+    private partial void LogDumpLogCaptured(string dumpType, string lineBreak, ConcurrentTextWriter dumpLog);
 }

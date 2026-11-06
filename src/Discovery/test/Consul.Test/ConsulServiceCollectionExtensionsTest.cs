@@ -23,17 +23,13 @@ public sealed class ConsulServiceCollectionExtensionsTest
         {
             ["spring:application:name"] = "myName",
             ["spring:cloud:inet:defaultHostName"] = "from-test",
-            ["spring:cloud:inet:skipReverseDnsLookup"] = "true",
-            ["consul:discovery:UseNetworkInterfaces"] = "true",
             ["consul:discovery:register"] = "false",
             ["consul:discovery:deregister"] = "false",
             ["consul:host"] = "http://testhost:8500"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddLogging();
         services.AddConsulDiscoveryClient();
 
@@ -46,7 +42,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
     {
         var services = new ServiceCollection();
         services.AddLogging();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
 
         services.AddConsulDiscoveryClient();
 
@@ -67,7 +63,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
             ["spring:cloud:discovery:enabled"] = "false"
         };
 
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider provider = services.BuildServiceProvider(true);
@@ -88,7 +84,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
             ["consul:discovery:enabled"] = "true"
         };
 
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
 
         services.AddConsulDiscoveryClient();
 
@@ -106,10 +102,8 @@ public sealed class ConsulServiceCollectionExtensionsTest
             ["consul:discovery:register"] = "false"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddLogging();
 
         services.AddConsulDiscoveryClient();
@@ -130,10 +124,8 @@ public sealed class ConsulServiceCollectionExtensionsTest
             ["consul:discovery:register"] = "false"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddLogging();
         services.AddConsulDiscoveryClient();
 
@@ -151,7 +143,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
         var services = new ServiceCollection();
         // ReSharper disable once AccessToDisposedClosure
         services.AddLogging(builder => builder.AddProvider(capturingLoggerProvider));
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -181,7 +173,7 @@ public sealed class ConsulServiceCollectionExtensionsTest
         var services = new ServiceCollection();
         // ReSharper disable once AccessToDisposedClosure
         services.AddLogging(builder => builder.AddProvider(capturingLoggerProvider));
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);

@@ -13,7 +13,7 @@ public sealed class HttpClientExtensionsTest
     [Fact]
     public void ConfigureForSteeltoe_sets_user_agent_and_timeout()
     {
-        var httpClient = new HttpClient();
+        using var httpClient = new HttpClient();
 
         httpClient.ConfigureForSteeltoe(5.Seconds());
 
@@ -25,12 +25,12 @@ public sealed class HttpClientExtensionsTest
     [Fact]
     public async Task GetAccessTokenAsync_with_username_and_password_sends_request_with_basic_auth()
     {
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
 
         handler.Mock.Expect(HttpMethod.Post, "https://auth-server.com/oauth/token").WithHeaders("Authorization", "Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=")
             .WithFormData("grant_type=client_credentials").Respond("application/json", "{ \"access_token\": \"secret\" }");
 
-        var httpClient = new HttpClient(handler);
+        using var httpClient = new HttpClient(handler);
 
         string accessToken = await httpClient.GetAccessTokenAsync(new Uri("https://auth-server.com/oauth/token"), "test-user", "test-password",
             TestContext.Current.CancellationToken);
@@ -45,12 +45,12 @@ public sealed class HttpClientExtensionsTest
     [Fact]
     public async Task GetAccessTokenAsync_with_only_password_sends_request_with_basic_auth()
     {
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
 
         handler.Mock.Expect(HttpMethod.Post, "https://auth-server.com/oauth/token").WithHeaders("Authorization", "Basic OnRlc3QtcGFzc3dvcmQ=")
             .WithFormData("grant_type=client_credentials").Respond("application/json", "{ \"access_token\": \"secret\" }");
 
-        var httpClient = new HttpClient(handler);
+        using var httpClient = new HttpClient(handler);
 
         string accessToken = await httpClient.GetAccessTokenAsync(new Uri("https://auth-server.com/oauth/token"), null, "test-password",
             TestContext.Current.CancellationToken);

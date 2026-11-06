@@ -32,13 +32,13 @@ public sealed class TracingLogProcessorTest
         });
 
         Tracer tracer = TracerProvider.Default.GetTracer("tracer-name");
-        TelemetrySpan span = tracer.StartActiveSpan("spanName");
+        using TelemetrySpan span = tracer.StartActiveSpan("spanName");
 
         string message1 = processor.Process("InputLogMessage1");
 
         message1.Should().Be($" [foobar,{span.Context.TraceId},{span.Context.SpanId},0000000000000000,true] InputLogMessage1");
 
-        TelemetrySpan childSpan = tracer.StartActiveSpan("spanName2", SpanKind.Internal, span);
+        using TelemetrySpan childSpan = tracer.StartActiveSpan("spanName2", SpanKind.Internal, span);
 
         string message2 = processor.Process("InputLogMessage2");
 

@@ -7,11 +7,12 @@ using System.Text;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.Net.Http.Headers;
+using NSubstitute;
+using StackExchange.Redis;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Connectors.Redis;
 
@@ -32,6 +33,8 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         builder.Configuration.AddInMemoryCollection(appSettings);
 
+        IConnectionMultiplexer? connectionMultiplexer = null;
+
         builder.AddRedis(null, addOptions =>
         {
             addOptions.CreateConnection = (serviceProvider, serviceBindingName) =>
@@ -39,7 +42,8 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
                 var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<RedisOptions>>();
                 RedisOptions options = optionsMonitor.Get(serviceBindingName);
 
-                return GetMockedConnectionMultiplexer(options.ConnectionString);
+                connectionMultiplexer = GetMockedConnectionMultiplexer(options.ConnectionString);
+                return connectionMultiplexer;
             };
         });
 
@@ -51,7 +55,7 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
 
         builder.Services.AddDataProtection().PersistKeysToRedis().SetApplicationName(appName);
 
-        await using WebApplication app = builder.Build();
+        WebApplication app = builder.Build();
 
         app.UseSession();
 
@@ -78,22 +82,30 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
             return Task.CompletedTask;
         });
 
-        await app.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(app);
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
-        using HttpClient httpClient = app.GetTestClient();
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/set-session"), TestContext.Current.CancellationToken);
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        using HttpClient httpClient = host.GetTestClient();
+        using HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("http://localhost/set-session"), TestContext.Current.CancellationToken);
+        response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        string setCookieHeaderText = response.Headers.Single(header => header.Key == "Set-Cookie").Value.Single();
+        string setCookieHeaderText = response1.Headers.Single(header => header.Key == "Set-Cookie").Value.Single();
         SetCookieHeaderValue setCookieHeaderValue = SetCookieHeaderValue.Parse(setCookieHeaderText);
         var cookie = new Cookie(setCookieHeaderValue.Name.Value!, setCookieHeaderValue.Value.Value);
 
-        var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/get-session"));
-        request.Headers.Add("Cookie", cookie.ToString());
-        response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
+        using var request2 = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/get-session"));
+        request2.Headers.Add("Cookie", cookie.ToString());
+        using HttpResponseMessage response2 = await httpClient.SendAsync(request2, TestContext.Current.CancellationToken);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        string responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        response2.StatusCode.Should().Be(HttpStatusCode.OK);
+        string responseContent = await response2.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
         responseContent.Should().Be("example-value");
+
+        // The data protection keys that encrypt the session cookie must be stored in Redis, so that all app instances share them.
+        connectionMultiplexer.Should().NotBeNull();
+        IDatabase database = connectionMultiplexer.GetDatabase();
+
+        database.ReceivedCalls().Where(call => call.GetMethodInfo().Name == nameof(IDatabase.ListRightPush)).Select(call => call.GetArguments()[0]).Should()
+            .Contain(key => (RedisKey)key! == "DataProtection-Keys");
     }
 }

@@ -5,7 +5,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
@@ -29,7 +28,7 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
@@ -37,8 +36,8 @@ public sealed class ContentNegotiationTest
 
         HttpContent requestContent = new StringContent("{}", contentType);
 
-        HttpResponseMessage response =
-            await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent,
+            TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
@@ -50,7 +49,7 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
@@ -58,8 +57,8 @@ public sealed class ContentNegotiationTest
 
         HttpContent requestContent = new StringContent("{}", contentType);
 
-        HttpResponseMessage response =
-            await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent,
+            TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
@@ -71,7 +70,7 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
@@ -79,8 +78,8 @@ public sealed class ContentNegotiationTest
 
         HttpContent requestContent = new StringContent("{}", contentType);
 
-        HttpResponseMessage response =
-            await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.PostAsync(new Uri("http://localhost/actuator/loggers/Default"), requestContent,
+            TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.UnsupportedMediaType);
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -94,11 +93,11 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.GetAsync(new Uri("http://localhost/actuator/loggers"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -110,25 +109,17 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
-        var requestMessage = new HttpRequestMessage
-        {
-            Method = HttpMethod.Get,
-            RequestUri = new Uri("http://localhost/actuator/loggers"),
-            Headers =
-            {
-                Accept =
-                {
-                    MediaTypeWithQualityHeaderValue.Parse("text/html"),
-                    MediaTypeWithQualityHeaderValue.Parse("application/xhtml+xml")
-                }
-            }
-        };
+        using var requestMessage = new HttpRequestMessage();
+        requestMessage.Method = HttpMethod.Get;
+        requestMessage.RequestUri = new Uri("http://localhost/actuator/loggers");
+        requestMessage.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("text/html"));
+        requestMessage.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/xhtml+xml"));
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -142,25 +133,17 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
-        var requestMessage = new HttpRequestMessage
-        {
-            Method = HttpMethod.Get,
-            RequestUri = new Uri("http://localhost/actuator/loggers"),
-            Headers =
-            {
-                Accept =
-                {
-                    MediaTypeWithQualityHeaderValue.Parse("text/html; q=0.8"),
-                    MediaTypeWithQualityHeaderValue.Parse("application/json; q=0.1")
-                }
-            }
-        };
+        using var requestMessage = new HttpRequestMessage();
+        requestMessage.Method = HttpMethod.Get;
+        requestMessage.RequestUri = new Uri("http://localhost/actuator/loggers");
+        requestMessage.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("text/html; q=0.8"));
+        requestMessage.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("application/json; q=0.1"));
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -172,25 +155,17 @@ public sealed class ContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddLoggersActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
-        var requestMessage = new HttpRequestMessage
-        {
-            Method = HttpMethod.Get,
-            RequestUri = new Uri("http://localhost/actuator/loggers"),
-            Headers =
-            {
-                Accept =
-                {
-                    MediaTypeWithQualityHeaderValue.Parse("text/html"),
-                    MediaTypeWithQualityHeaderValue.Parse("*/*; q=0.8")
-                }
-            }
-        };
+        using var requestMessage = new HttpRequestMessage();
+        requestMessage.Method = HttpMethod.Get;
+        requestMessage.RequestUri = new Uri("http://localhost/actuator/loggers");
+        requestMessage.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("text/html"));
+        requestMessage.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("*/*; q=0.8"));
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
@@ -203,13 +178,13 @@ public sealed class ContentNegotiationTest
         builder.Services.AddSingleton<IHeapDumper, FakeHeapDumper>();
         builder.Services.AddHeapDumpActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
         using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/heapdump"));
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        HttpResponseMessage response = await client.SendAsync(request, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
     }
@@ -222,13 +197,13 @@ public sealed class ContentNegotiationTest
         builder.Services.AddSingleton<IHeapDumper, FakeHeapDumper>();
         builder.Services.AddHeapDumpActuator();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient client = host.GetTestClient();
         using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/heapdump"));
         request.Headers.Accept.Add(new MediaTypeWithQualityHeaderValue("application/octet-stream"));
-        HttpResponseMessage response = await client.SendAsync(request, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
     }

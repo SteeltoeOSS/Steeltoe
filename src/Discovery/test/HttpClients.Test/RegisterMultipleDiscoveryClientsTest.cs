@@ -14,13 +14,13 @@ using RichardSzalay.MockHttp;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.Http.HttpClientPooling;
+using Steeltoe.Common.Net;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.CloudFoundry;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings;
 using Steeltoe.Configuration.CloudFoundry.ServiceBindings.PostProcessors;
 using Steeltoe.Discovery.Configuration;
 using Steeltoe.Discovery.Consul;
-using Steeltoe.Discovery.Consul.Registry;
 using Steeltoe.Discovery.Eureka;
 using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
@@ -61,10 +61,9 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationBuilder.Build());
         services.AddOptions();
         services.AddEurekaDiscoveryClient();
 
@@ -86,10 +85,11 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             ["eureka:instance:UseNetworkInterfaces"] = "true"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
+        services.AddSingleton<INetworkInterfaceProvider, FakeNetworkInterfaceProvider>();
         services.AddLogging();
         services.AddOptions();
         services.AddEurekaDiscoveryClient();
@@ -120,7 +120,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         builder.Services.AddOptions();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", "{}");
 
         builder.Services.AddEurekaDiscoveryClient();
@@ -131,7 +131,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
         _ = await discoveryClient.FetchFullRegistryAsync(TestContext.Current.CancellationToken);
 
-        handler.ClientCertificates.Cast<X509Certificate>().Should().NotBeEmpty();
+        using X509Certificate certificate = handler.ClientCertificates.Cast<X509Certificate>().Should().ContainSingle().Subject;
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -152,7 +152,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         builder.Services.AddOptions();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", "{}");
 
         builder.Services.AddEurekaDiscoveryClient();
@@ -163,7 +163,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
         _ = await discoveryClient.FetchFullRegistryAsync(TestContext.Current.CancellationToken);
 
-        handler.ClientCertificates.Cast<X509Certificate>().Should().NotBeEmpty();
+        using X509Certificate certificate = handler.ClientCertificates.Cast<X509Certificate>().Should().ContainSingle().Subject;
 
         handler.Mock.VerifyNoOutstandingExpectation();
     }
@@ -225,17 +225,18 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["eureka:client:enabled"] = "false"
+            ["eureka:client:shouldRegisterWithEureka"] = "false",
+            ["eureka:client:shouldFetchRegistry"] = "false"
         };
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddCloudFoundry();
         builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
-        IConfiguration configuration = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -322,17 +323,18 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["eureka:client:enabled"] = "false"
+            ["eureka:client:shouldRegisterWithEureka"] = "false",
+            ["eureka:client:shouldFetchRegistry"] = "false"
         };
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
         builder.AddCloudFoundry();
         builder.AddCloudFoundryServiceBindings(CloudFoundryServiceBrokerTypes.Eureka);
-        IConfiguration configuration = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddEurekaDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -428,7 +430,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         configurationBuilder.AddCloudFoundryServiceBindings(_ => false, new EnvironmentServiceBindingsReader(), CloudFoundryServiceBrokerTypes.Eureka,
             loggerFactory);
 
-        _ = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         IList<string> logMessages = capturingLoggerProvider.GetAll();
 
@@ -543,7 +545,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
 
         handler.Mock.Expect(HttpMethod.Post, "https://p-spring-cloud-services.uaa.system.test-cloud.com/oauth/token")
             .WithHeaders("Authorization", "Basic cC1zZXJ2aWNlLXJlZ2lzdHJ5LTA2ZTI4ZWZkLTI0YmUtNGNlMy05Nzg0LTg1NGVkOGQyYWNiZTpkQ3Nkb2l1a2xpY1M=")
@@ -616,7 +618,7 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
 
         handler.Mock.Expect(HttpMethod.Get, "https://api.eureka-server.com/eureka/apps").WithHeaders("Authorization", "Basic dSRlcj8sTkBtZTo6cEBzcyx3MHJkPQ==")
             .WithHeaders("X-Discovery-AllowRedirect", "false").Respond("application/json", applicationsResponse);
@@ -660,23 +662,21 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddLogging();
         services.AddOptions();
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConsulDiscoveryClient>();
 
         _ = serviceProvider.GetRequiredService<IConsulClient>();
-        _ = serviceProvider.GetRequiredService<TtlScheduler>();
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistry>();
-        _ = serviceProvider.GetRequiredService<ConsulRegistration>();
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
+
+        IDiscoveryClient discoveryClient = serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which;
+        discoveryClient.Should().BeOfType<ConsulDiscoveryClient>();
     }
 
     [Fact]
@@ -692,27 +692,27 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             ["consul:discovery:deregister"] = "false"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
+        services.AddSingleton<INetworkInterfaceProvider, FakeNetworkInterfaceProvider>();
         services.AddLogging();
         services.AddOptions();
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConsulDiscoveryClient>();
-
         _ = serviceProvider.GetRequiredService<IConsulClient>();
-        _ = serviceProvider.GetRequiredService<TtlScheduler>();
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistry>();
-
-        var registration = serviceProvider.GetRequiredService<ConsulRegistration>();
-        registration.Host.Should().Be("from-test");
-
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
+
+        IDiscoveryClient discoveryClient = serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which;
+        discoveryClient.Should().BeOfType<ConsulDiscoveryClient>();
+
+        IServiceInstance? serviceInstance = discoveryClient.GetLocalServiceInstance();
+
+        serviceInstance.Should().NotBeNull();
+        serviceInstance.Host.Should().Be("from-test");
     }
 
     [Fact]
@@ -726,27 +726,26 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             ["consul:discovery:deregister"] = "false"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddLogging();
         services.AddOptions();
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
-        serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<ConsulDiscoveryClient>();
-
         _ = serviceProvider.GetRequiredService<IConsulClient>();
-        _ = serviceProvider.GetRequiredService<TtlScheduler>();
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistry>();
-
-        var registration = serviceProvider.GetRequiredService<ConsulRegistration>();
-        registration.Port.Should().Be(1234);
-
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
+
+        IDiscoveryClient discoveryClient = serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which;
+        discoveryClient.Should().BeOfType<ConsulDiscoveryClient>();
+
+        IServiceInstance? serviceInstance = discoveryClient.GetLocalServiceInstance();
+
+        serviceInstance.Should().NotBeNull();
+        serviceInstance.Port.Should().Be(1234);
     }
 
     [Fact]
@@ -761,22 +760,26 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             ["Consul:Discovery:UseAspNetCoreUrls"] = "false"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddLogging();
         services.AddOptions();
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var registration = serviceProvider.GetRequiredService<ConsulRegistration>();
 
-        registration.Host.Should().NotBe("myapp");
-        registration.Port.Should().Be(0);
-
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
+
+        IDiscoveryClient discoveryClient = serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which;
+        discoveryClient.Should().BeOfType<ConsulDiscoveryClient>();
+
+        IServiceInstance? serviceInstance = discoveryClient.GetLocalServiceInstance();
+
+        serviceInstance.Should().NotBeNull();
+        serviceInstance.Host.Should().NotBe("myapp");
+        serviceInstance.Port.Should().Be(0);
     }
 
     [Fact]
@@ -791,22 +794,26 @@ public sealed class RegisterMultipleDiscoveryClientsTest
             ["Consul:Discovery:Port"] = "8080"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddLogging();
         services.AddOptions();
         services.AddConsulDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
-        var registration = serviceProvider.GetRequiredService<ConsulRegistration>();
 
-        registration.Host.Should().NotBe("myapp");
-        registration.Port.Should().Be(8080);
-
-        _ = serviceProvider.GetRequiredService<ConsulServiceRegistrar>();
         _ = serviceProvider.GetRequiredService<IHealthContributor>();
+
+        IDiscoveryClient discoveryClient = serviceProvider.GetServices<IDiscoveryClient>().Should().ContainSingle().Which;
+        discoveryClient.Should().BeOfType<ConsulDiscoveryClient>();
+
+        IServiceInstance? serviceInstance = discoveryClient.GetLocalServiceInstance();
+
+        serviceInstance.Should().NotBeNull();
+        serviceInstance.Host.Should().NotBe("myapp");
+        serviceInstance.Port.Should().Be(8080);
     }
 
     [Fact]
@@ -830,11 +837,11 @@ public sealed class RegisterMultipleDiscoveryClientsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         IServiceCollection services = new ServiceCollection();
         services.AddOptions();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddConfigurationDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -856,10 +863,10 @@ public sealed class RegisterMultipleDiscoveryClientsTest
     [Fact]
     public async Task WithMultipleClients_AddsDiscoveryClients()
     {
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(FastDiscovery).Build();
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(FastDiscovery).Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddConfigurationDiscoveryClient();
         services.AddConsulDiscoveryClient();
         services.AddEurekaDiscoveryClient();
@@ -886,5 +893,23 @@ public sealed class RegisterMultipleDiscoveryClientsTest
         services.AddEurekaDiscoveryClient();
 
         services.Count.Should().Be(beforeServiceCount);
+    }
+
+    private sealed class FakeNetworkInterfaceProvider : INetworkInterfaceProvider
+    {
+        private const string TestIPAddress = "11.22.33.44";
+        private const string TestHostName = "test.interface-name.com";
+
+        private static readonly NetworkInterfaceSnapshot Snapshot = new("eth0", "eth0-id", true, false, 1, [IPAddress.Parse(TestIPAddress)]);
+
+        public IReadOnlyList<NetworkInterfaceSnapshot> GetAllNetworkInterfaces()
+        {
+            return [Snapshot];
+        }
+
+        public string ResolveHostName(IPAddress address)
+        {
+            return TestHostName;
+        }
     }
 }

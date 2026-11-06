@@ -35,7 +35,9 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
 #pragma warning restore CS0618 // Type or member is obsolete
         }));
 
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var clientFactory = host.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = clientFactory.CreateClient("test");
@@ -63,7 +65,8 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
 #pragma warning restore CS0618 // Type or member is obsolete
         });
 
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var clientFactory = host.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = clientFactory.CreateClient("test");
@@ -83,7 +86,9 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
         HostBuilder hostBuilder = GetHostBuilderWithCustomHeader(customCertificateHeader);
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var clientFactory = host.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient client = clientFactory.CreateClient("test");
@@ -112,7 +117,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             });
         });
 
-        await using WebApplication server = serverBuilder.Build();
+        WebApplication server = serverBuilder.Build();
 
         server.MapGet("/", (HttpContext httpContext) =>
         {
@@ -121,8 +126,9 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             return Results.Ok();
         });
 
-        await server.StartAsync(TestContext.Current.CancellationToken);
-        var addressesFeature = server.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!;
+        await using HostWrapper serverHost = HostWrapper.Wrap(server);
+        await serverHost.StartAsync(TestContext.Current.CancellationToken);
+        var addressesFeature = serverHost.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!;
         int port = new Uri(addressesFeature.Addresses.First()).Port;
 
         HostBuilder clientHostBuilder = GetHostBuilder(builder => builder.ConfigureServices(services =>
@@ -145,7 +151,9 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
 #pragma warning restore CS0618 // Type or member is obsolete
         }));
 
-        using IHost clientHost = await clientHostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper clientHost = HostWrapper.Wrap(clientHostBuilder.Build());
+        await clientHost.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificateToDispose = clientHost.Services.GetAppInstanceIdentityCertificate();
         var clientFactory = clientHost.Services.GetRequiredService<IHttpClientFactory>();
         using HttpClient httpClient = clientFactory.CreateClient("test");
         using HttpResponseMessage response = await httpClient.GetAsync(new Uri($"https://localhost:{port}/"), TestContext.Current.CancellationToken);
@@ -153,7 +161,10 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string instanceCertificatePem = await File.ReadAllTextAsync("instance.crt", TestContext.Current.CancellationToken);
-        var expectedCertificate = X509Certificate2.CreateFromPem(instanceCertificatePem);
+        using var expectedCertificate = X509Certificate2.CreateFromPem(instanceCertificatePem);
+        // The server callback created this certificate from the received header value.
+        using X509Certificate2? receivedCertificateToDispose = receivedCertificate;
+
         receivedCertificate.Should().NotBeNull();
         receivedCertificate.Thumbprint.Should().Be(expectedCertificate.Thumbprint);
     }

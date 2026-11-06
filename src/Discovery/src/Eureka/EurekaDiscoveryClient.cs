@@ -12,9 +12,6 @@ using Steeltoe.Discovery.Eureka.AppInfo;
 using Steeltoe.Discovery.Eureka.Configuration;
 using Steeltoe.Discovery.Eureka.Transport;
 
-// Justification: See the doc-comments on IDiscoveryClient.ShutdownAsync.
-#pragma warning disable CA1001 // Types that own disposable fields should be disposable
-
 namespace Steeltoe.Discovery.Eureka;
 
 /// <summary>
@@ -24,7 +21,10 @@ namespace Steeltoe.Discovery.Eureka;
 /// </see>
 /// .
 /// </summary>
+#pragma warning disable CA1001 // Types that own disposable fields should be disposable
+// Justification: See the doc-comments on IDiscoveryClient.ShutdownAsync.
 public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
+#pragma warning restore CA1001 // Types that own disposable fields should be disposable
 {
     private readonly EurekaApplicationInfoManager _appInfoManager;
     private readonly EurekaClient _eurekaClient;
@@ -33,8 +33,8 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
     private readonly TimeProvider _timeProvider;
     private readonly IDisposable? _clientOptionsChangeToken;
     private readonly ILogger<EurekaDiscoveryClient> _logger;
-    private readonly Timer? _heartbeatTimer;
-    private readonly Timer? _cacheRefreshTimer;
+    private readonly ITimer? _heartbeatTimer;
+    private readonly ITimer? _cacheRefreshTimer;
     private readonly SemaphoreSlim _registerUnregisterAsyncLock = new(1);
     private readonly SemaphoreSlim _registryFetchAsyncLock = new(1);
     private volatile bool _hasRegistered;
@@ -65,6 +65,8 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
     }
 
     public string Description => "A discovery client for Spring Cloud Eureka.";
+
+    internal event EventHandler? HeartbeatCycleCompleted;
 
     /// <summary>
     /// Occurs after applications have been fetched from Eureka.
@@ -240,13 +242,13 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
         }
     }
 
-    private static Timer StartTimer(TimeSpan interval, Action action)
+    private ITimer StartTimer(TimeSpan interval, Action action)
     {
         var gatedAction = new GatedAction(action);
-        return new Timer(_ => gatedAction.Run(), null, interval, interval);
+        return _timeProvider.CreateTimer(_ => gatedAction.Run(), null, interval, interval);
     }
 
-    private static void ChangeTimer(Timer? timer, TimeSpan? interval)
+    private static void ChangeTimer(ITimer? timer, TimeSpan? interval)
     {
         if (timer != null && interval > TimeSpan.Zero)
         {
@@ -518,13 +520,13 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
     // ReSharper disable once AsyncVoidMethod
     private async void HeartbeatAsyncTask()
     {
-        if (!IsAlive)
-        {
-            return;
-        }
-
         try
         {
+            if (!IsAlive)
+            {
+                return;
+            }
+
             await RenewAsync(CancellationToken.None);
         }
         catch (Exception exception)
@@ -533,6 +535,10 @@ public sealed partial class EurekaDiscoveryClient : IDiscoveryClient
             {
                 LogPeriodicRenewFailed(exception);
             }
+        }
+        finally
+        {
+            HeartbeatCycleCompleted?.Invoke(this, EventArgs.Empty);
         }
     }
 

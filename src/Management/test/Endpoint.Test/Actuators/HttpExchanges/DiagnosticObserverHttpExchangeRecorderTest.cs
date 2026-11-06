@@ -45,26 +45,33 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddSingleton(timeProvider);
+        builder.Services.AddSingleton<SignalingHttpExchangeRecorder>();
+        builder.Services.AddSingleton<IHttpExchangeRecorder>(serviceProvider => serviceProvider.GetRequiredService<SignalingHttpExchangeRecorder>());
         builder.Services.AddHttpExchangesActuator();
         builder.Services.PostConfigure<HttpExchangesEndpointOptions>(options => options.ResponseHeaders.Remove(HeaderNames.Date));
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapGet("/hello", () => "Hello World!");
+        app.MapGet("/hello", () => "Hello World!");
+
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
 
         // ReSharper disable once ShortLivedHttpClient
         using var httpClient = new HttpClient();
 
-        HttpResponseMessage helloResponse =
+        using HttpResponseMessage helloResponse =
             await httpClient.GetAsync(new Uri("http://127.0.0.1:5000/hello?someQuery=value"), TestContext.Current.CancellationToken);
 
         helloResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
-        _ = await httpClient.GetAsync(new Uri("http://127.0.0.1:5000/does/not/exist"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage errorResponse =
+            await httpClient.GetAsync(new Uri("http://127.0.0.1:5000/does/not/exist"), TestContext.Current.CancellationToken);
 
-        await Task.Delay(250.Milliseconds(), TestContext.Current.CancellationToken);
+        // Recording happens after the response is sent, so wait for both requests to be recorded instead of assuming they are.
+        var recorder = host.Services.GetRequiredService<SignalingHttpExchangeRecorder>();
+        await recorder.WaitForExchangesAsync(2, TestContext.Current.CancellationToken);
 
-        HttpResponseMessage actuatorResponse =
+        using HttpResponseMessage actuatorResponse =
             await httpClient.GetAsync(new Uri("http://127.0.0.1:5000/actuator/httpexchanges"), TestContext.Current.CancellationToken);
 
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -181,12 +188,11 @@ public sealed class DiagnosticObserverHttpExchangeRecorderTest
             HttpContext = context
         });
 
-        SpinWait.SpinUntil(() => false, 1.Seconds());
-
+        activity.SetEndTime(activity.StartTimeUtc + 1.Seconds());
         listener.StopActivity(activity, context);
 
         HttpExchange httpExchange = recorded.Should().ContainSingle().Subject;
-        httpExchange.TimeTaken.Should().BeGreaterThan(900.Milliseconds()).And.BeLessThan(1300.Milliseconds());
+        httpExchange.TimeTaken.Should().Be(1.Seconds());
     }
 
     [Fact]

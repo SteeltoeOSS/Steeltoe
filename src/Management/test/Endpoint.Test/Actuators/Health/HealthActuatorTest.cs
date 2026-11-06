@@ -7,7 +7,6 @@ using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -36,7 +35,7 @@ public sealed class HealthActuatorTest
     public async Task Registers_dependent_services()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddHealthActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -50,7 +49,7 @@ public sealed class HealthActuatorTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddHealthActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -93,7 +92,7 @@ public sealed class HealthActuatorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddHealthActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -136,7 +135,7 @@ public sealed class HealthActuatorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddHealthActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -180,7 +179,7 @@ public sealed class HealthActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -227,12 +226,12 @@ public sealed class HealthActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -270,12 +269,12 @@ public sealed class HealthActuatorTest
         builder.Services.AddHealthActuator();
         builder.Services.RemoveAll<IHealthContributor>();
         builder.Services.AddHealthContributor<DownContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -296,19 +295,16 @@ public sealed class HealthActuatorTest
         builder.Services.AddHealthActuator();
         builder.Services.RemoveAll<IHealthContributor>();
         builder.Services.AddHealthContributor<DownContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        var requestMessage = new HttpRequestMessage
-        {
-            RequestUri = new Uri("http://localhost/actuator/health")
-        };
-
+        using var requestMessage = new HttpRequestMessage();
+        requestMessage.RequestUri = new Uri("http://localhost/actuator/health");
         requestMessage.Headers.Add("X-Use-Status-Code-From-Response", "false");
 
-        HttpResponseMessage response = await httpClient.SendAsync(requestMessage, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -327,12 +323,12 @@ public sealed class HealthActuatorTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response =
+        using HttpResponseMessage response =
             await httpClient.GetAsync(new Uri("http://localhost/actuator/health/unknown-group"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
@@ -355,12 +351,13 @@ public sealed class HealthActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<UpContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/LIVENESS"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await httpClient.GetAsync(new Uri("http://localhost/actuator/health/LIVENESS"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -391,12 +388,13 @@ public sealed class HealthActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<UpContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/READINESS"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await httpClient.GetAsync(new Uri("http://localhost/actuator/health/READINESS"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -428,12 +426,13 @@ public sealed class HealthActuatorTest
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<UpContributor>();
         builder.Services.AddHealthChecks().AddPrivateMemoryHealthCheck(1 * OneGigabyte).AddWorkingSetHealthCheck(1 * OneGigabyte);
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/ASPNET"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await httpClient.GetAsync(new Uri("http://localhost/actuator/health/ASPNET"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -527,9 +526,9 @@ public sealed class HealthActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<ComplexDetailsContributor>();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.Use(async (httpContext, next) =>
+        app.Use(async (httpContext, next) =>
         {
             if (hasClaim)
             {
@@ -539,10 +538,12 @@ public sealed class HealthActuatorTest
             await next(httpContext);
         });
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health/test-group"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await httpClient.GetAsync(new Uri("http://localhost/actuator/health/test-group"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -599,12 +600,12 @@ public sealed class HealthActuatorTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddHealthActuator();
-        WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response1 =
+        using HttpResponseMessage response1 =
             await httpClient.GetAsync(new Uri("http://localhost/actuator/health/ping-group"), TestContext.Current.CancellationToken);
 
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
@@ -640,7 +641,7 @@ public sealed class HealthActuatorTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 =
+        using HttpResponseMessage response2 =
             await httpClient.GetAsync(new Uri("http://localhost/actuator/health/ping-group"), TestContext.Current.CancellationToken);
 
         response2.StatusCode.Should().Be(HttpStatusCode.OK);

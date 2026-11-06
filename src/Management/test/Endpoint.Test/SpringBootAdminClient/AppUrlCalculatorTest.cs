@@ -2,13 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.AspNetCore.Hosting.Server;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Net;
 using Steeltoe.Management.Endpoint.SpringBootAdminClient;
@@ -28,8 +28,8 @@ public sealed class AppUrlCalculatorTest
     [Fact]
     public void Selects_default_binding_when_nothing_configured()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
@@ -46,14 +46,14 @@ public sealed class AppUrlCalculatorTest
             ["urls"] = $"http://dontcare:{ListenNonSecurePort1};https://dontcare:{ListenSecurePort1};https://dontcare:{ListenSecurePort2}"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ListenSecurePort1}/");
+        url.Should().Be($"https://{FakeDomainNameResolver.TestHostName}:{ListenSecurePort1}/");
     }
 
     [Fact]
@@ -65,14 +65,14 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:BaseScheme"] = "http"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{ListenNonSecurePort1}/");
+        url.Should().Be($"http://{FakeDomainNameResolver.TestHostName}:{ListenNonSecurePort1}/");
     }
 
     [Fact]
@@ -84,14 +84,14 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:BaseScheme"] = "https"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ListenSecurePort1}/");
+        url.Should().Be($"https://{FakeDomainNameResolver.TestHostName}:{ListenSecurePort1}/");
     }
 
     [Fact]
@@ -103,14 +103,14 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:BasePort"] = "7890"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:7890/");
+        url.Should().Be($"https://{FakeDomainNameResolver.TestHostName}:7890/");
     }
 
     [Fact]
@@ -122,14 +122,14 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:BasePort"] = OverriddenPort
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{OverriddenPort}/");
+        url.Should().Be($"https://{FakeDomainNameResolver.TestHostName}:{OverriddenPort}/");
     }
 
     [Fact]
@@ -140,14 +140,14 @@ public sealed class AppUrlCalculatorTest
             ["Management:Endpoints:Port"] = ManagementPort
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{ManagementPort}/");
+        url.Should().Be($"http://{FakeDomainNameResolver.TestHostName}:{ManagementPort}/");
     }
 
     [Fact]
@@ -159,14 +159,14 @@ public sealed class AppUrlCalculatorTest
             ["Management:Endpoints:SslEnabled"] = "true"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ManagementPort}/");
+        url.Should().Be($"https://{FakeDomainNameResolver.TestHostName}:{ManagementPort}/");
     }
 
     [Fact]
@@ -178,14 +178,14 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:BaseScheme"] = "https"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ManagementPort}/");
+        url.Should().Be($"https://{FakeDomainNameResolver.TestHostName}:{ManagementPort}/");
     }
 
     [Fact]
@@ -198,14 +198,14 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:BaseScheme"] = "http"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{ManagementPort}/");
+        url.Should().Be($"http://{FakeDomainNameResolver.TestHostName}:{ManagementPort}/");
     }
 
     [Fact]
@@ -217,14 +217,14 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:BasePort"] = OverriddenPort
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeDomainNameResolver.HostName}:{OverriddenPort}/");
+        url.Should().Be($"http://{FakeDomainNameResolver.TestHostName}:{OverriddenPort}/");
     }
 
     [Fact]
@@ -237,14 +237,14 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:BasePort"] = OverriddenPort
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{OverriddenPort}/");
+        url.Should().Be($"https://{FakeDomainNameResolver.TestHostName}:{OverriddenPort}/");
     }
 
     [Fact]
@@ -255,8 +255,8 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:BaseHost"] = "test.host.com"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
@@ -273,8 +273,8 @@ public sealed class AppUrlCalculatorTest
             ["urls"] = $"http://dontcare:{ListenNonSecurePort1};http://localhost:{ListenNonSecurePort2};http://10.20.30.40:{ListenNonSecurePort3}"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
@@ -291,8 +291,8 @@ public sealed class AppUrlCalculatorTest
             ["urls"] = $"http://dontcare:{ListenNonSecurePort1};http://10.20.30.40:{ListenNonSecurePort2};http://localhost:{ListenNonSecurePort3}"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
@@ -310,14 +310,14 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:UseNetworkInterfaces"] = "true"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"http://{FakeInetUtils.HostName}:{ListenNonSecurePort1}/");
+        url.Should().Be($"http://{FakeNetworkInterfaceProvider.TestHostName}:{ListenNonSecurePort1}/");
     }
 
     [Fact]
@@ -329,14 +329,14 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.IPAddress}:{ListenSecurePort1}/");
+        url.Should().Be($"https://{FakeDomainNameResolver.TestIPAddress}:{ListenSecurePort1}/");
     }
 
     [Fact]
@@ -349,14 +349,14 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeInetUtils.IPAddress}:{ListenSecurePort1}/");
+        url.Should().Be($"https://{FakeNetworkInterfaceProvider.TestIPAddress}:{ListenSecurePort1}/");
     }
 
     [Fact]
@@ -367,8 +367,8 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:BasePath"] = "api"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
@@ -386,8 +386,8 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
@@ -405,8 +405,8 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
@@ -423,14 +423,14 @@ public sealed class AppUrlCalculatorTest
             ["urls"] = $"https://dontcare:{ListenSecurePort1};http://localhost:{ListenNonSecurePort1};http://10.20.30.40:{ListenNonSecurePort2}"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
         string? url = calculator.AutoDetectAppUrl(options.Value);
 
-        url.Should().Be($"https://{FakeDomainNameResolver.HostName}:{ListenSecurePort1}/");
+        url.Should().Be($"https://{FakeDomainNameResolver.TestHostName}:{ListenSecurePort1}/");
     }
 
     [Fact]
@@ -441,8 +441,8 @@ public sealed class AppUrlCalculatorTest
             ["urls"] = $"http://localhost:{ListenNonSecurePort2};http://dontcare:{ListenNonSecurePort1}"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
@@ -454,8 +454,8 @@ public sealed class AppUrlCalculatorTest
     [Fact]
     public void Unable_when_no_bindings_available()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var fakeServer = (FakeServer)serviceProvider.GetRequiredService<IServer>();
         fakeServer.Features.Get<IServerAddressesFeature>()!.Addresses.Clear();
@@ -475,8 +475,8 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:BaseHost"] = "host:name"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
@@ -493,8 +493,8 @@ public sealed class AppUrlCalculatorTest
             ["urls"] = $"http://dontcare:{ListenNonSecurePort1}"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var fakeDomainNameResolver = (FakeDomainNameResolver)serviceProvider.GetRequiredService<IDomainNameResolver>();
         fakeDomainNameResolver.ReturnsNull = true;
@@ -515,8 +515,8 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:PreferIPAddress"] = "true"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var fakeDomainNameResolver = (FakeDomainNameResolver)serviceProvider.GetRequiredService<IDomainNameResolver>();
         fakeDomainNameResolver.ReturnsNull = true;
@@ -536,8 +536,8 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:BasePath"] = "path???/some"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
@@ -554,8 +554,8 @@ public sealed class AppUrlCalculatorTest
             ["Spring:Boot:Admin:Client:BasePath"] = "path%3F%3F%3F/some"
         };
 
-        IConfiguration configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        using ServiceProvider serviceProvider = BuildServiceProvider(configuration);
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+        using ServiceProvider serviceProvider = BuildServiceProvider(configurationRoot);
 
         var calculator = serviceProvider.GetRequiredService<AppUrlCalculator>();
         var options = serviceProvider.GetRequiredService<IOptions<SpringBootAdminClientOptions>>();
@@ -564,29 +564,35 @@ public sealed class AppUrlCalculatorTest
         url.Should().Be("http://localhost:5000/path%3F%3F%3F/some");
     }
 
-    private static ServiceProvider BuildServiceProvider(IConfiguration configuration)
+    private static ServiceProvider BuildServiceProvider(IConfigurationRoot configurationRoot)
     {
         var services = new ServiceCollection();
 
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddSingleton<IServer, FakeServer>();
         services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
-        services.AddSingleton<InetUtils, FakeInetUtils>();
+        services.AddSingleton<INetworkInterfaceProvider, FakeNetworkInterfaceProvider>();
         services.AddSpringBootAdminClient();
         services.RemoveAll<IHostedService>();
 
         return services.BuildServiceProvider(true);
     }
 
-    private sealed class FakeInetUtils(IOptionsMonitor<InetOptions> optionsMonitor, ILogger<InetUtils> logger)
-        : InetUtils(new FakeDomainNameResolver(), optionsMonitor, logger)
+    private sealed class FakeNetworkInterfaceProvider : INetworkInterfaceProvider
     {
-        public const string IPAddress = "10.11.12.13";
-        public const string HostName = "inet-host-name";
+        public const string TestIPAddress = "10.11.12.13";
+        public const string TestHostName = "inet-host-name";
 
-        public override HostInfo FindFirstNonLoopbackHostInfo()
+        private static readonly NetworkInterfaceSnapshot Snapshot = new("eth0", "fake-id", true, false, 1, [IPAddress.Parse(TestIPAddress)]);
+
+        public IReadOnlyList<NetworkInterfaceSnapshot> GetAllNetworkInterfaces()
         {
-            return new HostInfo(HostName, IPAddress);
+            return [Snapshot];
+        }
+
+        public string ResolveHostName(IPAddress address)
+        {
+            return TestHostName;
         }
     }
 }

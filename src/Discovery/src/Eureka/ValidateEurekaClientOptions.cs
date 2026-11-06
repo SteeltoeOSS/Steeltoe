@@ -29,15 +29,22 @@ internal sealed partial class ValidateEurekaClientOptions : IValidateOptions<Eur
             return ValidateOptionsResult.Success;
         }
 
+        List<string> errors = ValidateServiceUrls(options.EurekaServerServiceUrls);
+
+        return errors.Count > 0 ? ValidateOptionsResult.Fail(errors) : ValidateOptionsResult.Success;
+    }
+
+    private List<string> ValidateServiceUrls(string? eurekaServerServiceUrls)
+    {
         List<string> errors = [];
 
-        if (string.IsNullOrWhiteSpace(options.EurekaServerServiceUrls))
+        if (string.IsNullOrWhiteSpace(eurekaServerServiceUrls))
         {
             errors.Add("Eureka Service URL must be provided.");
         }
         else
         {
-            string[] urls = options.EurekaServerServiceUrls.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            string[] urls = eurekaServerServiceUrls.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
 
             foreach (string url in urls)
             {
@@ -55,7 +62,7 @@ internal sealed partial class ValidateEurekaClientOptions : IValidateOptions<Eur
             }
         }
 
-        return errors.Count > 0 ? ValidateOptionsResult.Fail(errors) : ValidateOptionsResult.Success;
+        return errors;
     }
 
     [LoggerMessage(EventId = 0, Level = LogLevel.Warning,

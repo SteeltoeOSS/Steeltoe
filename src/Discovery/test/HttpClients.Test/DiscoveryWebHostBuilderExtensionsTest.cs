@@ -15,11 +15,12 @@ namespace Steeltoe.Discovery.HttpClients.Test;
 
 public sealed class DiscoveryWebHostBuilderExtensionsTest
 {
-    private static readonly Dictionary<string, string?> EurekaSettings = new()
+    // Keeps the client enabled, so its startup and shutdown are exercised, but makes no network calls (like ConsulSettings does for Consul).
+    private static readonly Dictionary<string, string?> EurekaSettingsWithoutNetworkCalls = new()
     {
-        ["eureka:client:shouldRegisterWithEureka"] = "true",
-        ["eureka:client:eurekaServer:connectTimeoutSeconds"] = "1",
-        ["eureka:client:eurekaServer:retryCount"] = "0"
+        ["eureka:client:enabled"] = "true",
+        ["eureka:client:shouldRegisterWithEureka"] = "false",
+        ["eureka:client:shouldFetchRegistry"] = "false"
     };
 
     private static readonly Dictionary<string, string?> ConsulSettings = new()
@@ -31,14 +32,15 @@ public sealed class DiscoveryWebHostBuilderExtensionsTest
     };
 
     [Fact]
-    public void AddEurekaDiscoveryClient_WebHostBuilder_AddsServiceDiscovery_Eureka()
+    public async Task AddEurekaDiscoveryClient_WebHostBuilder_AddsServiceDiscovery_Eureka()
     {
         WebHostBuilder hostBuilder = TestWebHostBuilderFactory.Create();
-        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettings));
+        hostBuilder.ConfigureAppConfiguration(builder => builder.AddInMemoryCollection(EurekaSettingsWithoutNetworkCalls));
 
         hostBuilder.ConfigureServices(services => services.AddEurekaDiscoveryClient());
 
-        using IWebHost host = hostBuilder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         host.Services.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
         host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();

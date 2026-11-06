@@ -19,19 +19,15 @@ internal static class PropertiesFile
 
         foreach (string line in await File.ReadAllLinesAsync(path, Encoding.UTF8, TestContext.Current.CancellationToken))
         {
-            if (!line.StartsWith("git.", StringComparison.Ordinal))
+            if (line.StartsWith("git.", StringComparison.Ordinal))
             {
-                continue;
+                int equalsIndex = line.IndexOf('=');
+
+                if (equalsIndex != -1)
+                {
+                    map[line[..equalsIndex]] = line[(equalsIndex + 1)..];
+                }
             }
-
-            int equalsIndex = line.IndexOf('=');
-
-            if (equalsIndex < 0)
-            {
-                continue;
-            }
-
-            map[line[..equalsIndex]] = line[(equalsIndex + 1)..];
         }
 
         return map;

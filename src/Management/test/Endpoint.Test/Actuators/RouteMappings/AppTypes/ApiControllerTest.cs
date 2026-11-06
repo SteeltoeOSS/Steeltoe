@@ -5,7 +5,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -31,13 +30,15 @@ public sealed class ApiControllerTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddRouteMappingsActuator();
         builder.Services.AddControllers().HideControllersExcept(typeof(SimpleTestController));
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapControllers();
+        app.MapControllers();
+
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -101,13 +102,15 @@ public sealed class ApiControllerTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddRouteMappingsActuator();
         builder.Services.AddControllers().HideControllersExcept(typeof(AnnotatedTestController));
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapControllers();
+        app.MapControllers();
+
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -218,13 +221,15 @@ public sealed class ApiControllerTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddRouteMappingsActuator();
         builder.Services.AddControllers().HideControllersExcept(typeof(MultipleVerbsTestController));
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapControllers();
+        app.MapControllers();
+
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -408,13 +413,15 @@ public sealed class ApiControllerTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddRouteMappingsActuator();
         builder.Services.AddControllers().HideControllersExcept(typeof(AnyVerbTestController));
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapControllers();
+        app.MapControllers();
+
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -477,12 +484,12 @@ public sealed class ApiControllerTest
         });
 
         builder.Configure(applicationBuilder => applicationBuilder.UseEndpoints(routes => routes.MapControllers()));
-        using IWebHost host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -554,12 +561,12 @@ public sealed class ApiControllerTest
         builder.ConfigureWebHost(webHostBuilder =>
             webHostBuilder.Configure(applicationBuilder => applicationBuilder.UseEndpoints(routes => routes.MapControllers())));
 
-        using IHost host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);

@@ -2,14 +2,13 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using System.Diagnostics;
 using System.Net;
 using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Steeltoe.Common.HealthChecks;
 using Steeltoe.Common.TestResources;
@@ -36,12 +35,13 @@ public sealed class HealthAggregationTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        builder.Services.RemoveAll<IHealthContributor>();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -61,12 +61,12 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<DisabledContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -86,12 +86,12 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<UnknownContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -116,12 +116,12 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<UpContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -146,12 +146,12 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<WarningContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -176,12 +176,12 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<OutOfServiceContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
@@ -206,12 +206,12 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<DownContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
@@ -236,12 +236,12 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddHealthContributor<ComplexDetailsContributor>();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -317,12 +317,12 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
@@ -364,28 +364,35 @@ public sealed class HealthAggregationTest
     [Fact]
     public async Task Aggregates_contributors_in_parallel()
     {
+        var timeProvider = new RecordingFakeTimeProvider();
+
         List<IHealthContributor> contributors =
         [
-            new SlowContributor(2.Seconds()),
-            new SlowContributor(3.Seconds()),
-            new SlowContributor(4.Seconds())
+            new SlowContributor(timeProvider, 2.Seconds()),
+            new SlowContributor(timeProvider, 3.Seconds())
         ];
+
+        // The aggregator runs at most as many contributors in parallel as there are processors.
+        Assert.SkipWhen(contributors.Count > System.Environment.ProcessorCount, "Not enough CPUs to run all contributors in parallel.");
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        var stopwatch = new Stopwatch();
-        stopwatch.Start();
+        Task<HttpResponseMessage> responseTask = httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        // Both contributors must be waiting at the same time before either one completes, which proves they run in parallel.
+        await timeProvider.WaitForNextTimerAsync(TestContext.Current.CancellationToken);
+        await timeProvider.WaitForNextTimerAsync(TestContext.Current.CancellationToken);
 
-        stopwatch.Stop();
+        timeProvider.Advance(3.Seconds());
+
+        using HttpResponseMessage response = await responseTask;
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -400,16 +407,10 @@ public sealed class HealthAggregationTest
                 },
                 "alwaysSlow-1": {
                   "status": "UP"
-                },
-                "alwaysSlow-2": {
-                  "status": "UP"
                 }
               }
             }
             """);
-
-        // Upper bound must be less than 2+3+4=9s if contributors ran sequentially.
-        stopwatch.Elapsed.Should().BeGreaterThan(500.Milliseconds()).And.BeLessThan(9.Seconds());
     }
 
     [Fact]
@@ -426,12 +427,12 @@ public sealed class HealthAggregationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddHealthActuator();
         builder.Services.AddSingleton<IEnumerable<IHealthContributor>>(contributors);
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -444,16 +445,20 @@ public sealed class HealthAggregationTest
     [Fact]
     public async Task Propagates_cancellation()
     {
-        List<IHealthContributor> contributors = [new SlowContributor(5.Seconds())];
+        var timeProvider = new RecordingFakeTimeProvider();
+        List<IHealthContributor> contributors = [new SlowContributor(timeProvider, 5.Seconds())];
         await using ServiceProvider emptyServiceProvider = new ServiceCollection().BuildServiceProvider(true);
         var aggregator = new HealthAggregator();
 
         using var source = new CancellationTokenSource();
-        source.CancelAfter(1.Seconds());
 
-        // ReSharper disable AccessToDisposedClosure
-        Func<Task> action = async () => await aggregator.AggregateAsync(contributors, [], emptyServiceProvider, source.Token);
-        // ReSharper restore AccessToDisposedClosure
+        Task aggregateTask = aggregator.AggregateAsync(contributors, [], emptyServiceProvider, source.Token);
+
+        // The contributor is waiting, so cancellation arrives while it is running.
+        await timeProvider.WaitForNextTimerAsync(TestContext.Current.CancellationToken);
+        await source.CancelAsync();
+
+        Func<Task> action = async () => await aggregateTask.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
 
         await action.Should().ThrowExactlyAsync<TaskCanceledException>();
     }
@@ -471,12 +476,12 @@ public sealed class HealthAggregationTest
         checksBuilder.AddCheck<AspNetDegradedCheck>("aspnet-degraded-check");
         checksBuilder.AddCheck<AspNetHealthyCheck>("aspnet-healthy-check");
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
@@ -529,13 +534,16 @@ public sealed class HealthAggregationTest
         checksBuilder.AddCheck<AspNetUnhealthyCheck>("aspnet-unhealthy-check", tags: ["ExcludeFromHealthActuator"]);
         checksBuilder.AddCheck<AspNetHealthyCheck>("aspnet-healthy-check");
 
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapHealthChecks("/health");
+        app.MapHealthChecks("/health");
+
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -556,7 +564,7 @@ public sealed class HealthAggregationTest
             }
             """);
 
-        HttpResponseMessage aspNetResponse = await httpClient.GetAsync(new Uri("http://localhost/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage aspNetResponse = await httpClient.GetAsync(new Uri("http://localhost/health"), TestContext.Current.CancellationToken);
 
         aspNetResponse.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
 
@@ -573,17 +581,20 @@ public sealed class HealthAggregationTest
         builder.Services.AddDbContext<TestDbContext>(options => options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
         builder.Services.AddHealthChecks().AddDbContextCheck<TestDbContext>();
         builder.Services.AddHealthActuator();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
         // ReSharper disable once AccessToDisposedClosure
-        Action action = () => host.Services.GetRequiredService<TestDbContext>();
+        Action action = () => app.Services.GetRequiredService<TestDbContext>();
         action.Should().ThrowExactly<InvalidOperationException>();
 
-        host.MapHealthChecks("/health");
+        app.MapHealthChecks("/health");
+
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage actuatorResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage actuatorResponse =
+            await httpClient.GetAsync(new Uri("http://localhost/actuator/health"), TestContext.Current.CancellationToken);
 
         actuatorResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -600,7 +611,7 @@ public sealed class HealthAggregationTest
             }
             """);
 
-        HttpResponseMessage aspNetResponse = await httpClient.GetAsync(new Uri("http://localhost/health"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage aspNetResponse = await httpClient.GetAsync(new Uri("http://localhost/health"), TestContext.Current.CancellationToken);
 
         aspNetResponse.StatusCode.Should().Be(HttpStatusCode.OK);
 

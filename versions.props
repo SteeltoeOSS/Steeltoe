@@ -6,7 +6,7 @@
     -->
 
     <AspNetCoreHealthChecksVersion>9.0.*</AspNetCoreHealthChecksVersion>
-    <CoverletVersion>10.0.*</CoverletVersion>
+    <CoverletVersion>10.1.*</CoverletVersion>
     <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
     <MicrosoftAzureCosmosVersion>3.62.*</MicrosoftAzureCosmosVersion>
     <MicrosoftBuildUtilitiesCoreVersion>18.9.*</MicrosoftBuildUtilitiesCoreVersion>
@@ -55,7 +55,7 @@
 
     <BouncyCastleVersion>2.2.*</BouncyCastleVersion>
     <ConsulVersion>1.8.*</ConsulVersion>
-    <DotnetGCDumpVersion>9.0.652701</DotnetGCDumpVersion>
+    <DotnetGCDumpVersion>10.0.750501</DotnetGCDumpVersion>
     <EntityFrameworkCoreVersion>8.0.*</EntityFrameworkCoreVersion>
     <FoundationalVersion>
       <!--
@@ -64,8 +64,8 @@
       -->
       10.0.*
     </FoundationalVersion>
-    <MicrosoftDiagnosticsNETCoreClientVersion>0.2.652701</MicrosoftDiagnosticsNETCoreClientVersion>
-    <MicrosoftDiagnosticsTracingTraceEventVersion>3.1.23</MicrosoftDiagnosticsTracingTraceEventVersion>
+    <MicrosoftDiagnosticsNETCoreClientVersion>0.2.750501</MicrosoftDiagnosticsNETCoreClientVersion>
+    <MicrosoftDiagnosticsTracingTraceEventVersion>4.0.0</MicrosoftDiagnosticsTracingTraceEventVersion>
     <OpenTelemetryExporterPrometheusVersion>1.15.*-*</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryVersion>1.15.*</OpenTelemetryVersion>
     <SerilogExtensionsLoggingVersion>10.0.*</SerilogExtensionsLoggingVersion>

@@ -33,7 +33,7 @@ public sealed class BootstrapperLoggerFactoryTest
         builder.Logging.AddProvider(capturingLoggerProvider);
         builder.Services.UpgradeBootstrapLoggerFactory(bootstrapLoggerFactory);
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         var loggerFactory = app.Services.GetRequiredService<ILoggerFactory>();
@@ -56,7 +56,7 @@ public sealed class BootstrapperLoggerFactoryTest
     [Fact]
     public void Creates_default_minimum_levels()
     {
-        var bootstrapLoggerFactory = BootstrapLoggerFactory.CreateConsole();
+        using var bootstrapLoggerFactory = BootstrapLoggerFactory.CreateConsole();
         ILogger logger = bootstrapLoggerFactory.CreateLogger("TestLogger");
 
         logger.IsEnabled(LogLevel.Trace).Should().BeFalse();
@@ -75,8 +75,9 @@ public sealed class BootstrapperLoggerFactoryTest
             ["LogLevel:TestLogger"] = "Warning"
         };
 
-        IConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
-        var bootstrapLoggerFactory = BootstrapLoggerFactory.CreateConsole(loggingBuilder => loggingBuilder.AddConfiguration(configuration));
+        using ConfigurationRoot configuration = new ConfigurationBuilder().AddInMemoryCollection(appSettings).BuildAsRoot();
+        // ReSharper disable once AccessToDisposedClosure
+        using var bootstrapLoggerFactory = BootstrapLoggerFactory.CreateConsole(loggingBuilder => loggingBuilder.AddConfiguration(configuration));
         ILogger logger = bootstrapLoggerFactory.CreateLogger("TestLogger");
 
         logger.IsEnabled(LogLevel.Trace).Should().BeFalse();

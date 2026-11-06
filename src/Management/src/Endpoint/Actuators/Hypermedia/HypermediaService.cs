@@ -62,17 +62,15 @@ internal sealed partial class HypermediaService
     {
         ArgumentNullException.ThrowIfNull(baseUrl);
 
-        var links = new Links();
         ManagementOptions managementOptions = _managementOptionsMonitor.CurrentValue;
 
         if (!_endpointOptions.IsEnabled(managementOptions))
         {
-            return links;
+            return new Links();
         }
 
         LogProcessingHypermedia();
 
-        Link? selfLink = null;
         bool skipExposureCheck = PermissionsProvider.IsCloudFoundryRequest(baseUrl.PathAndQuery);
         string? basePath = managementOptions.GetBasePath(baseUrl.AbsolutePath);
 
@@ -81,32 +79,36 @@ internal sealed partial class HypermediaService
             basePath = $"{_httpContextAccessor.HttpContext.Request.PathBase}{basePath}";
         }
 
-        foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviders.Select(provider => provider.Get()).OrderBy(options => options.Id))
+        return GetLinks(baseUrl, basePath, skipExposureCheck, managementOptions);
+    }
+
+    private Links GetLinks(Uri baseUrl, string? basePath, bool skipExposureCheck, ManagementOptions managementOptions)
+    {
+        var links = new Links();
+        Link? selfLink = null;
+
+        foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviders.Select(provider => provider.Get())
+            .Where(options => options.Id != null && options.IsEnabled(managementOptions)).OrderBy(options => options.Id))
         {
-            if (endpointOptions.Id == null || !endpointOptions.IsEnabled(managementOptions))
+            if (skipExposureCheck || endpointOptions.IsExposed(managementOptions))
             {
-                continue;
-            }
+                string endpointId = endpointOptions.Id!;
 
-            if (!skipExposureCheck && !endpointOptions.IsExposed(managementOptions))
-            {
-                continue;
-            }
-
-            if (endpointOptions.Id == _endpointOptions.Id)
-            {
-                selfLink = CreateLink(baseUrl, basePath, endpointOptions);
-            }
-            else
-            {
-                if (links.Entries.ContainsKey(endpointOptions.Id))
+                if (endpointId == _endpointOptions.Id)
                 {
-                    LogDuplicateEndpoint(endpointOptions.Id);
+                    selfLink = CreateLink(baseUrl, basePath, endpointOptions);
                 }
                 else
                 {
-                    Link link = CreateLink(baseUrl, basePath, endpointOptions);
-                    links.Entries.Add(endpointOptions.Id, link);
+                    if (links.Entries.ContainsKey(endpointId))
+                    {
+                        LogDuplicateEndpoint(endpointId);
+                    }
+                    else
+                    {
+                        Link link = CreateLink(baseUrl, basePath, endpointOptions);
+                        links.Entries.Add(endpointId, link);
+                    }
                 }
             }
         }

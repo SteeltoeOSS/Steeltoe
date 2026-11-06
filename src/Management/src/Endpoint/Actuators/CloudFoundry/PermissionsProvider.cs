@@ -52,7 +52,7 @@ internal sealed partial class PermissionsProvider
 
         CloudFoundryEndpointOptions options = _optionsMonitor.CurrentValue;
         var checkPermissionsUri = new Uri($"{options.Api}/v2/apps/{options.ApplicationId}/permissions", UriKind.RelativeOrAbsolute);
-        var request = new HttpRequestMessage(HttpMethod.Get, checkPermissionsUri);
+        using var request = new HttpRequestMessage(HttpMethod.Get, checkPermissionsUri);
         var auth = new AuthenticationHeaderValue("bearer", accessToken);
         request.Headers.Authorization = auth;
 

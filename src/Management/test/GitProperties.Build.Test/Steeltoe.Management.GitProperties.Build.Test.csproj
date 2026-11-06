@@ -11,7 +11,7 @@
 
   <ItemGroup>
     <!-- Exposes $(TargetFramework) to runtime code, so the TFM can be changed without adapting existing tests. -->
-    <AssemblyMetadata Include="TargetFramework" Value="$(TargetFramework)" />
+    <AssemblyMetadata Include="TestTargetFramework" Value="$(TargetFramework)" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,6 +4,7 @@
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Configuration.Placeholder.Test;
 
@@ -21,11 +22,11 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("foo=bar");
     }
@@ -42,11 +43,11 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("foo=bar");
     }
@@ -57,11 +58,11 @@ public sealed class PropertyPlaceholderHelperTest
         const string text = "foo=${foo?empty}";
 
         var builder = new ConfigurationBuilder();
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("foo=empty");
     }
@@ -78,11 +79,11 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("foo=empty");
     }
@@ -99,11 +100,11 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("foo=bar");
     }
@@ -120,11 +121,11 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("foo=bar");
     }
@@ -135,11 +136,11 @@ public sealed class PropertyPlaceholderHelperTest
         const string text = "foo=${foo.bar?empty}";
 
         var builder = new ConfigurationBuilder();
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("foo=empty");
     }
@@ -157,11 +158,11 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("foo=bar,bar=baz");
     }
@@ -179,11 +180,11 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("foo=bar,bar=baz");
     }
@@ -201,11 +202,11 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("foo=bar");
     }
@@ -223,11 +224,11 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("foo=bar");
     }
@@ -245,7 +246,7 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder1 = new ConfigurationBuilder();
         builder1.AddInMemoryCollection(appSettings1);
-        IConfiguration configuration1 = builder1.Build();
+        using ConfigurationRoot configuration1 = builder1.BuildAsRoot();
 
         const string text2 = "${top}";
 
@@ -259,7 +260,7 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder2 = new ConfigurationBuilder();
         builder2.AddInMemoryCollection(appSettings2);
-        IConfiguration configuration2 = builder2.Build();
+        using ConfigurationRoot configuration2 = builder2.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
@@ -285,7 +286,7 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder1 = new ConfigurationBuilder();
         builder1.AddInMemoryCollection(appSettings1);
-        IConfiguration configuration1 = builder1.Build();
+        using ConfigurationRoot configuration1 = builder1.BuildAsRoot();
 
         const string text2 = "${top}";
 
@@ -299,7 +300,7 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder2 = new ConfigurationBuilder();
         builder2.AddInMemoryCollection(appSettings2);
-        IConfiguration configuration2 = builder2.Build();
+        using ConfigurationRoot configuration2 = builder2.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
@@ -324,11 +325,11 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("foo=bar,bar=${bar}");
     }
@@ -347,11 +348,11 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("line=two");
     }
@@ -370,11 +371,11 @@ public sealed class PropertyPlaceholderHelperTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("line=two");
     }
@@ -385,11 +386,11 @@ public sealed class PropertyPlaceholderHelperTest
         const string text = "line=${root:sub:lines[2]?empty}";
 
         var builder = new ConfigurationBuilder();
-        IConfiguration configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
         var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
 
-        string? result = helper.ResolvePlaceholders(text, configuration);
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
 
         result.Should().Be("line=empty");
     }

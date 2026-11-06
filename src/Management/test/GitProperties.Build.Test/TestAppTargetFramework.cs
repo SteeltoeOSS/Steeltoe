@@ -16,7 +16,7 @@ internal static partial class TestAppTargetFramework
     private static string Resolve()
     {
         AssemblyMetadataAttribute? attribute = Assembly.GetExecutingAssembly().GetCustomAttributes<AssemblyMetadataAttribute>()
-            .FirstOrDefault(candidate => candidate.Key == "TargetFramework");
+            .FirstOrDefault(candidate => candidate.Key == "TestTargetFramework");
 
         if (attribute?.Value == null)
         {

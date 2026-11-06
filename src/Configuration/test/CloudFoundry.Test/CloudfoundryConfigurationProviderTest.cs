@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Diagnostics;
 using System.Net;
-using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpOverrides;
@@ -194,7 +194,7 @@ public sealed class CloudFoundryConfigurationProviderTest
     }
 
     [Fact]
-    public void Load_VCAP_APPLICATION_Allows_Reload_Without_Throwing_Exception()
+    public async Task Load_VCAP_APPLICATION_Allows_Reload_Without_Throwing_Exception()
     {
         const string environment = """
             {
@@ -207,26 +207,42 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddCloudFoundry();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        const int minimumReloadCount = 20;
+        CloudFoundryApplicationOptions? options;
+        int reloadCount = 0;
 
-        CloudFoundryApplicationOptions? options = null;
+        using var stopSource = new CancellationTokenSource();
 
-        using var tokenSource = new CancellationTokenSource(250.Milliseconds());
-
-        _ = Task.Run(() =>
+        // Not passing the token to Task.Run: the loop observes it itself, and the task must always start so it can be awaited below.
+        Task reloadTask = Task.Run(() =>
         {
             // ReSharper disable once AccessToDisposedClosure
-            while (!tokenSource.IsCancellationRequested)
+            while (!stopSource.IsCancellationRequested)
             {
+                // ReSharper disable once AccessToDisposedClosure
                 configurationRoot.Reload();
+                // ReSharper disable once AccessToModifiedClosure
+                Interlocked.Increment(ref reloadCount);
             }
-        }, tokenSource.Token);
+        }, CancellationToken.None);
 
-        while (!tokenSource.IsCancellationRequested)
+        var stopwatch = Stopwatch.StartNew();
+
+        do
         {
             options = configurationRoot.GetSection("vcap:application").Get<CloudFoundryApplicationOptions>();
         }
+        while (Volatile.Read(ref reloadCount) < minimumReloadCount && stopwatch.Elapsed < Timeouts.Safety);
+
+        await stopSource.CancelAsync();
+
+        // Wait for the background reloads to stop before disposing, and surface any exception they threw.
+        await reloadTask;
+
+        // Proves that reloading actually happened while the options were being read.
+        reloadCount.Should().BeGreaterThanOrEqualTo(minimumReloadCount);
 
         options.Should().NotBeNull();
         options.ApplicationVersion.Should().Be("fb8fbcc6-8d58-479e-bcc7-3b4ce5a7f0ca");
@@ -238,7 +254,7 @@ public sealed class CloudFoundryConfigurationProviderTest
     [InlineData(false)]
     public async Task ForwardedHeadersOptions_unrestricted_when_running_on_CloudFoundry(bool isRunningOnCloudFoundry)
     {
-        using IDisposable? scope = isRunningOnCloudFoundry ? new EnvironmentVariableScope("VCAP_APPLICATION", "{}") : null;
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", isRunningOnCloudFoundry ? "{}" : null);
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
         builder.AddCloudFoundryConfiguration();
@@ -275,34 +291,33 @@ public sealed class CloudFoundryConfigurationProviderTest
     [InlineData(false)]
     public async Task ForwardedHeadersMiddleware_updates_connection_details_when_running_on_CloudFoundry(bool isRunningOnCloudFoundry)
     {
-        using IDisposable? scope = isRunningOnCloudFoundry ? new EnvironmentVariableScope("VCAP_APPLICATION", "{}") : null;
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", isRunningOnCloudFoundry ? "{}" : null);
 
         WebApplicationBuilder builder = WebApplication.CreateBuilder();
         builder.WebHost.UseKestrel().UseUrls("http://127.0.0.1:0");
         builder.AddCloudFoundryConfiguration();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
         bool? forwardedHeadersWereEvaluated = null;
 
-        host.Map("/", context =>
+        app.Map("/", context =>
         {
             forwardedHeadersWereEvaluated = context.Request.IsHttps;
             return Task.CompletedTask;
         });
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
-        string address = host.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
+        string address = app.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
 
-        var client = new HttpClient();
+        using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("X-Forwarded-Proto", "https");
         client.DefaultRequestHeaders.Add("X-Forwarded-For", "1.2.3.4");
 
-        HttpResponseMessage response = await client.GetAsync(new Uri(address), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.GetAsync(new Uri(address), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         forwardedHeadersWereEvaluated.Should()
             .Be(isRunningOnCloudFoundry, $"X-Forwarded-Proto should {(isRunningOnCloudFoundry ? string.Empty : "not ")}be evaluated");
-
-        await host.StopAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -313,28 +328,27 @@ public sealed class CloudFoundryConfigurationProviderTest
         builder.WebHost.UseKestrel().UseUrls("http://127.0.0.1:0");
         builder.AddCloudFoundryConfiguration();
         builder.Services.Configure<ForwardedHeadersOptions>(options => options.KnownProxies.Add(IPAddress.Parse("192.168.1.20")));
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
         bool? forwardedHeadersWereEvaluated = null;
 
-        host.Map("/", context =>
+        app.Map("/", context =>
         {
             forwardedHeadersWereEvaluated = context.Request.IsHttps;
             return Task.CompletedTask;
         });
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
-        string address = host.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
+        string address = app.Urls.First(url => url.StartsWith("http://", StringComparison.OrdinalIgnoreCase));
 
-        var client = new HttpClient();
+        using var client = new HttpClient();
         client.DefaultRequestHeaders.Add("X-Forwarded-Proto", "https");
         client.DefaultRequestHeaders.Add("X-Forwarded-For", "1.2.3.4");
 
-        HttpResponseMessage response = await client.GetAsync(new Uri(address), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.GetAsync(new Uri(address), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         forwardedHeadersWereEvaluated.Should().BeFalse("X-Forwarded-Proto should not be evaluated for unknown proxies");
-
-        await host.StopAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -372,12 +386,12 @@ public sealed class CloudFoundryConfigurationProviderTest
 
         var builder = new ConfigurationBuilder();
         builder.Add(source);
-        IConfigurationRoot root = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        root["application_id"].Should().Be("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3");
-        root["limits:disk"].Should().Be("1024");
-        root["uris:0"].Should().Be("my-app.10.244.0.34.xip.io");
-        root["uris:1"].Should().Be("my-app2.10.244.0.34.xip.io");
+        configurationRoot["application_id"].Should().Be("fa05c1a9-0fc1-4fbd-bae1-139850dec7a3");
+        configurationRoot["limits:disk"].Should().Be("1024");
+        configurationRoot["uris:0"].Should().Be("my-app.10.244.0.34.xip.io");
+        configurationRoot["uris:1"].Should().Be("my-app2.10.244.0.34.xip.io");
     }
 
     [Fact]

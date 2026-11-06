@@ -5,8 +5,11 @@
 using System.Net;
 using System.Net.Http.Json;
 using System.Text;
+using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Configuration.Memory;
 using Microsoft.Extensions.Logging.Abstractions;
+using Microsoft.Extensions.Time.Testing;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.Discovery;
 using Steeltoe.Common.TestResources;
@@ -65,7 +68,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
     public void GetLabels_Null()
     {
         var options = new ConfigServerClientOptions();
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string[] result = provider.GetLabels(provider.ClientOptions);
@@ -80,7 +83,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = string.Empty
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string[] result = provider.GetLabels(provider.ClientOptions);
@@ -95,7 +98,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "foobar"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string[] result = provider.GetLabels(provider.ClientOptions);
@@ -110,7 +113,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "1,2,3,"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string[] result = provider.GetLabels(provider.ClientOptions);
@@ -128,7 +131,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "1,,2,3,"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string[] result = provider.GetLabels(provider.ClientOptions);
@@ -148,7 +151,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "development"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
@@ -175,7 +178,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Password = "password"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
@@ -202,7 +205,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Password = "password"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
@@ -227,7 +230,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Token = "MyVaultToken"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), null);
@@ -265,7 +268,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
                 """);
 
         // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
 
         Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
 
@@ -295,7 +298,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             .WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
         // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
         provider.Load();
 
         await provider.RefreshVaultTokenAsync(provider.ClientOptions, TestContext.Current.CancellationToken);
@@ -325,11 +328,127 @@ public sealed partial class ConfigServerConfigurationProviderTest
             .WithHeaders("Authorization", "Bearer secret").WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
 
         // ReSharper disable once AccessToDisposedClosure
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
 
         await provider.RefreshVaultTokenAsync(provider.ClientOptions, TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    [Fact]
+    public void Token_renewal_runs_at_the_configured_rate()
+    {
+        var options = new ConfigServerClientOptions
+        {
+            Name = "foo",
+            Environment = "development",
+            Token = "MyVaultToken",
+            TokenRenewRate = 5_000
+        };
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        MockedRequest renewRequest = handler.Mock.When(HttpMethod.Post, "http://localhost:8888/vault/v1/auth/token/renew-self")
+            .WithHeaders("X-Vault-Token", "MyVaultToken").WithContent("{\"increment\":300}").Respond(HttpStatusCode.NoContent);
+
+        var timeProvider = new FakeTimeProvider();
+
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, NullLoggerFactory.Instance);
+        provider.Load();
+
+        // Loading does not renew the token.
+        handler.Mock.GetMatchCount(renewRequest).Should().Be(0);
+
+        timeProvider.Advance(TimeSpan.FromMilliseconds(options.TokenRenewRate - 1));
+        handler.Mock.GetMatchCount(renewRequest).Should().Be(0);
+
+        timeProvider.Advance(TimeSpan.FromMilliseconds(1));
+        handler.Mock.GetMatchCount(renewRequest).Should().Be(1);
+
+        timeProvider.Advance(TimeSpan.FromMilliseconds(options.TokenRenewRate));
+        handler.Mock.GetMatchCount(renewRequest).Should().Be(2);
+    }
+
+    [Fact]
+    public void Token_renewal_continues_after_a_failed_renewal()
+    {
+        var options = new ConfigServerClientOptions
+        {
+            Name = "foo",
+            Environment = "development",
+            Token = "MyVaultToken",
+            TokenRenewRate = 5_000
+        };
+
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        MockedRequest renewRequest = handler.Mock.When(HttpMethod.Post, "http://localhost:8888/vault/v1/auth/token/renew-self")
+            .Respond(HttpStatusCode.InternalServerError);
+
+        var timeProvider = new FakeTimeProvider();
+
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, NullLoggerFactory.Instance);
+        provider.Load();
+
+        // A failing renewal must not throw from the timer callback.
+        Action failingRenewals = () =>
+        {
+            timeProvider.Advance(TimeSpan.FromMilliseconds(options.TokenRenewRate));
+            timeProvider.Advance(TimeSpan.FromMilliseconds(options.TokenRenewRate));
+        };
+
+        failingRenewals.Should().NotThrow();
+        handler.Mock.GetMatchCount(renewRequest).Should().Be(2);
+    }
+
+    [Fact]
+    public void Disposing_the_provider_stops_polling_and_token_renewal()
+    {
+        const string responseJson = """
+            {
+              "name": "foo",
+              "profiles": [
+                "development"
+              ],
+              "propertySources": []
+            }
+            """;
+
+        var options = new ConfigServerClientOptions
+        {
+            Name = "foo",
+            Environment = "development",
+            Token = "MyVaultToken",
+            TokenRenewRate = 5_000,
+            PollingInterval = TimeSpan.FromSeconds(10)
+        };
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        MockedRequest loadRequest = handler.Mock.When(HttpMethod.Get, "http://localhost:8888/foo/development").Respond("application/json", responseJson);
+
+        MockedRequest renewRequest =
+            handler.Mock.When(HttpMethod.Post, "http://localhost:8888/vault/v1/auth/token/renew-self").Respond(HttpStatusCode.NoContent);
+
+        var timeProvider = new FakeTimeProvider();
+
+        // ReSharper disable once AccessToDisposedClosure
+        using (var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, timeProvider, NullLoggerFactory.Instance))
+        {
+            provider.Load();
+
+            timeProvider.Advance(options.PollingInterval);
+
+            // One request from loading and one from polling, and two renewals.
+            handler.Mock.GetMatchCount(loadRequest).Should().Be(2);
+            handler.Mock.GetMatchCount(renewRequest).Should().Be(2);
+        }
+
+        timeProvider.Advance(1.Hours());
+
+        handler.Mock.GetMatchCount(loadRequest).Should().Be(2);
+        handler.Mock.GetMatchCount(renewRequest).Should().Be(2);
     }
 
     [Fact]
@@ -346,7 +465,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         using HttpClient httpClient = provider.CreateHttpClient(provider.ClientOptions);
@@ -369,7 +488,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             }
         };
 
-        using (var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance))
+        using (ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options))
         {
             provider.Load();
             provider.ClientOptions.Discovery.Enabled.Should().BeTrue();
@@ -387,11 +506,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.Add(FastTestConfigurations.ConfigServer);
         configurationBuilder.AddInMemoryCollection(appSettings);
         configurationBuilder.AddConfigServer(options);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        using (ConfigServerConfigurationProvider provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().Single())
+        using (ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single())
         {
             provider.ClientOptions.Discovery.Enabled.Should().BeTrue();
         }
@@ -413,11 +533,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.Add(FastTestConfigurations.ConfigServer);
         configurationBuilder.AddInMemoryCollection(appSettings);
         configurationBuilder.AddConfigServer(options);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        using ConfigServerConfigurationProvider provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
+        using ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
 
         ConfigServerClientOptions optionsSnapshot = provider.ClientOptions;
         provider.SetLastDiscoveryLookupResult(new List<IServiceInstance>());
@@ -469,13 +590,27 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Timeout = 10
         };
 
-        var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(appSettings);
-        configurationBuilder.AddConfigServer(options);
+        // Loading at provider level (instead of through a configuration root) so the provider can be disposed when loading fails.
+        // The provider is normally created inside the ConfigurationRoot constructor, which throws, so nothing can dispose it.
+        var memorySource = new MemoryConfigurationSource
+        {
+            InitialData = appSettings
+        };
 
-        Action action = () => _ = configurationBuilder.Build();
+        var source = new ConfigServerConfigurationSource(options, [memorySource], null, null, null, NullLoggerFactory.Instance);
+        using var provider = (ConfigServerConfigurationProvider)source.Build(new ConfigurationBuilder());
+
+        Action action = provider.Load;
 
         action.Should().ThrowExactly<ConfigServerException>().WithMessage("Could not locate Config Server via discovery*");
+    }
+
+    private static ConfigServerConfigurationProvider CreateProviderWithoutRemoteLoading(ConfigServerClientOptions options)
+    {
+        // Used by tests that verify provider behavior other than loading, which would otherwise try to reach Config Server (slow when connecting fails).
+
+        IConfigurationRoot configuration = new ConfigurationBuilder().Add(FastTestConfigurations.ConfigServer).Build();
+        return new ConfigServerConfigurationProvider(options, configuration, null, null, TimeProvider.System, NullLoggerFactory.Instance);
     }
 
     private static string GetEncodedUserPassword(string user, string password)

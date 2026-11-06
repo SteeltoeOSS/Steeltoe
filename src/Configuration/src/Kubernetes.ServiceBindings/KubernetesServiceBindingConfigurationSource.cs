@@ -29,6 +29,10 @@ internal sealed class KubernetesServiceBindingConfigurationSource : PostProcesso
         ArgumentNullException.ThrowIfNull(builder);
 
         CaptureConfigurationBuilder(builder);
-        return new KubernetesServiceBindingConfigurationProvider(this);
+
+        return new KubernetesServiceBindingConfigurationProvider(this)
+        {
+            DisposesPostProcessors = !IsBuildingParentConfiguration(builder)
+        };
     }
 }

@@ -51,17 +51,13 @@ internal static class HttpClientExtensions
         ArgumentNullException.ThrowIfNull(httpClient);
         ArgumentNullException.ThrowIfNull(accessTokenUri);
 
-        var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri)
+        using var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")));
+
+        request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
         {
-            Headers =
-            {
-                Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")))
-            },
-            Content = new FormUrlEncodedContent(new Dictionary<string, string>
-            {
-                ["grant_type"] = "client_credentials"
-            })
-        };
+            ["grant_type"] = "client_credentials"
+        });
 
         httpClient.ConfigureForSteeltoe(null);
 

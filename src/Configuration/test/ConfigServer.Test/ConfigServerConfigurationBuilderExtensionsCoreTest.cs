@@ -2,8 +2,10 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Configuration.Placeholder;
 
@@ -11,18 +13,13 @@ namespace Steeltoe.Configuration.ConfigServer.Test;
 
 public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
 {
-    private readonly Dictionary<string, string?> _quickTests = new()
-    {
-        ["spring:cloud:config:timeout"] = "10"
-    };
-
     [Fact]
     public void AddConfigServer_AddsConfigServerProviderToProvidersList()
     {
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(_quickTests);
+        configurationBuilder.Add(FastTestConfigurations.ConfigServer);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
 
@@ -35,10 +32,13 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         CapturingLoggerProvider loggerProvider = new();
         using var loggerFactory = new LoggerFactory([loggerProvider]);
 
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
+
         var configurationBuilder = new ConfigurationBuilder();
-        configurationBuilder.AddInMemoryCollection(_quickTests);
-        configurationBuilder.AddConfigServer(loggerFactory);
-        _ = configurationBuilder.Build();
+        // ReSharper disable once AccessToDisposedClosure
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, loggerFactory);
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         IList<string> logMessages = loggerProvider.GetAll();
 
@@ -87,7 +87,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -124,8 +124,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
               "spring": {
                 "cloud": {
                   "config": {
-                    "validateCertificates": false,
-                    "timeout": 0
+                    "validateCertificates": false
                   }
                 }
               }
@@ -136,9 +135,10 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.Add(FastTestConfigurations.ConfigServer);
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -155,8 +155,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
               "spring": {
                 "cloud": {
                   "config": {
-                    "validate_certificates": false,
-                    "timeout": 0
+                    "validate_certificates": false
                   }
                 }
               }
@@ -167,9 +166,10 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         fileProvider.IncludeAppSettingsJsonFile(appSettings);
 
         var configurationBuilder = new ConfigurationBuilder();
+        configurationBuilder.Add(FastTestConfigurations.ConfigServer);
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -205,7 +205,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsXmlFile(fileProvider);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -244,7 +244,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsIniFile(fileProvider);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -284,7 +284,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddCommandLine(appSettings);
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -339,7 +339,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddPlaceholderResolver();
         configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -423,6 +423,9 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             }
             """;
 
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
+
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeAppSettingsJsonFile(appSettings);
         fileProvider.IncludeFile("vcapapp.json", vcapApplication);
@@ -432,8 +435,9 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapapp.json");
         configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapservices.json");
-        configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        // ReSharper disable once AccessToDisposedClosure
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();
@@ -525,6 +529,9 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
             }
             """;
 
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
+
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeAppSettingsJsonFile(appSettings);
         fileProvider.IncludeFile("vcapapp.json", vcapApplication);
@@ -534,8 +541,9 @@ public sealed class ConfigServerConfigurationBuilderExtensionsCoreTest
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapapp.json");
         configurationBuilder.AddInMemoryJsonFile(fileProvider, "vcapservices.json");
-        configurationBuilder.AddConfigServer();
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        // ReSharper disable once AccessToDisposedClosure
+        configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? configServerProvider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().SingleOrDefault();
         configServerProvider.Should().NotBeNull();

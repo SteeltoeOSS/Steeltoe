@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
-using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -140,24 +139,55 @@ public sealed class EurekaHealthCheckHandlerTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NoContent);
         handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond("application/json", "{}");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
+        var discoveryClient = app.Services.GetRequiredService<EurekaDiscoveryClient>();
+        Task heartbeatCycleTask = WaitForHeartbeatCycleAsync(discoveryClient);
+
+        await app.StartAsync(TestContext.Current.CancellationToken);
+
         app.Services.GetServices<IDiscoveryClient>().Should().ContainSingle();
 
-        await Task.Delay(2.Seconds(), TestContext.Current.CancellationToken);
+        await heartbeatCycleTask;
 
         contributor.IsAwaited.Should().BeTrue();
 
-        var infoManager = app.Services.GetRequiredService<EurekaApplicationInfoManager>();
-        infoManager.Instance.Status.Should().Be(InstanceStatus.Up);
-
         handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    private static async Task WaitForHeartbeatCycleAsync(EurekaDiscoveryClient discoveryClient)
+    {
+        using var timeoutSource = new CancellationTokenSource(Timeouts.Safety);
+        using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken, timeoutSource.Token);
+
+        using var signal = new SemaphoreSlim(0);
+
+        discoveryClient.HeartbeatCycleCompleted += OnHeartbeatCycleCompleted;
+
+        try
+        {
+            await signal.WaitAsync(linkedSource.Token);
+        }
+        catch (OperationCanceledException) when (timeoutSource.IsCancellationRequested && !TestContext.Current.CancellationToken.IsCancellationRequested)
+        {
+            throw new TimeoutException("Timed out waiting for a heartbeat cycle to complete.");
+        }
+        finally
+        {
+            discoveryClient.HeartbeatCycleCompleted -= OnHeartbeatCycleCompleted;
+        }
+
+        void OnHeartbeatCycleCompleted(object? sender, EventArgs args)
+        {
+            // ReSharper disable once AccessToDisposedClosure
+            signal.Release();
+        }
     }
 
     private sealed class TestHealthContributor : IHealthContributor

@@ -19,8 +19,13 @@ using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Security.Authorization.Certificate.Test;
 
-public sealed partial class CertificateHttpClientBuilderExtensionsTest
+public sealed partial class CertificateHttpClientBuilderExtensionsTest : IDisposable
 {
+    // AddAppInstanceIdentityCertificate sets these variables process-wide when not running on Cloud Foundry, so they are restored after each test.
+    private readonly EnvironmentVariableScope _certificateScope = new("CF_INSTANCE_CERT", null);
+    private readonly EnvironmentVariableScope _keyScope = new("CF_INSTANCE_KEY", null);
+    private readonly EnvironmentVariableScope _certificateAuthorityScope = new("CF_SYSTEM_CERT_PATH", null);
+
     [Fact]
     public async Task AddAppInstanceIdentityCertificate_UsesMtlsWithoutHeaderInjection()
     {
@@ -28,7 +33,9 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
         using var certScope = new EnvironmentVariableScope("CF_INSTANCE_CERT", "instance.crt");
         using var keyScope = new EnvironmentVariableScope("CF_INSTANCE_KEY", "instance.key");
         HostBuilder hostBuilder = GetHostBuilder();
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -65,7 +72,7 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             });
         });
 
-        await using WebApplication server = serverBuilder.Build();
+        WebApplication server = serverBuilder.Build();
 
         server.MapGet("/", (HttpContext httpContext) =>
         {
@@ -73,12 +80,15 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             return Results.Ok();
         });
 
-        await server.StartAsync(TestContext.Current.CancellationToken);
-        var addressesFeature = server.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!;
+        await using HostWrapper serverHost = HostWrapper.Wrap(server);
+        await serverHost.StartAsync(TestContext.Current.CancellationToken);
+        var addressesFeature = serverHost.Services.GetRequiredService<IServer>().Features.Get<IServerAddressesFeature>()!;
         int port = new Uri(addressesFeature.Addresses.First()).Port;
 
         HostBuilder clientHostBuilder = GetHostBuilder();
-        using IHost clientHost = await clientHostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper clientHost = HostWrapper.Wrap(clientHostBuilder.Build());
+        await clientHost.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificateToDispose = clientHost.Services.GetAppInstanceIdentityCertificate();
         var handlerFactory = clientHost.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
         SocketsHttpHandler socketsHandler = GetInnerHandler(handler).Should().BeOfType<SocketsHttpHandler>().Which;
@@ -95,9 +105,18 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string instanceCertificatePem = await File.ReadAllTextAsync("instance.crt", TestContext.Current.CancellationToken);
-        var expectedCertificate = X509Certificate2.CreateFromPem(instanceCertificatePem);
+        using var expectedCertificate = X509Certificate2.CreateFromPem(instanceCertificatePem);
         receivedCertificate.Should().NotBeNull();
         receivedCertificate.Thumbprint.Should().Be(expectedCertificate.Thumbprint);
+
+        // On Windows, the library imports the certificate with UserKeySet, which stores its private key in the user's key store
+        // (%APPDATA%\Microsoft\Crypto\Keys). After a TLS handshake has used the certificate, disposing it does not remove that key file, because the
+        // runtime keeps a handle to the key until it is finalized, which does not happen at process exit (https://github.com/dotnet/runtime/issues/101090).
+        // Without the explicit deletion below, every run of this test leaves a key file behind, so they pile up on developer machines.
+        if (OperatingSystem.IsWindows() && appInstanceCertificateToDispose?.GetRSAPrivateKey() is RSACng clientKey)
+        {
+            clientKey.Key.Delete();
+        }
     }
 
     [Fact]
@@ -119,7 +138,9 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             httpClientBuilder.AddClientCertificateForMutualTls(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
         }));
 
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -153,7 +174,9 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
                 services.AddHttpClient("test").AddClientCertificateForMutualTls(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName));
         });
 
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -179,7 +202,8 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             builder.ConfigureServices(services => services.AddHttpClient("test").AddClientCertificateForMutualTls("does-not-exist"));
         });
 
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -213,7 +237,9 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             httpClientBuilder.AddClientCertificateForMutualTls(CertificateConfigurationExtensions.AppInstanceIdentityCertificateName);
         }));
 
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         Action action = () => handlerFactory.CreateHandler("test");
@@ -245,7 +271,9 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
             });
         });
 
-        using IHost host = await hostBuilder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using X509Certificate2? appInstanceCertificateToDispose = host.Services.GetAppInstanceIdentityCertificate();
 
         var handlerFactory = host.Services.GetRequiredService<IHttpMessageHandlerFactory>();
         using HttpMessageHandler handler = handlerFactory.CreateHandler("test");
@@ -302,5 +330,12 @@ public sealed partial class CertificateHttpClientBuilderExtensionsTest
         }
 
         return hostBuilder;
+    }
+
+    public void Dispose()
+    {
+        _certificateAuthorityScope.Dispose();
+        _keyScope.Dispose();
+        _certificateScope.Dispose();
     }
 }

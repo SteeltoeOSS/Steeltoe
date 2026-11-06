@@ -21,9 +21,7 @@ internal static class TextDecryptorFactory
 
             if (settings is { KeyStore: { Location: not null, Password: not null, Alias: not null }, Rsa: { Salt: not null, Algorithm: not null } })
             {
-                var keystoreStream = new FileStream(settings.KeyStore.Location, FileMode.Open, FileAccess.Read);
-                var keyProvider = new KeyProvider(keystoreStream, settings.KeyStore.Password);
-
+                var keyProvider = new KeyProvider(settings.KeyStore.Location, settings.KeyStore.Password);
                 return new RsaKeyStoreDecryptor(keyProvider, settings.KeyStore.Alias, settings.Rsa.Salt, settings.Rsa.Strong, settings.Rsa.Algorithm);
             }
         }

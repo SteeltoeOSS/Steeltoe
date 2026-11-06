@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text.Json.Nodes;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -27,7 +26,7 @@ public sealed class RefreshActuatorTest
     public async Task Registers_dependent_services()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddRefreshActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -41,7 +40,7 @@ public sealed class RefreshActuatorTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddRefreshActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -72,7 +71,7 @@ public sealed class RefreshActuatorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddRefreshActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -114,7 +113,8 @@ public sealed class RefreshActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -158,12 +158,13 @@ public sealed class RefreshActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Configuration.Sources.Add(new TestConfigurationSource());
         builder.Services.AddRefreshActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response =
+            await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -182,14 +183,19 @@ public sealed class RefreshActuatorTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Configuration.Sources.Add(new TestConfigurationSource());
         builder.Services.AddRefreshActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        _ = await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
-        _ = await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
-        _ = await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response1 =
+            await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
+
+        using HttpResponseMessage response2 =
+            await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
+
+        using HttpResponseMessage response3 =
+            await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
 
         var configuration = host.Services.GetRequiredService<IConfiguration>();
         configuration["FakeLoadCount"].Should().Be("4");
@@ -216,18 +222,22 @@ public sealed class RefreshActuatorTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddRefreshActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response1 = await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response1 =
+            await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
 
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseBody1 = await response1.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
 
         responseBody1.Should().BeJson("[]");
+
+        var optionsMonitor = host.Services.GetRequiredService<IOptionsMonitor<RefreshEndpointOptions>>();
+        optionsMonitor.CurrentValue.ReturnConfiguration.Should().BeFalse();
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -236,7 +246,10 @@ public sealed class RefreshActuatorTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 = await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
+        optionsMonitor.CurrentValue.ReturnConfiguration.Should().BeTrue();
+
+        using HttpResponseMessage response2 =
+            await httpClient.PostAsync(new Uri("http://localhost/actuator/refresh"), null, TestContext.Current.CancellationToken);
 
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
 

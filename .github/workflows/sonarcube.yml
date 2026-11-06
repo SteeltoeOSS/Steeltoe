@@ -18,7 +18,6 @@ permissions:
   pull-requests: write
 
 env:
-  STEELTOE_MACOS_DIAGNOSE_HOSTNAME_LOOKUP: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_NOLOGO: true
   SOLUTION_FILE: 'src/Steeltoe.All.slnx'
@@ -58,7 +57,7 @@ jobs:
 
     steps:
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: |
           8.0.*
@@ -69,7 +68,7 @@ jobs:
       run: dotnet tool install --global dotnet-sonarscanner
 
     - name: Git checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         persist-credentials: false
         # Sonar: Shallow clones should be disabled for a better relevancy of analysis.
@@ -102,12 +101,15 @@ jobs:
       run: dotnet build ${{ env.SOLUTION_FILE }} --no-restore --configuration Release --verbosity minimal /p:NuGetAuditLevel=low /p:WarningsNotAsErrors='${{ env.NUGET_VULNERABLE_PACKAGE_WARNINGS }}'
 
     - name: Test
+      id: test
       run: dotnet test ${{ env.SOLUTION_FILE }} --filter "Category!=MemoryDumps&Category!=GitProperties" ${{ env.COMMON_TEST_ARGS }} ${{ env.COVERAGE_COLLECT_ARGS }}
 
     - name: Test (memory dumps)
+      id: test-memory-dumps
       run: dotnet test src/Management/test/Endpoint.Test --filter "Category=MemoryDumps" ${{ env.COMMON_TEST_ARGS }} ${{ env.COVERAGE_COLLECT_ARGS }}
 
     - name: Test (git.properties)
+      id: test-gitproperties
       run: >-
         dotnet dotnet-coverage collect -f cobertura -o ${{ github.workspace }}/TestOutput/GitProperties.Build.Test.cobertura.xml --
         dotnet test src/Management/test/GitProperties.Build.Test ${{ env.COMMON_TEST_ARGS }}
@@ -119,6 +121,19 @@ jobs:
         -CoverageFile ${{ github.workspace }}/TestOutput/GitProperties.Build.Test.cobertura.xml
         -RepoRoot ${{ github.workspace }}
         -ProjectRelativePath src/Management/src/GitProperties.Build
+
+    - name: Upload crash/hang dumps (on failure)
+      if: ${{ !cancelled() && (steps.test.outcome == 'failure' || steps.test-memory-dumps.outcome == 'failure' || steps.test-gitproperties.outcome == 'failure') }}
+      uses: actions/upload-artifact@v7
+      with:
+        name: FailedTestOutput
+        path: |
+          ${{ github.workspace }}/TestOutput/**/*.dmp
+          ${{ github.workspace }}/TestOutput/**/Sequence_*.xml
+          ${{ github.workspace }}/TestOutput/**/*.binlog
+          ${{ github.workspace }}/TestOutput/**/*.nettrace
+          ${{ github.workspace }}/TestOutput/**/*.context.txt
+        if-no-files-found: ignore
 
     - name: End Sonar .NET scanner
       if: ${{ !cancelled() && steps.sonar_begin.outcome == 'success' }}

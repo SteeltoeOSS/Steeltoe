@@ -64,21 +64,7 @@ public sealed class ComposeGitPropertiesTask : Task
 
         if (this.LogOnFailure($"failed to read {CacheFile}", () => lines = AtomicFile.Read(CacheFile).ToList()))
         {
-            if (isDirty == true)
-            {
-                for (int index = 0; index < lines.Count; index++)
-                {
-                    if (lines[index].StartsWith($"{GitPropertiesFormat.CommitIdDescribeKey}=", StringComparison.Ordinal))
-                    {
-                        lines[index] += "-dirty";
-                    }
-                }
-            }
-
-            if (isDirty != null)
-            {
-                lines.Add($"git.dirty={(isDirty.Value ? "true" : "false")}");
-            }
+            SetDirtyState(isDirty, lines);
 
             lines.Add($"git.build.version={GitPropertiesFormat.EscapeLineBreaks(Version)}");
 
@@ -101,6 +87,25 @@ public sealed class ComposeGitPropertiesTask : Task
         }
 
         return false;
+    }
+
+    private static void SetDirtyState(bool? isDirty, List<string> lines)
+    {
+        if (isDirty == true)
+        {
+            for (int index = 0; index < lines.Count; index++)
+            {
+                if (lines[index].StartsWith($"{GitPropertiesFormat.CommitIdDescribeKey}=", StringComparison.Ordinal))
+                {
+                    lines[index] += "-dirty";
+                }
+            }
+        }
+
+        if (isDirty != null)
+        {
+            lines.Add($"git.dirty={(isDirty.Value ? "true" : "false")}");
+        }
     }
 
     private bool? DetermineDirtyState()

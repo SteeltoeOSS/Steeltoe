@@ -9,7 +9,6 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -141,7 +140,8 @@ public sealed class EndpointAuthorizationTest
 
     private async Task ActAndAssertAsync(IHostBuilder builder, Type endpointOptionsType, bool expectSuccess)
     {
-        using IHost host = await builder.StartAsync(TestContext.Current.CancellationToken);
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         Type optionsMonitorType = typeof(IOptionsMonitor<>).MakeGenericType(endpointOptionsType);
         object optionsMonitor = host.Services.GetRequiredService(optionsMonitorType);
@@ -163,7 +163,10 @@ public sealed class EndpointAuthorizationTest
             response = await httpClient.PostAsync(new Uri(path, UriKind.RelativeOrAbsolute), null, TestContext.Current.CancellationToken);
         }
 
-        response.StatusCode.Should().Be(expectSuccess ? HttpStatusCode.OK : HttpStatusCode.Forbidden);
+        using (response)
+        {
+            response.StatusCode.Should().Be(expectSuccess ? HttpStatusCode.OK : HttpStatusCode.Forbidden);
+        }
     }
 
     public enum RegistrationMode

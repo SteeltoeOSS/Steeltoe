@@ -28,7 +28,7 @@ internal sealed class SpringBootAdminApiClient
         using HttpClient httpClient = CreateHttpClient(options.ConnectionTimeout);
 
         string requestUri = $"{options.Url}/instances";
-        HttpResponseMessage response = await httpClient.PostAsJsonAsync(requestUri, application, cancellationToken);
+        using HttpResponseMessage response = await httpClient.PostAsJsonAsync(requestUri, application, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {
@@ -48,7 +48,7 @@ internal sealed class SpringBootAdminApiClient
         using HttpClient httpClient = CreateHttpClient(options.ConnectionTimeout);
 
         var requestUri = new Uri($"{options.Url}/instances/{id}");
-        HttpResponseMessage response = await httpClient.DeleteAsync(requestUri, cancellationToken);
+        using HttpResponseMessage response = await httpClient.DeleteAsync(requestUri, cancellationToken);
 
         if (!response.IsSuccessStatusCode)
         {

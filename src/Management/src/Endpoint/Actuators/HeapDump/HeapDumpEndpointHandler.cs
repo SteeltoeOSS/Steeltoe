@@ -30,6 +30,13 @@ internal sealed partial class HeapDumpEndpointHandler : IHeapDumpEndpointHandler
     public Task<string> InvokeAsync(object? argument, CancellationToken cancellationToken)
     {
         LogInvokingHeapDumper();
+        using IDisposable? dumpLock = MemoryDumpLock.TryEnter(_logger);
+
+        if (dumpLock == null)
+        {
+            throw new TooManyActuatorRequestsException("Another memory dump is currently in progress, please try again later.");
+        }
+
         string filePath = _heapDumper.DumpHeapToFile(cancellationToken);
         return Task.FromResult(filePath);
     }

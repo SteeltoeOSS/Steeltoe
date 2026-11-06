@@ -28,16 +28,40 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         using var invoker = new HttpMessageInvoker(handler);
 
-        HttpResponseMessage result = await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
+        using HttpResponseMessage result = await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
 
         result.Headers.GetValues("requestUri").Should().ContainSingle().Which.Should().Be("https://some-resolved-host:1234/api");
         loadBalancer.Statistics.Should().ContainSingle();
     }
 
     [Fact]
+    public async Task DoesNotResolveOrTrackStatistics_WhenRequestUsesNonDefaultPort()
+    {
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replace-me:8080/api"));
+        var loadBalancer = new FakeLoadBalancer();
+
+        var services = new ServiceCollection();
+        services.AddSingleton(loadBalancer);
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+
+        var handler = new DiscoveryHttpDelegatingHandler<FakeLoadBalancer>(serviceProvider, TimeProvider.System)
+        {
+            InnerHandler = new TestInnerDelegatingHandler()
+        };
+
+        using var invoker = new HttpMessageInvoker(handler);
+
+        using HttpResponseMessage result = await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
+
+        result.Headers.GetValues("requestUri").Should().ContainSingle().Which.Should().Be("https://replace-me:8080/api");
+        loadBalancer.Statistics.Should().BeEmpty();
+    }
+
+    [Fact]
     public async Task DoesNotTrackStatistics_WhenRequestIsCanceled()
     {
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replace-me/api"));
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replace-me/api"));
         var loadBalancer = new FakeLoadBalancer();
 
         var services = new ServiceCollection();
@@ -55,8 +79,9 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         using var invoker = new HttpMessageInvoker(handler);
 
-        // ReSharper disable once AccessToDisposedClosure
+        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
+        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<OperationCanceledException>();
         loadBalancer.Statistics.Should().BeEmpty();
@@ -65,7 +90,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
     [Fact]
     public async Task DoesNotTrackStatistics_WhenResolutionFails_WithProvidedLoadBalancer()
     {
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replace-me/api"));
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replace-me/api"));
         var loadBalancer = new BrokenLoadBalancer();
 
         var services = new ServiceCollection();
@@ -80,8 +105,9 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         using var invoker = new HttpMessageInvoker(handler);
 
-        // ReSharper disable once AccessToDisposedClosure
+        // ReSharper disable AccessToDisposedClosure
         Func<Task> action = async () => await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
+        // ReSharper restore AccessToDisposedClosure
 
         await action.Should().ThrowExactlyAsync<DataException>();
         loadBalancer.Statistics.Should().BeEmpty();
@@ -90,7 +116,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
     [Fact]
     public async Task TracksStatistics_WhenRequestsGoWrong_WithProvidedLoadBalancer()
     {
-        var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replace-me/api"));
+        using var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, new Uri("https://replace-me/api"));
         var loadBalancer = new FakeLoadBalancer();
 
         var services = new ServiceCollection();
@@ -105,7 +131,7 @@ public sealed class DiscoveryHttpDelegatingHandlerTest
 
         using var invoker = new HttpMessageInvoker(handler);
 
-        HttpResponseMessage result = await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
+        using HttpResponseMessage result = await invoker.SendAsync(httpRequestMessage, TestContext.Current.CancellationToken);
 
         loadBalancer.Statistics.Should().ContainSingle();
         result.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
