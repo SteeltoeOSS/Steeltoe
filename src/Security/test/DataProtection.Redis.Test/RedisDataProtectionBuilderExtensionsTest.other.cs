@@ -9,7 +9,7 @@ namespace Steeltoe.Security.DataProtection.Redis.Test;
 
 partial class RedisDataProtectionBuilderExtensionsTest
 {
-    private static object GetMockedConnectionMultiplexer(string? connectionString)
+    private static IConnectionMultiplexer GetMockedConnectionMultiplexer(string? connectionString)
     {
         Dictionary<string, byte[]> innerStore = [];
 

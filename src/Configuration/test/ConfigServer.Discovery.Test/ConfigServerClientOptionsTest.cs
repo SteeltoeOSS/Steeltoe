@@ -14,7 +14,7 @@ namespace Steeltoe.Configuration.ConfigServer.Discovery.Test;
 public sealed class ConfigServerClientOptionsTest
 {
     [Fact]
-    public void Config_Server_URI_is_resolved_from_discovery_and_survives_changes_in_IConfiguration()
+    public async Task Config_Server_URI_is_resolved_from_discovery_and_survives_changes_in_IConfiguration()
     {
         const string configServerResponseJson = """
             {
@@ -92,17 +92,17 @@ public sealed class ConfigServerClientOptionsTest
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), configureOptions, () => handler, NullLoggerFactory.Instance);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
-        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions(configureOptions);
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
         provider.ClientOptions.Uri.Should().Be("http://overridden-by-discovery");
@@ -123,7 +123,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -190,7 +190,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -227,11 +227,13 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
+
+        await provider.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public void Updates_discovered_Config_Server_URI_on_provider_reload()
+    public async Task Updates_discovered_Config_Server_URI_on_provider_reload()
     {
         const string configServerResponseJson = """
             {
@@ -308,18 +310,18 @@ public sealed class ConfigServerClientOptionsTest
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), configureOptions, () => handler, NullLoggerFactory.Instance);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();
         handler.Mock.Clear();
 
-        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions(configureOptions);
 
-        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
         provider.ClientOptions.Uri.Should().Be("http://overridden-by-discovery");
@@ -338,7 +340,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -401,7 +403,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
 
         handler.Mock.Expect(HttpMethod.Get, "https://alternate-discovered-server.com:7777/internal/alternate-name/alternate-profile/alternate-label")
             .Respond("application/json", configServerResponseJson);
@@ -425,6 +427,8 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
         optionsMonitor.CurrentValue.ValidateCertificates.Should().BeFalse();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
+
+        await provider.ShutdownAsync(TestContext.Current.CancellationToken);
     }
 }

@@ -2,7 +2,6 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
-using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -63,7 +62,7 @@ public sealed class ConfigurationDiscoveryClientTest
         };
 
         TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var client = new ConfigurationDiscoveryClient(optionsMonitor);
+        using var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
         fruitInstances.Should().HaveCount(3);
@@ -78,7 +77,7 @@ public sealed class ConfigurationDiscoveryClientTest
     [Fact]
     public async Task ReceivesUpdatesTo_ConfiguredServices()
     {
-        var options = new ConfigurationDiscoveryOptions
+        var initialOptions = new ConfigurationDiscoveryOptions
         {
             Services =
             {
@@ -92,16 +91,40 @@ public sealed class ConfigurationDiscoveryClientTest
             }
         };
 
-        TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(options);
-        var client = new ConfigurationDiscoveryClient(optionsMonitor);
+        TestOptionsMonitor<ConfigurationDiscoveryOptions> optionsMonitor = TestOptionsMonitor.Create(initialOptions);
+        using var client = new ConfigurationDiscoveryClient(optionsMonitor);
 
         IList<IServiceInstance> fruitInstances = await client.GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
 
         fruitInstances.Should().ContainSingle().Which.Host.Should().Be("fruit-ball");
 
-        options.Services[0].Host = "updatedValue";
+        var changedOptions = new ConfigurationDiscoveryOptions
+        {
+            Services =
+            {
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "fruitService",
+                    Host = "updatedValue",
+                    Port = 443,
+                    IsSecure = true
+                },
+                new ConfigurationServiceInstance
+                {
+                    ServiceId = "vegetableService",
+                    Host = "vegemite",
+                    Port = 8081
+                }
+            }
+        };
 
+        optionsMonitor.Change(changedOptions);
+
+        fruitInstances = await client.GetInstancesAsync("fruitService", TestContext.Current.CancellationToken);
         fruitInstances.Should().ContainSingle().Which.Host.Should().Be("updatedValue");
+
+        ISet<string> serviceIds = await client.GetServiceIdsAsync(TestContext.Current.CancellationToken);
+        serviceIds.Should().BeEquivalentTo("fruitService", "vegetableService");
     }
 
     [Fact]
@@ -125,10 +148,10 @@ public sealed class ConfigurationDiscoveryClientTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddConfigurationDiscoveryClient();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -150,10 +173,8 @@ public sealed class ConfigurationDiscoveryClientTest
     [Fact]
     public async Task DoesNotRegisterConfigurationDiscoveryClientMultipleTimes()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
 
         services.AddConfigurationDiscoveryClient();
         services.AddConfigurationDiscoveryClient();
@@ -167,10 +188,8 @@ public sealed class ConfigurationDiscoveryClientTest
     [Fact]
     public async Task RegistersHostedService()
     {
-        IConfiguration configuration = new ConfigurationBuilder().Build();
-
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
 
         services.AddConfigurationDiscoveryClient();
 
@@ -229,14 +248,8 @@ public sealed class ConfigurationDiscoveryClientTest
         await using WebApplication webApplication = builder.Build();
 
         ConfigurationDiscoveryClient discoveryClient = webApplication.Services.GetServices<IDiscoveryClient>().OfType<ConfigurationDiscoveryClient>().Single();
-        DiscoveryInstancesFetchedEventArgs? eventArgs = null;
-        int eventCount = 0;
-
-        discoveryClient.InstancesFetched += (_, args) =>
-        {
-            eventArgs = args;
-            Interlocked.Increment(ref eventCount);
-        };
+        var eventFetched = new TaskCompletionSource<DiscoveryInstancesFetchedEventArgs>(TaskCreationOptions.RunContinuationsAsynchronously);
+        discoveryClient.InstancesFetched += (_, args) => eventFetched.TrySetResult(args);
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -267,9 +280,8 @@ public sealed class ConfigurationDiscoveryClientTest
 
         fileProvider.NotifyChanged();
 
-        SpinWait.SpinUntil(() => eventCount == 1, 5.Seconds()).Should().BeTrue();
+        DiscoveryInstancesFetchedEventArgs eventArgs = await eventFetched.Task.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
 
-        eventArgs.Should().NotBeNull();
         eventArgs.InstancesByServiceId.Should().HaveCount(2);
         eventArgs.InstancesByServiceId.Should().ContainKey("ServiceA").WhoseValue.Should().HaveCount(1);
         eventArgs.InstancesByServiceId.Should().ContainKey("ServiceB").WhoseValue.Should().HaveCount(2);

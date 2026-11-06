@@ -159,7 +159,7 @@ public sealed class HostBuilderTest
         builder.Logging.AddDynamicConsole();
         builder.Logging.AddConfiguration(builder.Configuration.GetSection("Logging"));
         builder.Services.UpgradeBootstrapLoggerFactory(bootstrapLoggerFactory);
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
 

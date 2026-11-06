@@ -38,10 +38,10 @@ public sealed class ApplicationInstanceInfoTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddApplicationInstanceInfo();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -67,10 +67,10 @@ public sealed class ApplicationInstanceInfoTest
     {
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryCollection(appSettings);
-        IConfiguration configuration = builder.Build();
+        IConfigurationRoot configurationRoot = builder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddApplicationInstanceInfo();
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 

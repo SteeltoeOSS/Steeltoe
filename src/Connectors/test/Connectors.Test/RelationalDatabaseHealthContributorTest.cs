@@ -36,8 +36,7 @@ public sealed class RelationalDatabaseHealthContributorTest
         string errorMessage = result.Details.Should().ContainKey("error").WhoseValue.As<string>();
 
         errorMessage.Should().Match(error =>
-            error.StartsWith("NpgsqlException: Failed to connect", StringComparison.Ordinal) ||
-            error.StartsWith("TimeoutException: ", StringComparison.Ordinal));
+            error.StartsWith("NpgsqlException: ", StringComparison.Ordinal) || error.StartsWith("TimeoutException: ", StringComparison.Ordinal));
     }
 
     [Fact(Skip = "Integration test - Requires local PostgreSQL server")]
@@ -98,9 +97,9 @@ public sealed class RelationalDatabaseHealthContributorTest
     [Fact]
     public async Task SQLServer_Not_Connected_Returns_Down_Status()
     {
-        // Using a known host/port, so running this test doesn't take 15 seconds (the Connect Timeout only kicks in *after* establishing the socket connection).
         var healthContributor = new RelationalDatabaseHealthContributor(
-            () => new SqlConnection("Server=tcp:www.microsoft.com,80;Connect Timeout=1;Connect Retry Count=0"), "SQL Server", "localhost",
+            // Nothing listens on this loopback port, so the connection is refused without any network access.
+            () => new SqlConnection("Server=tcp:127.0.0.1,9999;Connect Timeout=1;Connect Retry Count=0"), "SQL Server", "localhost",
             NullLogger<RelationalDatabaseHealthContributor>.Instance)
         {
             ServiceName = "Example"
@@ -116,6 +115,7 @@ public sealed class RelationalDatabaseHealthContributorTest
 
         result.Details.Should().ContainKey("error").WhoseValue.As<string>().Should().Match(exception =>
             exception.StartsWith("SqlException: Connection Timeout Expired.", StringComparison.Ordinal) ||
+            exception.StartsWith("SqlException: A connection was successfully established with the server, but then an error", StringComparison.Ordinal) ||
             exception.StartsWith("SqlException: A network-related or instance-specific error", StringComparison.Ordinal));
     }
 
@@ -159,6 +159,28 @@ public sealed class RelationalDatabaseHealthContributorTest
         result.Details.Should().Contain("host", "localhost");
         result.Details.Should().Contain("service", "Example");
         result.Details.Should().NotContainKey("error");
+    }
+
+    [Fact]
+    public async Task Is_Connected_But_Query_Fails_Returns_Down_Status()
+    {
+        var command = Substitute.For<DbCommand>();
+        command.ExecuteScalarAsync(Arg.Any<CancellationToken>()).Returns(Task.FromException<object?>(new InvalidOperationException("Query failed.")));
+
+        await using var connection = new FakeDbConnection(command);
+
+        var healthContributor =
+            // ReSharper disable once AccessToDisposedClosure
+            new RelationalDatabaseHealthContributor(() => connection, "SQL Server", "localhost", NullLogger<RelationalDatabaseHealthContributor>.Instance)
+            {
+                ServiceName = "Example"
+            };
+
+        HealthCheckResult? result = await healthContributor.CheckHealthAsync(TestContext.Current.CancellationToken);
+
+        result.Should().NotBeNull();
+        result.Status.Should().Be(HealthStatus.Down);
+        result.Details.Should().Contain("error", "InvalidOperationException: Query failed.");
     }
 
     [Fact]

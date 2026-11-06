@@ -14,7 +14,8 @@ public sealed class ThreadDumpEndpointOptions : EndpointOptions
     public override EndpointPermissions RequiredPermissions { get; set; } = EndpointPermissions.Full;
 
     /// <summary>
-    /// Gets or sets the time (in milliseconds) to trace for, before automatically stopping the trace. Default value: 10.
+    /// Gets or sets how long to sample (in milliseconds). Higher values increase accuracy, at the cost of pausing the app for longer intervals. Default
+    /// value: 10.
     /// </summary>
     public int Duration { get; set; } = 10;
 }

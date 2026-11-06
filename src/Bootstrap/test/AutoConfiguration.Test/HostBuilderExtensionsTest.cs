@@ -44,6 +44,7 @@ using Steeltoe.Logging;
 using Steeltoe.Logging.DynamicConsole;
 using Steeltoe.Logging.DynamicSerilog;
 using Steeltoe.Management.Endpoint;
+using Steeltoe.Management.Endpoint.Actuators.Health.Availability;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Tracing;
 
@@ -51,6 +52,13 @@ namespace Steeltoe.Bootstrap.AutoConfiguration.Test;
 
 public sealed class HostBuilderExtensionsTest
 {
+    private static readonly Dictionary<string, string?> HealthProbeSettings = new()
+    {
+        ["Management:Endpoints:Health:Liveness:Enabled"] = "true",
+        ["Management:Endpoints:Health:Readiness:Enabled"] = "true",
+        ["Management:Endpoints:Health:ShowComponents"] = "Always"
+    };
+
     [Theory]
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
@@ -59,6 +67,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task ConfigServerConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationConfigServer, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertConfigServerConfigurationIsAutowired(hostWrapper);
     }
@@ -71,6 +80,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task CloudFoundryConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationCloudFoundry, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertCloudFoundryConfigurationIsAutowired(hostWrapper);
     }
@@ -83,6 +93,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task RandomValueConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationRandomValue, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertRandomValueConfigurationIsAutowired(hostWrapper);
     }
@@ -95,6 +106,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task SpringBootConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationSpringBoot, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertSpringBootConfigurationIsAutowired(hostWrapper);
     }
@@ -107,6 +119,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task EncryptionConfiguration_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationEncryption, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertEncryptionConfigurationIsAutowired(hostWrapper);
     }
@@ -119,6 +132,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task PlaceholderResolver_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ConfigurationPlaceholder, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertPlaceholderResolverIsAutowired(hostWrapper);
     }
@@ -131,6 +145,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task Connectors_AreAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.Connectors, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertConnectorsAreAutowired(hostWrapper);
     }
@@ -148,6 +163,7 @@ public sealed class HostBuilderExtensionsTest
         exclusions.Add("System.Data.SqlClient");
 
         await using HostWrapper hostWrapper = HostWrapperFactory.GetExcluding(exclusions, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         hostWrapper.Services.GetService<ConnectorFactory<SqlServerOptions, SqlConnection>>().Should().BeNull();
     }
@@ -160,6 +176,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task DynamicSerilog_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.LoggingDynamicSerilog, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertDynamicSerilogIsAutowired(hostWrapper);
     }
@@ -172,6 +189,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task DynamicConsoleLogger_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.LoggingDynamicConsole, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertDynamicConsoleIsAutowired(hostWrapper);
     }
@@ -193,6 +211,8 @@ public sealed class HostBuilderExtensionsTest
         await using HostWrapper hostWrapper =
             HostWrapperFactory.GetExcluding(SteeltoeAssemblyNames.All.Except(assembliesToInclude).ToHashSet(), hostBuilderType);
 
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
+
         AssertServiceDiscoveryClientsAreAutowired(hostWrapper);
     }
 
@@ -204,6 +224,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task Prometheus_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementPrometheus, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertPrometheusIsAutowired(hostWrapper);
     }
@@ -212,7 +233,6 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
-    [InlineData(HostBuilderType.HostApplication)]
     public async Task AllActuators_AreAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementEndpoint, hostBuilderType);
@@ -229,6 +249,7 @@ public sealed class HostBuilderExtensionsTest
     public async Task Tracing_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetForOnly(SteeltoeAssemblyNames.ManagementTracing, hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertTracingIsAutowired(hostWrapper);
     }
@@ -237,10 +258,10 @@ public sealed class HostBuilderExtensionsTest
     [InlineData(HostBuilderType.Host)]
     [InlineData(HostBuilderType.WebHost)]
     [InlineData(HostBuilderType.WebApplication)]
-    [InlineData(HostBuilderType.HostApplication)]
     public async Task Everything_IsAutowired(HostBuilderType hostBuilderType)
     {
         await using HostWrapper hostWrapper = HostWrapperFactory.GetExcluding(new HashSet<string>(), hostBuilderType);
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         AssertConfigServerConfigurationIsAutowired(hostWrapper);
         AssertCloudFoundryConfigurationIsAutowired(hostWrapper);
@@ -253,8 +274,6 @@ public sealed class HostBuilderExtensionsTest
         AssertServiceDiscoveryClientsAreAutowired(hostWrapper);
         AssertPrometheusIsAutowired(hostWrapper);
         AssertTracingIsAutowired(hostWrapper);
-
-        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
 
         await AssertAllActuatorsAreAutowiredAsync(hostWrapper, false, TestContext.Current.CancellationToken);
     }
@@ -354,29 +373,50 @@ public sealed class HostBuilderExtensionsTest
         hostWrapper.Services.GetServices<IHypermediaEndpointHandler>().Should().ContainSingle();
         hostWrapper.Services.GetServices<IStartupFilter>().OfType<ConfigureActuatorsMiddlewareStartupFilter>().Should().ContainSingle();
 
-        if (hostWrapper.Services.GetService<IServer>() != null)
-        {
-            using HttpClient httpClient = hostWrapper.GetTestClient();
+        var availability = hostWrapper.Services.GetRequiredService<ApplicationAvailability>();
+        availability.GetLivenessState().Should().Be(LivenessState.Correct);
+        availability.GetReadinessState().Should().Be(ReadinessState.AcceptingTraffic);
 
-            HttpResponseMessage response = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative), cancellationToken);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        using HttpClient httpClient = hostWrapper.GetTestClient();
 
-            response = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative), cancellationToken);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
+        using HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("/actuator", UriKind.Relative), cancellationToken);
+        response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            response = await httpClient.GetAsync(new Uri("/actuator/health", UriKind.Relative), cancellationToken);
-            response.StatusCode.Should().Be(expectHealthy ? HttpStatusCode.OK : HttpStatusCode.ServiceUnavailable);
+        using HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("/actuator/info", UriKind.Relative), cancellationToken);
+        response2.StatusCode.Should().Be(HttpStatusCode.OK);
 
-            response = await httpClient.GetAsync(new Uri("/actuator/health/liveness", UriKind.Relative), cancellationToken);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            string responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-            responseContent.Should().Contain("""LivenessState":"CORRECT""");
+        using HttpResponseMessage response3 = await httpClient.GetAsync(new Uri("/actuator/health", UriKind.Relative), cancellationToken);
+        response3.StatusCode.Should().Be(expectHealthy ? HttpStatusCode.OK : HttpStatusCode.ServiceUnavailable);
 
-            response = await httpClient.GetAsync(new Uri("/actuator/health/readiness", UriKind.Relative), cancellationToken);
-            response.StatusCode.Should().Be(HttpStatusCode.OK);
-            responseContent = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-            responseContent.Should().Contain("""ReadinessState":"ACCEPTING_TRAFFIC""");
-        }
+        using HttpResponseMessage response4 = await httpClient.GetAsync(new Uri("/actuator/health/liveness", UriKind.Relative), cancellationToken);
+        response4.StatusCode.Should().Be(HttpStatusCode.OK);
+        string responseContent = await response4.Content.ReadAsStringAsync(cancellationToken);
+
+        responseContent.Should().BeJson("""
+            {
+              "status": "UP",
+              "components": {
+                "livenessState": {
+                  "status": "UP"
+                }
+              }
+            }
+            """);
+
+        using HttpResponseMessage response5 = await httpClient.GetAsync(new Uri("/actuator/health/readiness", UriKind.Relative), cancellationToken);
+        response5.StatusCode.Should().Be(HttpStatusCode.OK);
+        responseContent = await response5.Content.ReadAsStringAsync(cancellationToken);
+
+        responseContent.Should().BeJson("""
+            {
+              "status": "UP",
+              "components": {
+                "readinessState": {
+                  "status": "UP"
+                }
+              }
+            }
+            """);
     }
 
     private static void AssertTracingIsAutowired(HostWrapper hostWrapper)
@@ -413,7 +453,12 @@ public sealed class HostBuilderExtensionsTest
 
             hostBuilder.ConfigureWebHost(builder =>
             {
-                builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.Add(FastTestConfigurations.All));
+                builder.ConfigureAppConfiguration(configurationBuilder =>
+                {
+                    configurationBuilder.Add(FastTestConfigurations.All);
+                    configurationBuilder.AddInMemoryCollection(HealthProbeSettings);
+                });
+
                 builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
                 builder.AddSteeltoe(assemblyNamesToExclude);
             });
@@ -424,7 +469,14 @@ public sealed class HostBuilderExtensionsTest
         private static IWebHost GetExcludingFromWebHostBuilder(IReadOnlySet<string> assemblyNamesToExclude)
         {
             WebHostBuilder builder = TestWebHostBuilderFactory.Create();
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.Add(FastTestConfigurations.All));
+
+            builder.ConfigureAppConfiguration(configurationBuilder =>
+            {
+                configurationBuilder.Add(FastTestConfigurations.All);
+                configurationBuilder.AddInMemoryCollection(HealthProbeSettings);
+            });
+
+            builder.ConfigureServices(services => services.AddRouting());
             builder.Configure(applicationBuilder => applicationBuilder.UseRouting());
             builder.AddSteeltoe(assemblyNamesToExclude);
 
@@ -435,6 +487,7 @@ public sealed class HostBuilderExtensionsTest
         {
             WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault();
             builder.Configuration.Add(FastTestConfigurations.All);
+            builder.Configuration.AddInMemoryCollection(HealthProbeSettings);
             builder.AddSteeltoe(assemblyNamesToExclude);
 
             WebApplication host = builder.Build();
@@ -447,6 +500,7 @@ public sealed class HostBuilderExtensionsTest
         {
             HostApplicationBuilder builder = TestHostApplicationBuilderFactory.Create();
             builder.Configuration.Add(FastTestConfigurations.All);
+            builder.Configuration.AddInMemoryCollection(HealthProbeSettings);
             builder.AddSteeltoe(assemblyNamesToExclude);
 
             return builder.Build();

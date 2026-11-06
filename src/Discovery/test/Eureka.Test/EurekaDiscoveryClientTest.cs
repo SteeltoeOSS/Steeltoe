@@ -4,7 +4,6 @@
 
 using System.Globalization;
 using System.Net;
-using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -208,7 +207,7 @@ public sealed class EurekaDiscoveryClientTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", FooAddedJson);
 
         await using WebApplication webApplication = builder.Build();
@@ -238,7 +237,7 @@ public sealed class EurekaDiscoveryClientTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/delta").Respond("application/json", FooModifiedJson);
 
         await using WebApplication webApplication = builder.Build();
@@ -282,7 +281,7 @@ public sealed class EurekaDiscoveryClientTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NotFound);
 
         await using WebApplication webApplication = builder.Build();
@@ -311,7 +310,7 @@ public sealed class EurekaDiscoveryClientTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NoContent);
 
         await using WebApplication webApplication = builder.Build();
@@ -339,7 +338,7 @@ public sealed class EurekaDiscoveryClientTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.OK);
         handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond(HttpStatusCode.NotFound);
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.OK);
@@ -372,7 +371,7 @@ public sealed class EurekaDiscoveryClientTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.OK);
         handler.Mock.Expect(HttpMethod.Put, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond("application/json", "{}");
 
@@ -404,7 +403,7 @@ public sealed class EurekaDiscoveryClientTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Delete, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond(HttpStatusCode.OK);
 
         await using WebApplication webApplication = builder.Build();
@@ -432,7 +431,7 @@ public sealed class EurekaDiscoveryClientTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.OK);
         handler.Mock.Expect(HttpMethod.Delete, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond(HttpStatusCode.OK);
 
@@ -461,8 +460,9 @@ public sealed class EurekaDiscoveryClientTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").Respond(HttpStatusCode.NotFound);
+        MockedRequest unregisterMock = handler.Mock.When(HttpMethod.Delete, "http://localhost:8761/eureka/apps/FOO/localhost%3Afoo").Respond(HttpStatusCode.OK);
 
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
@@ -471,6 +471,7 @@ public sealed class EurekaDiscoveryClientTest
 
         await discoveryClient.ShutdownAsync(TestContext.Current.CancellationToken);
 
+        handler.Mock.GetMatchCount(unregisterMock).Should().Be(0);
         handler.Mock.VerifyNoOutstandingExpectation();
     }
 
@@ -491,7 +492,8 @@ public sealed class EurekaDiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        discoveryClient.Applications = new ApplicationInfoCollection([
+        discoveryClient.Applications =
+        [
             new ApplicationInfo("app1", [
                 new InstanceInfo("id11", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
@@ -520,7 +522,7 @@ public sealed class EurekaDiscoveryClientTest
                     Status = InstanceStatus.OutOfService
                 }
             ])
-        ]);
+        ];
 
         IList<IServiceInstance> result = await discoveryClient.GetInstancesAsync("vapp1", TestContext.Current.CancellationToken);
 
@@ -555,7 +557,8 @@ public sealed class EurekaDiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
 
-        discoveryClient.Applications = new ApplicationInfoCollection([
+        discoveryClient.Applications =
+        [
             new ApplicationInfo("app1", [
                 new InstanceInfo("id1", "app1", "localhost", "192.168.56.1", new DataCenterInfo(), TimeProvider.System)
                 {
@@ -584,7 +587,7 @@ public sealed class EurekaDiscoveryClientTest
                     Status = InstanceStatus.OutOfService
                 }
             ])
-        ]);
+        ];
 
         ApplicationInfo? result = discoveryClient.GetApplication("app1");
 
@@ -677,7 +680,7 @@ public sealed class EurekaDiscoveryClientTest
                 handlerBuilder.AdditionalHandlers.Add(handlerBuilder.Services.GetRequiredService<ExtraRequestHeadersDelegatingHandler>()));
         });
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
 
         handler.Mock.Expect(HttpMethod.Post, "http://localhost:8761/eureka/apps/FOO").WithHeaders("X-Special-Feature", "enabled")
             .Respond(HttpStatusCode.NoContent);
@@ -705,7 +708,7 @@ public sealed class EurekaDiscoveryClientTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", FooAddedJson);
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps/delta").Respond("application/json", FooModifiedJson);
 
@@ -714,24 +717,26 @@ public sealed class EurekaDiscoveryClientTest
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
         ApplicationsFetchedEventArgs? applicationsEventArgs = null;
-        int applicationsEventCount = 0;
         DiscoveryInstancesFetchedEventArgs? instancesEventArgs = null;
-        int instancesEventCount = 0;
+        using var applicationsFetched = new SemaphoreSlim(0);
+        using var instancesFetched = new SemaphoreSlim(0);
 
+        // ReSharper disable AccessToDisposedClosure
         discoveryClient.ApplicationsFetched += (_, args) =>
         {
             applicationsEventArgs = args;
-            Interlocked.Increment(ref applicationsEventCount);
+            applicationsFetched.Release();
         };
 
         discoveryClient.InstancesFetched += (_, args) =>
         {
             instancesEventArgs = args;
-            Interlocked.Increment(ref instancesEventCount);
+            instancesFetched.Release();
         };
+        // ReSharper restore AccessToDisposedClosure
 
         await discoveryClient.FetchRegistryAsync(true, TestContext.Current.CancellationToken);
-        SpinWait.SpinUntil(() => applicationsEventCount == 1 && instancesEventCount == 1, 5.Seconds()).Should().BeTrue();
+        await WaitForBothEventsAsync(applicationsFetched, instancesFetched);
 
         applicationsEventArgs.Should().NotBeNull();
         InstanceInfo oldInstanceFromAppEvent = applicationsEventArgs.Applications.Should().ContainSingle().Which.Instances.Should().ContainSingle().Which;
@@ -745,7 +750,7 @@ public sealed class EurekaDiscoveryClientTest
         oldInstancesFromGet.Should().ContainSingle().Which.Uri.Should().Be(oldInstanceFromEvent.Uri);
 
         await discoveryClient.FetchRegistryAsync(false, TestContext.Current.CancellationToken);
-        SpinWait.SpinUntil(() => applicationsEventCount == 2 && instancesEventCount == 2, 5.Seconds()).Should().BeTrue();
+        await WaitForBothEventsAsync(applicationsFetched, instancesFetched);
 
         InstanceInfo newInstanceFromAppEvent = applicationsEventArgs.Applications.Should().ContainSingle().Which.Instances.Should().ContainSingle().Which;
         newInstanceFromAppEvent.ActionType.Should().Be(ActionType.Modified);
@@ -813,27 +818,34 @@ public sealed class EurekaDiscoveryClientTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddEurekaDiscoveryClient();
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", registryJson);
 
         await using WebApplication webApplication = builder.Build();
         webApplication.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         var discoveryClient = webApplication.Services.GetRequiredService<EurekaDiscoveryClient>();
-        DiscoveryInstancesFetchedEventArgs? eventArgs = null;
-        discoveryClient.InstancesFetched += (_, args) => eventArgs = args;
+        var eventFetched = new TaskCompletionSource<DiscoveryInstancesFetchedEventArgs>(TaskCreationOptions.RunContinuationsAsynchronously);
+        discoveryClient.InstancesFetched += (_, args) => eventFetched.TrySetResult(args);
 
         await discoveryClient.FetchRegistryAsync(true, TestContext.Current.CancellationToken);
-        SpinWait.SpinUntil(() => eventArgs != null, 5.Seconds()).Should().BeTrue();
 
-        eventArgs.Should().NotBeNull();
+        DiscoveryInstancesFetchedEventArgs eventArgs = await eventFetched.Task.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
 
         IList<IServiceInstance> instancesFromGet = await discoveryClient.GetInstancesAsync("vapp1", TestContext.Current.CancellationToken);
         IReadOnlyList<IServiceInstance> instancesFromEvent = eventArgs.InstancesByServiceId.Should().ContainKey("vapp1").WhoseValue;
 
+        instancesFromGet.Should().HaveCount(filterOnlyUpInstances ? 1 : 2);
+        instancesFromEvent.Should().HaveCount(filterOnlyUpInstances ? 1 : 2);
         instancesFromEvent.Should().BeEquivalentTo(instancesFromGet);
 
         handler.Mock.VerifyNoOutstandingExpectation();
+    }
+
+    private static async Task WaitForBothEventsAsync(SemaphoreSlim applicationsFetched, SemaphoreSlim instancesFetched)
+    {
+        (await applicationsFetched.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken)).Should().BeTrue();
+        (await instancesFetched.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken)).Should().BeTrue();
     }
 
     private sealed class ExtraRequestHeadersDelegatingHandler : DelegatingHandler

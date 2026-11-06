@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using System.Reflection;
 using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
@@ -27,12 +28,16 @@ public sealed class ConfigServerClientOptionsTest
     [Fact]
     public async Task ConfigureConfigServerClientOptions_WithDefaults()
     {
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
+
         var builder = new ConfigurationBuilder();
-        builder.AddConfigServer();
-        IConfiguration configuration = builder.Build();
+        // ReSharper disable once AccessToDisposedClosure
+        builder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
+        IConfigurationRoot configurationRoot = builder.Build();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions();
 
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -77,8 +82,8 @@ public sealed class ConfigServerClientOptionsTest
 
         var builder = new ConfigurationBuilder();
         builder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = builder.Build();
-        services.AddSingleton(configuration);
+        IConfigurationRoot configurationRoot = builder.Build();
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
 
         services.ConfigureConfigServerClientOptions(options => options.Environment = "staging");
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -267,21 +272,24 @@ public sealed class ConfigServerClientOptionsTest
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
         // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(new ConfigServerClientOptions(), null, () => handler, NullLoggerFactory.Instance);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
-        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions();
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
         var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConfigServerClientOptions>>();
 
-        provider.ClientOptions.ClientCertificate.Certificate.Should().NotBeNull();
-        optionsMonitor.CurrentValue.ClientCertificate.Certificate.Should().NotBeNull();
+        using X509Certificate2? initialProviderCertificate = provider.ClientOptions.ClientCertificate.Certificate;
+        using X509Certificate2? initialMonitorCertificate = optionsMonitor.CurrentValue.ClientCertificate.Certificate;
+
+        initialProviderCertificate.Should().NotBeNull();
+        initialMonitorCertificate.Should().NotBeNull();
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -304,10 +312,13 @@ public sealed class ConfigServerClientOptionsTest
 
         fileProvider.NotifyChanged();
 
+        using X509Certificate2? reloadedProviderCertificate = provider.ClientOptions.ClientCertificate.Certificate;
+        using X509Certificate2? reloadedMonitorCertificate = optionsMonitor.CurrentValue.ClientCertificate.Certificate;
+
         provider.ClientOptions.Timeout.Should().Be(15_000);
-        provider.ClientOptions.ClientCertificate.Certificate.Should().NotBeNull();
+        reloadedProviderCertificate.Should().NotBeNull();
         optionsMonitor.CurrentValue.Timeout.Should().Be(15_000);
-        optionsMonitor.CurrentValue.ClientCertificate.Certificate.Should().NotBeNull();
+        reloadedMonitorCertificate.Should().NotBeNull();
     }
 
     [Fact]
@@ -370,15 +381,15 @@ public sealed class ConfigServerClientOptionsTest
         configurationBuilder.AddPlaceholderResolver();
         // ReSharper disable once AccessToDisposedClosure
         configurationBuilder.AddConfigServer(defaultOptions, configureOptions, () => handler, NullLoggerFactory.Instance);
-        IConfigurationRoot configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         handler.Mock.VerifyNoOutstandingExpectation();
         handler.Mock.Clear();
 
-        ConfigServerConfigurationProvider provider = configuration.Providers.OfType<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.Providers.OfType<ConfigServerConfigurationProvider>().Single();
 
         IServiceCollection services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.ConfigureConfigServerClientOptions(configureOptions);
 
         using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -398,7 +409,7 @@ public sealed class ConfigServerClientOptionsTest
         optionsMonitor.CurrentValue.Label.Should().BeNull();
         optionsMonitor.CurrentValue.FailFast.Should().BeTrue();
 
-        configuration["example-server-key"].Should().Be("example-server-value");
+        configurationRoot["example-server-key"].Should().Be("example-server-value");
 
         fileProvider.ReplaceAppSettingsJsonFile("""
             {
@@ -447,7 +458,7 @@ public sealed class ConfigServerClientOptionsTest
             optionsMonitor.CurrentValue.Label.Should().Be(provider.ClientOptions.Label);
             optionsMonitor.CurrentValue.FailFast.Should().BeTrue();
 
-            configuration["example-server-key"].Should().Be("example-server-value");
+            configurationRoot["example-server-key"].Should().Be("example-server-value");
         }
     }
 }

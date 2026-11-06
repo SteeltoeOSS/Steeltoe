@@ -1,0 +1,186 @@
+// Licensed to the .NET Foundation under one or more agreements.
+// The .NET Foundation licenses this file to you under the Apache 2.0 License.
+// See the LICENSE file in the project root for more information.
+
+using System.Net;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using NSubstitute;
+using Steeltoe.Common.Extensions;
+using Steeltoe.Common.Net;
+using Steeltoe.Discovery.Consul.Configuration;
+
+namespace Steeltoe.Discovery.Consul.Test;
+
+public sealed class PostConfigureConsulDiscoveryOptionsTest
+{
+    [Fact]
+    public void Constructor_InitializesDefaults()
+    {
+        var options = new ConsulDiscoveryOptions();
+
+        options.Register.Should().BeTrue();
+        options.RegisterHealthCheck.Should().BeTrue();
+        options.DefaultQueryTag.Should().BeNull();
+        options.DefaultZoneMetadataName.Should().Be("zone");
+        options.Deregister.Should().BeTrue();
+        options.Enabled.Should().BeTrue();
+        options.FailFast.Should().BeTrue();
+        options.HealthCheckCriticalTimeout.Should().Be("30m");
+        options.HealthCheckInterval.Should().Be("10s");
+        options.HealthCheckPath.Should().Be("/actuator/health");
+        options.HealthCheckTimeout.Should().Be("10s");
+        options.HealthCheckTlsSkipVerify.Should().BeFalse();
+        options.HealthCheckUrl.Should().BeNull();
+        options.Heartbeat.Should().NotBeNull();
+        options.HostName.Should().BeNull();
+        options.InstanceGroup.Should().BeNull();
+        options.InstanceZone.Should().BeNull();
+        options.PreferIPAddress.Should().BeFalse();
+        options.QueryPassing.Should().BeTrue();
+        options.Scheme.Should().BeNull();
+        options.EffectiveScheme.Should().Be("http");
+        options.ServiceName.Should().BeNull();
+        options.Tags.Should().BeEmpty();
+        options.Metadata.Should().BeEmpty();
+        options.IPAddress.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task DoesNotUseNetworkInterfacesByDefault()
+    {
+        var domainNameResolver = Substitute.For<IDomainNameResolver>();
+        var networkInterfaceProvider = Substitute.For<INetworkInterfaceProvider>();
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
+        services.AddSingleton(domainNameResolver);
+        services.AddSingleton(networkInterfaceProvider);
+        services.AddSingleton<InetUtils>();
+        services.AddLogging();
+        services.AddApplicationInstanceInfo();
+        services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
+        services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
+
+        _ = optionsMonitor.CurrentValue;
+
+        networkInterfaceProvider.DidNotReceive().GetAllNetworkInterfaces();
+    }
+
+    [Fact]
+    public async Task CanUseNetworkInterfaces()
+    {
+        var domainNameResolver = Substitute.For<IDomainNameResolver>();
+        var networkInterfaceProvider = Substitute.For<INetworkInterfaceProvider>();
+
+        networkInterfaceProvider.GetAllNetworkInterfaces().Returns([
+            new NetworkInterfaceSnapshot("eth0", "eth0-id", true, false, 1, [IPAddress.Parse("254.254.254.254")])
+        ]);
+
+        networkInterfaceProvider.ResolveHostName(Arg.Any<IPAddress>()).Returns("test.interface-name.com");
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["consul:discovery:UseNetworkInterfaces"] = "true"
+        };
+
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
+        services.AddSingleton(domainNameResolver);
+        services.AddSingleton(networkInterfaceProvider);
+        services.AddSingleton<InetUtils>();
+        services.AddLogging();
+        services.AddApplicationInstanceInfo();
+        services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
+        services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
+
+        ConsulDiscoveryOptions options = optionsMonitor.CurrentValue;
+
+        options.HostName.Should().Be("test.interface-name.com");
+        options.IPAddress.Should().Be("254.254.254.254");
+
+        networkInterfaceProvider.Received(1).GetAllNetworkInterfaces();
+    }
+
+    [Fact]
+    public async Task CanUseNetworkInterfacesWithoutReverseDnsOnIP()
+    {
+        var domainNameResolver = Substitute.For<IDomainNameResolver>();
+        var networkInterfaceProvider = Substitute.For<INetworkInterfaceProvider>();
+
+        networkInterfaceProvider.GetAllNetworkInterfaces().Returns([
+            new NetworkInterfaceSnapshot("eth0", "eth0-id", true, false, 1, [IPAddress.Parse("254.254.254.254")])
+        ]);
+
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["consul:discovery:UseNetworkInterfaces"] = "true",
+            ["spring:cloud:inet:SkipReverseDnsLookup"] = "true",
+            ["spring:cloud:inet:DefaultHostname"] = "configured-default-host"
+        };
+
+        IConfigurationRoot configurationRoot = new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build();
+
+        var services = new ServiceCollection();
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
+        services.AddSingleton(domainNameResolver);
+        services.AddSingleton(networkInterfaceProvider);
+        services.AddSingleton<InetUtils>();
+        services.AddLogging();
+        services.AddApplicationInstanceInfo();
+        services.AddOptions<InetOptions>().BindConfiguration(InetOptions.ConfigurationPrefix);
+        services.AddOptions<ConsulDiscoveryOptions>().BindConfiguration(ConsulDiscoveryOptions.ConfigurationPrefix);
+        services.AddSingleton<IPostConfigureOptions<ConsulDiscoveryOptions>, PostConfigureConsulDiscoveryOptions>();
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var optionsMonitor = serviceProvider.GetRequiredService<IOptionsMonitor<ConsulDiscoveryOptions>>();
+
+        ConsulDiscoveryOptions options = optionsMonitor.CurrentValue;
+
+        options.HostName.Should().Be("configured-default-host");
+        options.IPAddress.Should().Be("254.254.254.254");
+
+        networkInterfaceProvider.DidNotReceive().ResolveHostName(Arg.Any<IPAddress>());
+    }
+
+    [Fact]
+    public void NormalizeForConsul_Digit_Throws()
+    {
+        Action action = () => PostConfigureConsulDiscoveryOptions.NormalizeForConsul("9abc", "name");
+
+        action.Should().ThrowExactly<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void NormalizeForConsul_ColonAtStart_Throws()
+    {
+        Action action = () => PostConfigureConsulDiscoveryOptions.NormalizeForConsul(":abc", "name");
+
+        action.Should().ThrowExactly<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void NormalizeForConsul_ColonAtEnd_Throws()
+    {
+        Action action = () => PostConfigureConsulDiscoveryOptions.NormalizeForConsul("abc:", "name");
+
+        action.Should().ThrowExactly<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void NormalizeForConsul_ReturnsExpected()
+    {
+        PostConfigureConsulDiscoveryOptions.NormalizeForConsul("abc1", "name").Should().Be("abc1");
+        PostConfigureConsulDiscoveryOptions.NormalizeForConsul("ab:c1", "name").Should().Be("ab-c1");
+        PostConfigureConsulDiscoveryOptions.NormalizeForConsul("ab::c1", "name").Should().Be("ab-c1");
+    }
+}

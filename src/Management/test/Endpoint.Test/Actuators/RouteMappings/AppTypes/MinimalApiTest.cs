@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.TestResources;
@@ -30,14 +29,15 @@ public sealed class MinimalApiTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddRouteMappingsActuator();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapGet("/api/ping", HandlePingRequest);
+        app.MapGet("/api/ping", HandlePingRequest);
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -92,14 +92,15 @@ public sealed class MinimalApiTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddRouteMappingsActuator();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapGet("/api/ping", () => "pong");
+        app.MapGet("/api/ping", () => "pong");
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -154,10 +155,10 @@ public sealed class MinimalApiTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddRouteMappingsActuator();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
         // @formatter:wrap_chained_method_calls chop_always
-        host.MapGet("/routes/{featureName?}", (IServiceProvider serviceProvider, string? featureName, [FromBody] string requestBody,
+        app.MapGet("/routes/{featureName?}", (IServiceProvider serviceProvider, string? featureName, [FromBody] string requestBody,
                 [FromHeader(Name = "X-Media-Version")] string mediaVersion, [FromHeader(Name = "X-Include-Details")] string? includeDetails, int pageNumber,
                 int pageSize = 10) =>
             {
@@ -174,10 +175,11 @@ public sealed class MinimalApiTest
             .Produces(404, null, "application/json");
         // @formatter:wrap_chained_method_calls restore
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -277,7 +279,7 @@ public sealed class MinimalApiTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddRouteMappingsActuator();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
         List<string> httpMethods =
         [
@@ -285,12 +287,13 @@ public sealed class MinimalApiTest
             "HEAD"
         ];
 
-        host.MapMethods("/api/ping", httpMethods, HandlePingRequest);
+        app.MapMethods("/api/ping", httpMethods, HandlePingRequest);
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -373,14 +376,15 @@ public sealed class MinimalApiTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddRouteMappingsActuator();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapMethods("/api/ping", [], HandlePingRequest);
+        app.MapMethods("/api/ping", [], HandlePingRequest);
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -441,15 +445,16 @@ public sealed class MinimalApiTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddRouteMappingsActuator();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapGet("/api/ping", HandlePingRequest);
-        host.MapPost("/api/ping", HandlePingRequest);
+        app.MapGet("/api/ping", HandlePingRequest);
+        app.MapPost("/api/ping", HandlePingRequest);
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -532,16 +537,17 @@ public sealed class MinimalApiTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddRouteMappingsActuator();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapGroup("/api/").MapGet("/ping", HandlePingRequest);
+        app.MapGroup("/api/").MapGet("/ping", HandlePingRequest);
 
-        host.MapGroup("/api/en-us").MapGet("ping", HandlePingRequest);
+        app.MapGroup("/api/en-us").MapGet("ping", HandlePingRequest);
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -624,22 +630,23 @@ public sealed class MinimalApiTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddRouteMappingsActuator();
-        await using WebApplication host = builder.Build();
+        WebApplication app = builder.Build();
 
-        host.MapGroup("/api/v1").MapDelete("products/{productId}", (Guid productId) =>
+        app.MapGroup("/api/v1").MapDelete("products/{productId}", (Guid productId) =>
         {
             _ = productId;
         });
 
-        host.MapGroup("/api/v2").MapPatch("products/{productId}", (Guid productId, [FromBody] Product product) =>
+        app.MapGroup("/api/v2").MapPatch("products/{productId}", (Guid productId, [FromBody] Product product) =>
         {
             _ = productId;
         });
 
+        await using HostWrapper host = HostWrapper.Wrap(app);
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -730,12 +737,12 @@ public sealed class MinimalApiTest
         builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
         builder.ConfigureServices(services => services.AddRouteMappingsActuator());
         builder.Configure(applicationBuilder => applicationBuilder.UseEndpoints(routes => routes.MapGet("/api/ping", () => "pong")));
-        using IWebHost host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
@@ -794,12 +801,12 @@ public sealed class MinimalApiTest
         builder.ConfigureWebHost(webHostBuilder =>
             webHostBuilder.Configure(applicationBuilder => applicationBuilder.UseEndpoints(routes => routes.MapGet("/api/ping", () => "pong"))));
 
-        using IHost host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/mappings"), TestContext.Current.CancellationToken);
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);

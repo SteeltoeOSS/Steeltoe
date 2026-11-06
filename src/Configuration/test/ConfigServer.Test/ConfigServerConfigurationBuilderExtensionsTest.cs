@@ -2,6 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
+using System.Security.Cryptography.X509Certificates;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
@@ -122,18 +124,15 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             ["Certificates:ConfigServer:PrivateKeyFilePath"] = "instance.key"
         };
 
-        var options = new ConfigServerClientOptions
-        {
-            Timeout = 10
-        };
-
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        configurationBuilder.AddConfigServer(options);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        configurationBuilder.Add(FastTestConfigurations.ConfigServer);
+        configurationBuilder.AddConfigServer();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
-        provider.ClientOptions.ClientCertificate.Certificate.Should().NotBeNull();
+        using X509Certificate2? clientCertificate = provider.ClientOptions.ClientCertificate.Certificate;
+        clientCertificate.Should().NotBeNull();
     }
 
     [Fact]
@@ -145,18 +144,15 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             ["Certificates:PrivateKeyFilePath"] = "instance.key"
         };
 
-        var options = new ConfigServerClientOptions
-        {
-            Timeout = 10
-        };
-
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryCollection(appSettings);
-        configurationBuilder.AddConfigServer(options);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        configurationBuilder.Add(FastTestConfigurations.ConfigServer);
+        configurationBuilder.AddConfigServer();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
-        provider.ClientOptions.ClientCertificate.Certificate.Should().NotBeNull();
+        using X509Certificate2? clientCertificate = provider.ClientOptions.ClientCertificate.Certificate;
+        clientCertificate.Should().NotBeNull();
     }
 
     [Fact]
@@ -192,7 +188,7 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddEnvironmentVariables();
         configurationBuilder.AddConfigServer(options, NullLoggerFactory.Instance);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().FirstOrDefault();
 
@@ -223,6 +219,9 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
             }
         };
 
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
+
         var fileProvider = new MemoryFileProvider();
 
         fileProvider.IncludeAppSettingsJsonFile("""
@@ -247,8 +246,9 @@ public sealed class ConfigServerConfigurationBuilderExtensionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        configurationBuilder.AddConfigServer(options, configureOptions, null, NullLoggerFactory.Instance);
-        IConfigurationRoot configurationRoot = configurationBuilder.Build();
+        // ReSharper disable once AccessToDisposedClosure
+        configurationBuilder.AddConfigServer(options, configureOptions, () => handler, NullLoggerFactory.Instance);
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
         ConfigServerConfigurationProvider? provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().FirstOrDefault();
 

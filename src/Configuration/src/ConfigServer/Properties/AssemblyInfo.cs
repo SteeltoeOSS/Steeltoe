@@ -17,3 +17,5 @@ using Steeltoe.Configuration.ConfigServer;
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer.Discovery.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer.Integration.Test")]
+[assembly: InternalsVisibleTo("Steeltoe.Connectors.Test")]

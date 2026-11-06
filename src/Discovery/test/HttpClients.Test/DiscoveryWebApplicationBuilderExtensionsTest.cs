@@ -2,8 +2,8 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using System.Runtime.InteropServices;
-using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,6 +28,14 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         ["eureka:client:eurekaServer:retryCount"] = "0"
     };
 
+    // Keeps the client enabled, so its startup and shutdown are exercised, but makes no network calls (like ConsulSettings does for Consul).
+    private static readonly Dictionary<string, string?> EurekaSettingsWithoutNetworkCalls = new()
+    {
+        ["eureka:client:enabled"] = "true",
+        ["eureka:client:shouldRegisterWithEureka"] = "false",
+        ["eureka:client:shouldFetchRegistry"] = "false"
+    };
+
     private static readonly Dictionary<string, string?> ConsulSettings = new()
     {
         ["consul:discovery:serviceName"] = "test-host",
@@ -40,10 +48,11 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
     public async Task AddEurekaDiscoveryClient_WebApplicationBuilder_AddsServiceDiscovery_Eureka()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddInMemoryCollection(EurekaSettings);
+        builder.Configuration.AddInMemoryCollection(EurekaSettingsWithoutNetworkCalls);
         builder.Services.AddEurekaDiscoveryClient();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         host.Services.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
         host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
@@ -63,7 +72,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
     }
 
     [FactSkippedOnPlatform(nameof(OSPlatform.OSX))]
-    public async Task AddEurekaDiscoveryClient_WorksWithGlobalServiceDiscovery()
+    public async Task AddEurekaDiscoveryClient_DoesNotDeadlockWhenResolvedWithGlobalServiceDiscovery()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Configuration.AddInMemoryCollection(EurekaSettings);
@@ -71,14 +80,19 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         builder.Services.AddEurekaDiscoveryClient();
         builder.Services.ConfigureHttpClientDefaults(action => action.AddServiceDiscovery());
 
-        await using WebApplication host = builder.Build();
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.OK, "{}");
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
+        host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         // ReSharper disable once AccessToDisposedClosure
         Task<EurekaDiscoveryClient> resolveTask = Task.Run(() => _ = host.Services.GetServices<IDiscoveryClient>().OfType<EurekaDiscoveryClient>().Single());
 
-        Func<Task> action = async () => await resolveTask.WaitAsync(5.Seconds(), TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await resolveTask.WaitAsync(Timeouts.Safety, TestContext.Current.CancellationToken);
 
         await action.Should().NotThrowAsync();
+
+        await host.StartAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
@@ -96,7 +110,7 @@ public sealed class DiscoveryWebApplicationBuilderExtensionsTest
         builder.Services.AddTransient<ResolvingHttpDelegatingHandler>();
         builder.Services.ConfigureHttpClientDefaults(action => action.AddHttpMessageHandler<ResolvingHttpDelegatingHandler>());
 
-        var handler = new DelegateToMockHttpClientHandler();
+        using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Get, "http://localhost:8761/eureka/apps").Respond("application/json", "{}");
 
         await using WebApplication host = builder.Build();

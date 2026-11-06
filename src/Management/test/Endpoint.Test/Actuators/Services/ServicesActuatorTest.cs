@@ -4,7 +4,6 @@
 
 using System.Net;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -31,7 +30,7 @@ public sealed class ServicesActuatorTest
     public async Task Registers_dependent_services()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddServicesActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -45,7 +44,7 @@ public sealed class ServicesActuatorTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddServicesActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -74,7 +73,7 @@ public sealed class ServicesActuatorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddServicesActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -114,7 +113,7 @@ public sealed class ServicesActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/beans"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/beans"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -527,12 +526,12 @@ public sealed class ServicesActuatorTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddSingleton<IServiceCollection>(testServices);
         builder.Services.AddServicesActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/beans"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/beans"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 

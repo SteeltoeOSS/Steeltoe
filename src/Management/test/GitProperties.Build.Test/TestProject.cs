@@ -19,6 +19,12 @@ internal sealed class TestProject(string rootDirectory, string name)
     public bool FallbackGitPropertiesGenerated => File.Exists(FallbackFilePath);
     public bool CompiledAssemblyExists => File.Exists(Path.Combine(RootDirectory, "bin", "Debug", TestAppTargetFramework.Default, $"{name}.dll"));
 
+    public void DeleteGeneratedGitProperties()
+    {
+        File.Delete(_debugGitPropertiesFilePath);
+        File.Delete(FallbackFilePath);
+    }
+
     public ProjectReference ToProjectReference()
     {
         return new ProjectReference(name);

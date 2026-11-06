@@ -32,7 +32,7 @@ jobs:
 
     steps:
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: |
           8.0.*
@@ -40,7 +40,7 @@ jobs:
           10.0.*
 
     - name: Git checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         persist-credentials: false
 
@@ -147,9 +147,9 @@ jobs:
         path: packages
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: 8.0.*
+        dotnet-version: 10.0.*
 
     - name: Install code signing tool
       run: dotnet tool install --global sign --prerelease
@@ -207,9 +207,9 @@ jobs:
         path: packages
 
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: 8.0.*
+        dotnet-version: 10.0.*
         source-url: ${{ vars.AZURE_ARTIFACTS_FEED_URL }}
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -240,9 +240,9 @@ jobs:
 
     steps:
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: 8.0.*
+        dotnet-version: 10.0.*
 
     - name: Download signed packages
       uses: actions/download-artifact@v8
@@ -271,7 +271,7 @@ jobs:
 
     steps:
     - name: Git checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         persist-credentials: true
 
@@ -312,4 +312,4 @@ jobs:
         git push --set-upstream origin $prBranchName
 
         Write-Output "Opening pull request to merge $prBranchName."
-        gh pr create --head $prBranchName --title 'Bump Steeltoe version' --body $commitMessage
+        gh pr create --head $prBranchName --title 'Bump Steeltoe version from $oldVersionPrefix to $newVersionPrefix' --body $commitMessage

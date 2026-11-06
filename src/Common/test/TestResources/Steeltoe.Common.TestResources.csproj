@@ -9,6 +9,7 @@
   <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="$(FluentAssertionsVersion)" />
     <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="$(MatchTargetFrameworkVersion)" />
+    <PackageReference Include="Microsoft.Extensions.TimeProvider.Testing" Version="$(TimeProviderTestingVersion)" />
     <PackageReference Include="NSubstitute" Version="$(NSubstituteVersion)" />
     <PackageReference Include="RichardSzalay.MockHttp" Version="$(MockHttpVersion)" />
     <PackageReference Include="System.Collections.Immutable" Version="$(FoundationalVersion)" />

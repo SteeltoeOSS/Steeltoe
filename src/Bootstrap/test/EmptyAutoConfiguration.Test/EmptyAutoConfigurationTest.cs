@@ -37,42 +37,54 @@ public sealed class EmptyAutoConfigurationTest
     }
 
     [Fact]
-    public void Loads_without_any_Steeltoe_references_using_WebApplicationBuilder()
+    public async Task Loads_without_any_Steeltoe_references_using_WebApplicationBuilder()
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
 
         Action action = () => builder.AddSteeltoe();
 
         action.Should().NotThrow();
+
+        await using HostWrapper hostWrapper = HostWrapper.Wrap(builder.Build());
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public void Loads_without_any_Steeltoe_references_using_HostApplicationBuilder()
+    public async Task Loads_without_any_Steeltoe_references_using_HostApplicationBuilder()
     {
         HostApplicationBuilder builder = TestHostApplicationBuilderFactory.Create();
 
         Action action = () => builder.AddSteeltoe();
 
         action.Should().NotThrow();
+
+        await using HostWrapper hostWrapper = HostWrapper.Wrap(builder.Build());
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public void Loads_without_any_Steeltoe_references_using_WebHostBuilder()
+    public async Task Loads_without_any_Steeltoe_references_using_WebHostBuilder()
     {
         WebHostBuilder builder = TestWebHostBuilderFactory.Create();
 
         Action action = () => builder.AddSteeltoe();
 
         action.Should().NotThrow();
+
+        await using HostWrapper hostWrapper = HostWrapper.Wrap(builder.Build());
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
     }
 
     [Fact]
-    public void Loads_without_any_Steeltoe_references_using_HostBuilder()
+    public async Task Loads_without_any_Steeltoe_references_using_HostBuilder()
     {
-        IHostBuilder builder = TestHostBuilderFactory.Create();
+        HostBuilder builder = TestHostBuilderFactory.Create();
 
         Action action = () => builder.AddSteeltoe();
 
         action.Should().NotThrow();
+
+        await using HostWrapper hostWrapper = HostWrapper.Wrap(builder.Build());
+        await hostWrapper.StartAsync(TestContext.Current.CancellationToken);
     }
 }

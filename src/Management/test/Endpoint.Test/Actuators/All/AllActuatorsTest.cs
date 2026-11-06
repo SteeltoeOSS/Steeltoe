@@ -36,10 +36,10 @@ public sealed class AllActuatorsTest
     [InlineData(true)]
     public async Task Registers_dependent_services(bool platformIsCloudFoundry)
     {
-        using IDisposable? scope = platformIsCloudFoundry ? new EnvironmentVariableScope("VCAP_APPLICATION", "{}") : null;
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", platformIsCloudFoundry ? "{}" : null);
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddSingleton<IWebHostEnvironment, FakeWebHostEnvironment>();
         services.AddAllActuators();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -99,7 +99,7 @@ public sealed class AllActuatorsTest
     [InlineData(HostBuilderType.WebApplication, true)]
     public async Task Does_not_register_duplicate_services(HostBuilderType hostBuilderType, bool platformIsCloudFoundry)
     {
-        using IDisposable? scope = platformIsCloudFoundry ? new EnvironmentVariableScope("VCAP_APPLICATION", "{}") : null;
+        using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", platformIsCloudFoundry ? "{}" : null);
         int actuatorCount = platformIsCloudFoundry ? 13 : 12;
 
         await using HostWrapper host = hostBuilderType.Build(builder =>

@@ -2,10 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Steeltoe.Common.Discovery;
+using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.TestResources;
 using Steeltoe.Discovery.Consul;
 using Steeltoe.Discovery.Eureka;
@@ -21,6 +23,14 @@ public sealed class DiscoveryHostApplicationBuilderExtensionsTest
         ["eureka:client:eurekaServer:retryCount"] = "0"
     };
 
+    // Keeps the client enabled, so its startup and shutdown are exercised, but makes no network calls (like ConsulSettings does for Consul).
+    private static readonly Dictionary<string, string?> EurekaSettingsWithoutNetworkCalls = new()
+    {
+        ["eureka:client:enabled"] = "true",
+        ["eureka:client:shouldRegisterWithEureka"] = "false",
+        ["eureka:client:shouldFetchRegistry"] = "false"
+    };
+
     private static readonly Dictionary<string, string?> ConsulSettings = new()
     {
         ["consul:discovery:serviceName"] = "test-host",
@@ -30,13 +40,14 @@ public sealed class DiscoveryHostApplicationBuilderExtensionsTest
     };
 
     [Fact]
-    public void AddEurekaDiscoveryClient_HostApplicationBuilder_AddsServiceDiscovery_Eureka()
+    public async Task AddEurekaDiscoveryClient_HostApplicationBuilder_AddsServiceDiscovery_Eureka()
     {
         HostApplicationBuilder hostBuilder = TestHostApplicationBuilderFactory.Create();
-        hostBuilder.Configuration.AddInMemoryCollection(EurekaSettings);
+        hostBuilder.Configuration.AddInMemoryCollection(EurekaSettingsWithoutNetworkCalls);
         hostBuilder.Services.AddEurekaDiscoveryClient();
 
-        using IHost host = hostBuilder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        await host.StartAsync(TestContext.Current.CancellationToken);
 
         host.Services.GetServices<IDiscoveryClient>().Should().ContainSingle().Which.Should().BeOfType<EurekaDiscoveryClient>();
         host.Services.GetServices<IHostedService>().OfType<DiscoveryClientHostedService>().Should().ContainSingle();
@@ -49,7 +60,10 @@ public sealed class DiscoveryHostApplicationBuilderExtensionsTest
         hostBuilder.Configuration.AddInMemoryCollection(EurekaSettings);
         hostBuilder.Services.AddEurekaDiscoveryClient();
 
-        using IHost host = hostBuilder.Build();
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.OK, "{}");
+        await using HostWrapper host = HostWrapper.Wrap(hostBuilder.Build());
+        host.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
         // ReSharper disable once AccessToDisposedClosure
         Func<Task> action = async () => await host.StartAsync(TestContext.Current.CancellationToken);

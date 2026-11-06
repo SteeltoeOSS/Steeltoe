@@ -2,6 +2,7 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Globalization;
 using System.Net;
 using System.Net.Http.Json;
 using System.Runtime.InteropServices;
@@ -10,6 +11,7 @@ using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Time.Testing;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.Http.HttpClientPooling;
 using Steeltoe.Common.Net;
@@ -21,7 +23,14 @@ namespace Steeltoe.Management.Endpoint.Test.SpringBootAdminClient;
 public sealed class HostBuilderTest
 {
     // Prevents HttpClient from timing out while stepping through code.
-    private const string VeryHighConnectionTimeoutForDebuggingTests = "900000"; // 15 minutes
+    private static readonly string VeryHighConnectionTimeoutForDebuggingTests = 15.Minutes().TotalMilliseconds.ToString(CultureInfo.InvariantCulture);
+
+    // Tests that refresh periodically use a fake clock, so they advance time instead of waiting for it.
+    private static readonly TimeSpan RefreshInterval = 1.Minutes();
+
+    // Note: These tests intentionally contain sleeps (Task.Delay), because signaling can't be used to indicate something did NOT happen.
+    // Advancing the clock far beyond the refresh interval first makes any scheduled refresh due, so the sleep only gives it time to run.
+    // Under high load, this may result in tests succeeding when they should have failed, which is still better than randomly failing tests.
 
     [Fact]
     public async Task CanUseDynamicHttpPort()
@@ -47,9 +56,13 @@ public sealed class HostBuilderTest
             return true;
         }).Respond("application/json", """{"Id":"1"}""");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
+
         await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -83,9 +96,13 @@ public sealed class HostBuilderTest
             return true;
         }).Respond("application/json", """{"Id":"1"}""");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
+
         await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -101,25 +118,33 @@ public sealed class HostBuilderTest
         var appSettings = new Dictionary<string, string?>
         {
             ["Spring:Boot:Admin:Client:Url"] = "http://sba-server.com",
-            ["Spring:Boot:Admin:Client:RefreshInterval"] = 100.Milliseconds().ToString(),
+            ["Spring:Boot:Admin:Client:RefreshInterval"] = RefreshInterval.ToString(),
             ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests
         };
+
+        var timeProvider = new FakeTimeProvider();
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
+        builder.Services.AddSingleton<TimeProvider>(timeProvider);
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
         MockedRequest registerMock = handler.Mock.When(HttpMethod.Post, "http://sba-server.com/instances").Respond("application/json", """{"Id":"1"}""");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
+
         await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        timeProvider.Advance(RefreshInterval);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
-        handler.Mock.GetMatchCount(registerMock).Should().BeGreaterThan(1);
+        handler.Mock.GetMatchCount(registerMock).Should().Be(2);
     }
 
     [Fact]
@@ -132,26 +157,36 @@ public sealed class HostBuilderTest
             ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests
         };
 
+        var timeProvider = new FakeTimeProvider();
+
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
+        builder.Services.AddSingleton<TimeProvider>(timeProvider);
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
         MockedRequest registerMock = handler.Mock.When(HttpMethod.Post, "http://sba-server.com/instances").Respond("application/json", """{"Id":"1"}""");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-        await app.StartAsync(TestContext.Current.CancellationToken);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
 
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(1);
+
+        timeProvider.Advance(1.Hours());
         await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
 
         handler.Mock.GetMatchCount(registerMock).Should().Be(1);
+        cycleWaiter.PendingCycles.Should().Be(0);
     }
 
     [Fact]
     public async Task PeriodicRefreshCanBeTurnedOnAfterStart()
     {
+        var timeProvider = new FakeTimeProvider();
         var fileProvider = new MemoryFileProvider();
 
         fileProvider.IncludeAppSettingsJsonFile($$"""
@@ -173,18 +208,25 @@ public sealed class HostBuilderTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
+        builder.Services.AddSingleton<TimeProvider>(timeProvider);
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
         MockedRequest registerMock = handler.Mock.When(HttpMethod.Post, "http://sba-server.com/instances").Respond("application/json", """{"Id":"1"}""");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-        await app.StartAsync(TestContext.Current.CancellationToken);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
 
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(1);
+
+        timeProvider.Advance(1.Hours());
         await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
 
         handler.Mock.GetMatchCount(registerMock).Should().Be(1);
+        cycleWaiter.PendingCycles.Should().Be(0);
 
         fileProvider.ReplaceAppSettingsJsonFile($$"""
             {
@@ -193,7 +235,7 @@ public sealed class HostBuilderTest
                   "Admin": {
                     "Client": {
                       "Url": "http://sba-server.com",
-                      "RefreshInterval": "{{100.Milliseconds()}}",
+                      "RefreshInterval": "{{RefreshInterval}}",
                       "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                     }
                   }
@@ -203,14 +245,17 @@ public sealed class HostBuilderTest
             """);
 
         fileProvider.NotifyChanged();
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
 
-        handler.Mock.GetMatchCount(registerMock).Should().BeGreaterThan(2);
+        timeProvider.Advance(RefreshInterval);
+        await cycleWaiter.WaitForCyclesAsync(1);
+
+        handler.Mock.GetMatchCount(registerMock).Should().Be(2);
     }
 
     [Fact]
     public async Task PeriodicRefreshCanBeTurnedOffAfterStart()
     {
+        var timeProvider = new FakeTimeProvider();
         var fileProvider = new MemoryFileProvider();
 
         fileProvider.IncludeAppSettingsJsonFile($$"""
@@ -220,7 +265,7 @@ public sealed class HostBuilderTest
                   "Admin": {
                     "Client": {
                       "Url": "http://sba-server.com",
-                      "RefreshInterval": "{{100.Milliseconds()}}",
+                      "RefreshInterval": "{{RefreshInterval}}",
                       "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                     }
                   }
@@ -232,19 +277,25 @@ public sealed class HostBuilderTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
+        builder.Services.AddSingleton<TimeProvider>(timeProvider);
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
         MockedRequest registerMock = handler.Mock.When(HttpMethod.Post, "http://sba-server.com/instances").Respond("application/json", """{"Id":"1"}""");
         MockedRequest otherRegisterMock = handler.Mock.When(HttpMethod.Post, "http://other-server.com/instances").Respond("application/json", """{"Id":"2"}""");
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
+
         await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        timeProvider.Advance(RefreshInterval);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
-        handler.Mock.GetMatchCount(registerMock).Should().BeGreaterThan(1);
+        handler.Mock.GetMatchCount(registerMock).Should().Be(2);
 
         fileProvider.ReplaceAppSettingsJsonFile($$"""
             {
@@ -263,9 +314,12 @@ public sealed class HostBuilderTest
             """);
 
         fileProvider.NotifyChanged();
+
+        timeProvider.Advance(1.Hours());
         await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
 
         handler.Mock.GetMatchCount(otherRegisterMock).Should().Be(0);
+        cycleWaiter.PendingCycles.Should().Be(0);
     }
 
     [Fact]
@@ -290,9 +344,11 @@ public sealed class HostBuilderTest
         await using (WebApplication app = builder.Build())
         {
             app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-            await app.StartAsync(TestContext.Current.CancellationToken);
+            var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+            using var cycleWaiter = new RefreshCycleWaiter(runner);
 
-            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+            await app.StartAsync(TestContext.Current.CancellationToken);
+            await cycleWaiter.WaitForCyclesAsync(1);
 
             await app.StopAsync(TestContext.Current.CancellationToken);
         }
@@ -322,9 +378,11 @@ public sealed class HostBuilderTest
         await using (WebApplication app = builder.Build())
         {
             app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-            await app.StartAsync(TestContext.Current.CancellationToken);
+            var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+            using var cycleWaiter = new RefreshCycleWaiter(runner);
 
-            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+            await app.StartAsync(TestContext.Current.CancellationToken);
+            await cycleWaiter.WaitForCyclesAsync(1);
 
             await app.StopAsync(TestContext.Current.CancellationToken);
         }
@@ -349,14 +407,16 @@ public sealed class HostBuilderTest
 
         using var handler = new DelegateToMockHttpClientHandler();
         handler.Mock.Expect(HttpMethod.Post, "http://sba-server.com/instances").Respond(HttpStatusCode.InternalServerError);
-        MockedRequest unregisterMock = handler.Mock.When(HttpMethod.Delete, "http://sba-server.com/instances/1").Respond(HttpStatusCode.InternalServerError);
+        MockedRequest unregisterMock = handler.Mock.When(HttpMethod.Delete, "http://sba-server.com/instances/*").Respond(HttpStatusCode.InternalServerError);
 
         await using (WebApplication app = builder.Build())
         {
             app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-            await app.StartAsync(TestContext.Current.CancellationToken);
+            var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+            using var cycleWaiter = new RefreshCycleWaiter(runner);
 
-            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+            await app.StartAsync(TestContext.Current.CancellationToken);
+            await cycleWaiter.WaitForCyclesAsync(1);
 
             await app.StopAsync(TestContext.Current.CancellationToken);
         }
@@ -368,6 +428,7 @@ public sealed class HostBuilderTest
     [Fact]
     public async Task UnregistersFromPreviousServerOnConfigurationChange()
     {
+        var timeProvider = new FakeTimeProvider();
         var fileProvider = new MemoryFileProvider();
 
         fileProvider.IncludeAppSettingsJsonFile($$"""
@@ -377,7 +438,7 @@ public sealed class HostBuilderTest
                   "Admin": {
                     "Client": {
                       "Url": "http://sba-server1.com",
-                      "RefreshInterval": "{{100.Milliseconds()}}",
+                      "RefreshInterval": "{{RefreshInterval}}",
                       "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                     }
                   }
@@ -389,6 +450,7 @@ public sealed class HostBuilderTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
+        builder.Services.AddSingleton<TimeProvider>(timeProvider);
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
@@ -397,13 +459,18 @@ public sealed class HostBuilderTest
         MockedRequest registerMock2 = handler.Mock.When(HttpMethod.Post, "http://sba-server2.com/instances").Respond("application/json", """{"Id":"2"}""");
         MockedRequest unregisterMock2 = handler.Mock.When(HttpMethod.Delete, "http://sba-server2.com/instances/2").Respond(HttpStatusCode.NoContent);
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+        var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
+
         await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        timeProvider.Advance(RefreshInterval);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
-        handler.Mock.GetMatchCount(registerMock1).Should().BeGreaterThan(1);
+        handler.Mock.GetMatchCount(registerMock1).Should().Be(2);
 
         fileProvider.ReplaceAppSettingsJsonFile($$"""
             {
@@ -412,7 +479,7 @@ public sealed class HostBuilderTest
                   "Admin": {
                     "Client": {
                       "Url": "http://sba-server2.com",
-                      "RefreshInterval": "{{100.Milliseconds()}}",
+                      "RefreshInterval": "{{RefreshInterval}}",
                       "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                     }
                   }
@@ -422,16 +489,19 @@ public sealed class HostBuilderTest
             """);
 
         fileProvider.NotifyChanged();
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+
+        timeProvider.Advance(RefreshInterval);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
         handler.Mock.GetMatchCount(unregisterMock1).Should().Be(1);
-        handler.Mock.GetMatchCount(registerMock2).Should().BeGreaterThan(1);
+        handler.Mock.GetMatchCount(registerMock2).Should().Be(1);
         handler.Mock.GetMatchCount(unregisterMock2).Should().Be(0);
     }
 
     [Fact]
     public async Task UnregistersFromPreviousServerOnShutdownAfterConfigurationBecameInvalid()
     {
+        var timeProvider = new FakeTimeProvider();
         var fileProvider = new MemoryFileProvider();
 
         fileProvider.IncludeAppSettingsJsonFile($$"""
@@ -441,7 +511,7 @@ public sealed class HostBuilderTest
                   "Admin": {
                     "Client": {
                       "Url": "http://sba-server1.com",
-                      "RefreshInterval": "{{100.Milliseconds()}}",
+                      "RefreshInterval": "{{RefreshInterval}}",
                       "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                     }
                   }
@@ -453,6 +523,7 @@ public sealed class HostBuilderTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
+        builder.Services.AddSingleton<TimeProvider>(timeProvider);
         builder.Services.AddSpringBootAdminClient();
 
         using var handler = new DelegateToMockHttpClientHandler();
@@ -464,11 +535,16 @@ public sealed class HostBuilderTest
         await using (WebApplication app = builder.Build())
         {
             app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
+            var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+            using var cycleWaiter = new RefreshCycleWaiter(runner);
+
             await app.StartAsync(TestContext.Current.CancellationToken);
+            await cycleWaiter.WaitForCyclesAsync(1);
 
-            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+            timeProvider.Advance(RefreshInterval);
+            await cycleWaiter.WaitForCyclesAsync(1);
 
-            handler.Mock.GetMatchCount(registerMock1).Should().BeGreaterThan(1);
+            handler.Mock.GetMatchCount(registerMock1).Should().Be(2);
 
             fileProvider.ReplaceAppSettingsJsonFile($$"""
                 {
@@ -478,6 +554,7 @@ public sealed class HostBuilderTest
                         "Client": {
                           "Url": "http://sba-server2.com",
                           "BaseUrl": "not-a-valid-uri",
+                          "RefreshInterval": "{{RefreshInterval}}",
                           "ConnectionTimeoutMs": {{VeryHighConnectionTimeoutForDebuggingTests}}
                         }
                       }
@@ -487,7 +564,13 @@ public sealed class HostBuilderTest
                 """);
 
             fileProvider.NotifyChanged();
-            await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+
+            // Two refresh cycles with the invalid configuration must not affect the registration with the previous server.
+            timeProvider.Advance(RefreshInterval);
+            await cycleWaiter.WaitForCyclesAsync(1);
+
+            timeProvider.Advance(RefreshInterval);
+            await cycleWaiter.WaitForCyclesAsync(1);
 
             await app.StopAsync(TestContext.Current.CancellationToken);
         }
@@ -503,13 +586,16 @@ public sealed class HostBuilderTest
         var appSettings = new Dictionary<string, string?>
         {
             ["Spring:Boot:Admin:Client:Url"] = "http://sba-server.com",
-            ["Spring:Boot:Admin:Client:RefreshInterval"] = 100.Milliseconds().ToString(),
+            ["Spring:Boot:Admin:Client:RefreshInterval"] = RefreshInterval.ToString(),
             ["Spring:Boot:Admin:Client:ConnectionTimeoutMs"] = VeryHighConnectionTimeoutForDebuggingTests
         };
+
+        var timeProvider = new FakeTimeProvider();
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.CreateDefault(false);
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Services.AddSingleton<IDomainNameResolver, FakeDomainNameResolver>();
+        builder.Services.AddSingleton<TimeProvider>(timeProvider);
         builder.Services.AddSpringBootAdminClient();
 
         bool isServerOnline = false;
@@ -523,24 +609,73 @@ public sealed class HostBuilderTest
             }
             : throw new HttpRequestException("Server is unreachable."));
 
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
-        await app.StartAsync(TestContext.Current.CancellationToken);
         var runner = app.Services.GetRequiredService<SpringBootAdminRefreshRunner>();
+        using var cycleWaiter = new RefreshCycleWaiter(runner);
 
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        await app.StartAsync(TestContext.Current.CancellationToken);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
-        handler.Mock.GetMatchCount(registerMock).Should().BeGreaterThan(1);
+        timeProvider.Advance(RefreshInterval);
+        await cycleWaiter.WaitForCyclesAsync(1);
+
+        handler.Mock.GetMatchCount(registerMock).Should().Be(2);
         runner.LastRegistrationId.Should().BeNull();
 
         isServerOnline = true;
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        timeProvider.Advance(RefreshInterval);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
         runner.LastRegistrationId.Should().NotBeNull();
 
         isServerOnline = false;
-        await Task.Delay(500.Milliseconds(), TestContext.Current.CancellationToken);
+        timeProvider.Advance(RefreshInterval);
+        await cycleWaiter.WaitForCyclesAsync(1);
 
         runner.LastRegistrationId.Should().NotBeNull();
+    }
+
+    private sealed class RefreshCycleWaiter : IDisposable
+    {
+        private readonly SpringBootAdminRefreshRunner _runner;
+        private readonly SemaphoreSlim _signal = new(0);
+
+        public int PendingCycles => _signal.CurrentCount;
+
+        public RefreshCycleWaiter(SpringBootAdminRefreshRunner runner)
+        {
+            _runner = runner;
+            _runner.CycleCompleted += OnCycleCompleted;
+        }
+
+        public async Task WaitForCyclesAsync(int count)
+        {
+            using var timeoutSource = new CancellationTokenSource(Timeouts.Safety);
+            using var linkedSource = CancellationTokenSource.CreateLinkedTokenSource(TestContext.Current.CancellationToken, timeoutSource.Token);
+
+            try
+            {
+                for (int index = 0; index < count; index++)
+                {
+                    await _signal.WaitAsync(linkedSource.Token);
+                }
+            }
+            catch (OperationCanceledException) when (timeoutSource.IsCancellationRequested && !TestContext.Current.CancellationToken.IsCancellationRequested)
+            {
+                throw new TimeoutException($"Timed out waiting for {count} refresh cycle(s) to complete.");
+            }
+        }
+
+        public void Dispose()
+        {
+            _runner.CycleCompleted -= OnCycleCompleted;
+            _signal.Dispose();
+        }
+
+        private void OnCycleCompleted(object? sender, EventArgs args)
+        {
+            _signal.Release();
+        }
     }
 }

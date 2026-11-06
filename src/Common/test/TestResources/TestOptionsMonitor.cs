@@ -36,6 +36,20 @@ public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
 {
     private readonly List<Action<T, string?>> _listeners = [];
 
+    /// <summary>
+    /// Gets the number of change listeners that are currently subscribed.
+    /// </summary>
+    public int ListenerCount
+    {
+        get
+        {
+            lock (_listeners)
+            {
+                return _listeners.Count;
+            }
+        }
+    }
+
     public T CurrentValue { get; private set; }
 
     /// <summary>
@@ -63,8 +77,12 @@ public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
     {
         ArgumentNullException.ThrowIfNull(listener);
 
-        _listeners.Add(listener);
-        return EmptyDisposable.Instance;
+        lock (_listeners)
+        {
+            _listeners.Add(listener);
+        }
+
+        return new Subscription(this, listener);
     }
 
     public void Change([DisallowNull] T options)
@@ -73,9 +91,27 @@ public sealed class TestOptionsMonitor<T> : IOptionsMonitor<T>
 
         CurrentValue = options;
 
-        foreach (Action<T, string?> listener in _listeners)
+        Action<T, string?>[] listeners;
+
+        lock (_listeners)
+        {
+            listeners = [.. _listeners];
+        }
+
+        foreach (Action<T, string?> listener in listeners)
         {
             listener(CurrentValue, string.Empty);
+        }
+    }
+
+    private sealed class Subscription(TestOptionsMonitor<T> owner, Action<T, string?> listener) : IDisposable
+    {
+        public void Dispose()
+        {
+            lock (owner._listeners)
+            {
+                owner._listeners.Remove(listener);
+            }
         }
     }
 }

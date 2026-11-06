@@ -13,11 +13,13 @@ internal sealed class FakeLoadBalancer : ILoadBalancer
 {
     internal IList<LoadBalancerStatistic> Statistics { get; } = [];
 
+    internal string ReplacementHost { get; init; } = "some-resolved-host:1234";
+
     public Task<Uri> ResolveServiceInstanceAsync(Uri requestUri, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(requestUri);
 
-        string replacementUri = requestUri.AbsoluteUri.Replace("replace-me", "some-resolved-host:1234", StringComparison.Ordinal);
+        string replacementUri = requestUri.AbsoluteUri.Replace("replace-me", ReplacementHost, StringComparison.Ordinal);
         return Task.FromResult(new Uri(replacementUri));
     }
 

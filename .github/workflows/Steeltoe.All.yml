@@ -17,7 +17,6 @@ permissions:
   pull-requests: write
 
 env:
-  STEELTOE_MACOS_DIAGNOSE_HOSTNAME_LOOKUP: true
   DOTNET_CLI_TELEMETRY_OPTOUT: 1
   DOTNET_NOLOGO: true
   SOLUTION_FILE: 'src/Steeltoe.All.slnx'
@@ -67,7 +66,7 @@ jobs:
 
     steps:
     - name: Setup .NET
-      uses: actions/setup-dotnet@v5
+      uses: actions/setup-dotnet@v6
       with:
         dotnet-version: |
           8.0.*
@@ -87,7 +86,7 @@ jobs:
       run: echo "DOTNET_GENERATE_ASPNET_CERTIFICATE=false" >> $GITHUB_ENV
 
     - name: Git checkout
-      uses: actions/checkout@v6
+      uses: actions/checkout@v7
       with:
         persist-credentials: false
 
@@ -139,6 +138,9 @@ jobs:
         path: |
           ${{ github.workspace }}/TestOutput/**/*.dmp
           ${{ github.workspace }}/TestOutput/**/Sequence_*.xml
+          ${{ github.workspace }}/TestOutput/**/*.binlog
+          ${{ github.workspace }}/TestOutput/**/*.nettrace
+          ${{ github.workspace }}/TestOutput/**/*.context.txt
         if-no-files-found: ignore
 
     - name: Report test results

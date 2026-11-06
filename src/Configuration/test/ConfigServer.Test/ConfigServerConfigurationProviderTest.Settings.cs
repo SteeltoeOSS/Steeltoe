@@ -2,10 +2,12 @@
 // The .NET Foundation licenses this file to you under the Apache 2.0 License.
 // See the LICENSE file in the project root for more information.
 
+using System.Net;
 using System.Reflection;
 using FluentAssertions.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging.Abstractions;
+using Steeltoe.Common.TestResources;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -15,7 +17,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
     public void DefaultConstructor_InitializedWithDefaultSettings()
     {
         var options = new ConfigServerClientOptions();
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
+
+        // ReSharper disable once AccessToDisposedClosure
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
         provider.Load();
 
         string? expectedAppName = Assembly.GetEntryAssembly()!.GetName().Name;
@@ -26,7 +33,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
     public void SourceConstructor_WithDefaults_InitializesWithDefaultSettings()
     {
         var options = new ConfigServerClientOptions();
-        var source = new ConfigServerConfigurationSource(options, [], null, null, null, NullLoggerFactory.Instance);
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.RespondToAnyRequest(HttpStatusCode.NotFound);
+
+        // ReSharper disable once AccessToDisposedClosure
+        var source = new ConfigServerConfigurationSource(options, [], null, null, () => handler, NullLoggerFactory.Instance);
         using var provider = new ConfigServerConfigurationProvider(source, NullLoggerFactory.Instance);
         provider.Load();
 
@@ -43,11 +55,12 @@ public sealed partial class ConfigServerConfigurationProviderTest
         };
 
         var builder = new ConfigurationBuilder();
+        builder.Add(FastTestConfigurations.ConfigServer);
         builder.AddInMemoryCollection(appSettings);
         builder.AddConfigServer();
-        IConfigurationRoot configuration = builder.Build();
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
 
-        ConfigServerConfigurationProvider provider = configuration.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
+        ConfigServerConfigurationProvider provider = configurationRoot.EnumerateProviders<ConfigServerConfigurationProvider>().Single();
         using HttpClient httpClient = provider.CreateHttpClient(provider.ClientOptions);
 
         httpClient.Should().NotBeNull();
@@ -63,7 +76,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, TimeProvider.System, NullLoggerFactory.Instance);
 
         // ReSharper disable AccessToDisposedClosure
         Action action = () => provider.BuildConfigServerUri(provider.ClientOptions, null!, null);
@@ -81,7 +94,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), null).ToString();
@@ -99,7 +112,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "myLabel"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), options.Label).ToString();
@@ -117,7 +130,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "myLabel/version"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), options.Label).ToString();
@@ -135,7 +148,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null).ToString();
@@ -153,7 +166,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null).ToString();
@@ -171,7 +184,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null).ToString();
@@ -189,7 +202,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Environment = "Production"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null).ToString();
@@ -207,7 +220,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Label = "demo"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), options.Label).ToString();
@@ -227,7 +240,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
             Password = "#&:$<>'/so,\"me"
         };
 
-        using var provider = new ConfigServerConfigurationProvider(options, null, null, null, NullLoggerFactory.Instance);
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
         provider.Load();
 
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), options.Label).ToString();

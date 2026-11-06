@@ -27,7 +27,11 @@ internal sealed class CloudFoundryServiceBindingConfigurationSource : PostProces
         ArgumentNullException.ThrowIfNull(builder);
 
         CaptureConfigurationBuilder(builder);
-        return new CloudFoundryServiceBindingConfigurationProvider(this, _serviceBindingsReader);
+
+        return new CloudFoundryServiceBindingConfigurationProvider(this, _serviceBindingsReader)
+        {
+            DisposesPostProcessors = !IsBuildingParentConfiguration(builder)
+        };
     }
 
     private string DebuggerToString()

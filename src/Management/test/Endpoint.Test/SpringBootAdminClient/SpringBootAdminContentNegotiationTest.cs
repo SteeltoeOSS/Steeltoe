@@ -5,7 +5,6 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Steeltoe.Common.TestResources;
@@ -51,14 +50,12 @@ public sealed class SpringBootAdminContentNegotiationTest
         builder.Services.AddSingleton<IThreadDumper, FakeThreadDumper>();
         builder.Services.AddAllActuators();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
-        var requestMessage = new HttpRequestMessage
-        {
-            Method = HttpMethod.Get,
-            RequestUri = new Uri($"http://localhost/actuator/{endpoint}")
-        };
+        using var requestMessage = new HttpRequestMessage();
+        requestMessage.Method = HttpMethod.Get;
+        requestMessage.RequestUri = new Uri($"http://localhost/actuator/{endpoint}");
 
         foreach (string acceptValue in acceptHeader.Split(','))
         {
@@ -66,7 +63,7 @@ public sealed class SpringBootAdminContentNegotiationTest
         }
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentType.Should().NotBeNull();
@@ -81,15 +78,13 @@ public sealed class SpringBootAdminContentNegotiationTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Services.AddAllActuators();
 
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
         await host.StartAsync(TestContext.Current.CancellationToken);
 
-        var requestMessage = new HttpRequestMessage
-        {
-            Method = HttpMethod.Post,
-            RequestUri = new Uri("http://localhost/actuator/loggers/Microsoft"),
-            Content = new StringContent("""{"configuredLevel":"ERROR"}""", MediaTypeHeaderValue.Parse("application/json"))
-        };
+        using var requestMessage = new HttpRequestMessage();
+        requestMessage.Method = HttpMethod.Post;
+        requestMessage.RequestUri = new Uri("http://localhost/actuator/loggers/Microsoft");
+        requestMessage.Content = new StringContent("""{"configuredLevel":"ERROR"}""", MediaTypeHeaderValue.Parse("application/json"));
 
         foreach (string acceptValue in SpringBootStandardAccept.Split(','))
         {
@@ -97,7 +92,7 @@ public sealed class SpringBootAdminContentNegotiationTest
         }
 
         using HttpClient client = host.GetTestClient();
-        HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await client.SendAsync(requestMessage, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         response.Content.Headers.ContentType.Should().BeNull();

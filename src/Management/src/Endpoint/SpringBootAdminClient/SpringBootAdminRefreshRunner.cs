@@ -29,6 +29,7 @@ internal sealed partial class SpringBootAdminRefreshRunner
 
     internal string? LastRegistrationId => _lastRegistrationId;
     internal SpringBootAdminClientOptions? LastGoodOptions => _lastGoodOptions;
+    internal event EventHandler? CycleCompleted;
 
     public SpringBootAdminRefreshRunner(AppUrlCalculator appUrlCalculator, SpringBootAdminApiClient springBootAdminApiClient,
         IOptionsMonitor<SpringBootAdminClientOptions> clientOptionsMonitor, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
@@ -56,17 +57,33 @@ internal sealed partial class SpringBootAdminRefreshRunner
 
     public async Task RunAsync(bool isFirstTime, CancellationToken cancellationToken)
     {
-        LogValidatingOptions();
-        SpringBootAdminClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
-        ValidateAndSetOptions(clientOptions);
-
-        if (_lastGoodOptions?.Url != null && !string.Equals(_lastGoodOptions.Url, clientOptions.Url, StringComparison.OrdinalIgnoreCase))
+        try
         {
-            LogUrlChanged(_lastGoodOptions.Url, clientOptions.Url);
-            await SafeUnregisterAsync(_lastGoodOptions, cancellationToken);
-        }
+            LogValidatingOptions();
+            SpringBootAdminClientOptions clientOptions = _clientOptionsMonitor.CurrentValue;
 
-        await RegisterAsync(clientOptions, isFirstTime, cancellationToken);
+            if (!isFirstTime && clientOptions.RefreshInterval <= TimeSpan.Zero)
+            {
+                // Periodic refresh was turned off since this cycle got scheduled. Skip it, using the very same options snapshot that
+                // made this decision, so a stale tick can never end up registering with a server that a concurrent configuration
+                // change just switched away from (which reading a separately-updated flag, like a timer's Period, could allow).
+                return;
+            }
+
+            ValidateAndSetOptions(clientOptions);
+
+            if (_lastGoodOptions?.Url != null && !string.Equals(_lastGoodOptions.Url, clientOptions.Url, StringComparison.OrdinalIgnoreCase))
+            {
+                LogUrlChanged(_lastGoodOptions.Url, clientOptions.Url);
+                await SafeUnregisterAsync(_lastGoodOptions, cancellationToken);
+            }
+
+            await RegisterAsync(clientOptions, isFirstTime, cancellationToken);
+        }
+        finally
+        {
+            CycleCompleted?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     private void ValidateAndSetOptions(SpringBootAdminClientOptions options)

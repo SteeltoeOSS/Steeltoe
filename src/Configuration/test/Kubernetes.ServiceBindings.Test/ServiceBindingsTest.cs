@@ -19,8 +19,8 @@ public sealed class ServiceBindingsTest
     [Fact]
     public void PopulatesContent()
     {
-        var path = new PhysicalFileProvider(GetK8SResourcesDirectory());
-        var bindings = new KubernetesServiceBindingConfigurationProvider.ServiceBindings(path);
+        using var fileProvider = new PhysicalFileProvider(GetK8SResourcesDirectory());
+        var bindings = new KubernetesServiceBindingConfigurationProvider.ServiceBindings(fileProvider);
 
         bindings.Bindings.Should().HaveCount(4);
     }

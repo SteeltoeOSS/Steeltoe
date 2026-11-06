@@ -5,7 +5,6 @@
 using System.Net;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -27,7 +26,7 @@ public sealed class EnvironmentActuatorTest
     public async Task Registers_dependent_services()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddSingleton<IWebHostEnvironment, FakeWebHostEnvironment>();
         services.AddEnvironmentActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
@@ -42,7 +41,7 @@ public sealed class EnvironmentActuatorTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddEnvironmentActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -74,7 +73,7 @@ public sealed class EnvironmentActuatorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddEnvironmentActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -100,7 +99,7 @@ public sealed class EnvironmentActuatorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddEnvironmentActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -129,10 +128,10 @@ public sealed class EnvironmentActuatorTest
         await using var stream = TextConverter.ToStream(appSettings);
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddJsonStream(stream);
-        IConfiguration configuration = configurationBuilder.Build();
+        IConfigurationRoot configurationRoot = configurationBuilder.Build();
 
         var services = new ServiceCollection();
-        services.AddSingleton(configuration);
+        services.AddSingleton<IConfiguration>(_ => configurationRoot);
         services.AddEnvironmentActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -147,6 +146,8 @@ public sealed class EnvironmentActuatorTest
     [InlineData(HostBuilderType.WebApplication)]
     public async Task Endpoint_returns_expected_data(HostBuilderType hostBuilderType)
     {
+        using var environmentScope = new EnvironmentVariableScope("ASPNETCORE_ENVIRONMENT", null);
+
         var appSettings = new Dictionary<string, string?>(AppSettings)
         {
             ["App:ShippingDatabaseQueue"] = "amqp://user:pass@shipping.db.com",
@@ -172,7 +173,7 @@ public sealed class EnvironmentActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -235,12 +236,12 @@ public sealed class EnvironmentActuatorTest
         builder.Configuration.AddInMemoryCollection(appSettings);
         builder.Configuration.AddPlaceholderResolver();
         builder.Services.AddEnvironmentActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -292,12 +293,12 @@ public sealed class EnvironmentActuatorTest
         builder.Configuration.AddInMemoryCollection(AppSettings);
         builder.Configuration.AddInMemoryCollection([]);
         builder.Services.AddEnvironmentActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -364,12 +365,12 @@ public sealed class EnvironmentActuatorTest
         builder.Configuration.Sources.Clear();
         builder.Configuration.AddInMemoryAppSettingsJsonFile(fileProvider);
         builder.Services.AddEnvironmentActuator();
-        await using WebApplication host = builder.Build();
+        await using HostWrapper host = HostWrapper.Wrap(builder.Build());
 
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response1 = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
 
         response1.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -429,7 +430,7 @@ public sealed class EnvironmentActuatorTest
 
         fileProvider.NotifyChanged();
 
-        HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response2 = await httpClient.GetAsync(new Uri("http://localhost/actuator/env"), TestContext.Current.CancellationToken);
 
         response2.StatusCode.Should().Be(HttpStatusCode.OK);
 

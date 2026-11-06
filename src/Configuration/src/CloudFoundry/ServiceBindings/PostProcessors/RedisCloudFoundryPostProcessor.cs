@@ -16,9 +16,9 @@ internal sealed class RedisCloudFoundryPostProcessor : CloudFoundryPostProcessor
 
             // Mapping from CloudFoundry service binding credentials to driver-specific connection string parameters.
             // The available credentials are documented at:
-            // - Tanzu Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/tanzu-valkey-tanzu-platform/10-2/valkey-tp/using.html#use-valkey-service-in-app
-            // - Azure Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/cloud-service-broker-azure/1-13/csb-azure/reference-azure-redis.html
-            // - AWS Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/cloud-service-broker-aws/1-15/csb-aws/reference-aws-redis.html
+            // - Tanzu Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/tanzu-valkey-tanzu-platform/11-0/valkey-tp/using.html#use-valkey-service-in-app
+            // - Azure Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/cloud-service-broker-azure/1-15/csb-azure/reference-azure-redis.html
+            // - AWS Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/cloud-service-broker-aws/1-17/csb-aws/reference-aws-redis.html
 
             mapper.MapFromTo("credentials:host", "host");
             mapper.MapFromTo("credentials:port", "port");

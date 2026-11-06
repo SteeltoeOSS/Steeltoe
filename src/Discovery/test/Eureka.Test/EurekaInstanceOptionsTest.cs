@@ -77,7 +77,7 @@ public sealed class EurekaInstanceOptionsTest
                   "instanceId": "instanceId",
                   "appName": "appName",
                   "appGroup": "appGroup",
-                  "instanceEnabledOnInit": true,
+                  "instanceEnabledOnInit": false,
                   "port": 100,
                   "securePort": 100,
                   "nonSecurePortEnabled": true,
@@ -108,16 +108,16 @@ public sealed class EurekaInstanceOptionsTest
 
         var configurationBuilder = new ConfigurationBuilder();
         configurationBuilder.AddInMemoryAppSettingsJsonFile(fileProvider);
-        IConfiguration configuration = configurationBuilder.Build();
+        using ConfigurationRoot configurationRoot = configurationBuilder.BuildAsRoot();
 
-        IConfigurationSection instanceSection = configuration.GetSection(EurekaInstanceOptions.ConfigurationPrefix);
+        IConfigurationSection instanceSection = configurationRoot.GetSection(EurekaInstanceOptions.ConfigurationPrefix);
         var instanceOptions = new EurekaInstanceOptions();
         instanceSection.Bind(instanceOptions);
 
         instanceOptions.InstanceId.Should().Be("instanceId");
         instanceOptions.AppName.Should().Be("appName");
         instanceOptions.AppGroupName.Should().Be("appGroup");
-        instanceOptions.IsInstanceEnabledOnInit.Should().BeTrue();
+        instanceOptions.IsInstanceEnabledOnInit.Should().BeFalse();
         instanceOptions.NonSecurePort.Should().Be(100);
         instanceOptions.SecurePort.Should().Be(100);
         instanceOptions.IsNonSecurePortEnabled.Should().BeTrue();

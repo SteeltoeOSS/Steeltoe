@@ -6,7 +6,6 @@ using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using RichardSzalay.MockHttp;
@@ -27,7 +26,7 @@ public sealed class CorsPolicyTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddInfoActuator();
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
@@ -38,9 +37,9 @@ public sealed class CorsPolicyTest
         await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
 
-        var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/info"));
+        using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/info"));
         request.Headers.Add("Origin", "http://example.api.com");
-        HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
@@ -52,7 +51,7 @@ public sealed class CorsPolicyTest
     {
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddRefreshActuator();
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
@@ -63,10 +62,10 @@ public sealed class CorsPolicyTest
         await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
 
-        var request = new HttpRequestMessage(HttpMethod.Options, new Uri("http://localhost/actuator/refresh"));
+        using var request = new HttpRequestMessage(HttpMethod.Options, new Uri("http://localhost/actuator/refresh"));
         request.Headers.Add("Origin", "http://example.api.com");
         request.Headers.Add("Access-Control-Request-Method", "POST");
-        HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
@@ -81,7 +80,7 @@ public sealed class CorsPolicyTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddInfoActuator();
         builder.Services.ConfigureActuatorsCorsPolicy(policy => policy.WithOrigins("http://example.api.com"));
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
@@ -94,20 +93,20 @@ public sealed class CorsPolicyTest
         await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
 
-        var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/info"));
-        request.Headers.Add("Origin", "http://example.api.com");
-        HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
+        using var request1 = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/info"));
+        request1.Headers.Add("Origin", "http://example.api.com");
+        using HttpResponseMessage response1 = await httpClient.SendAsync(request1, TestContext.Current.CancellationToken);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Headers.Should().ContainKey("Access-Control-Allow-Origin");
-        response.Headers.GetValues("Access-Control-Allow-Origin").Should().ContainSingle().And.Contain("http://example.api.com");
+        response1.StatusCode.Should().Be(HttpStatusCode.OK);
+        response1.Headers.Should().ContainKey("Access-Control-Allow-Origin");
+        response1.Headers.GetValues("Access-Control-Allow-Origin").Should().ContainSingle().And.Contain("http://example.api.com");
 
-        request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/info"));
-        request.Headers.Add("Origin", "http://google.com");
-        response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
+        using var request2 = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/info"));
+        request2.Headers.Add("Origin", "http://google.com");
+        using HttpResponseMessage response2 = await httpClient.SendAsync(request2, TestContext.Current.CancellationToken);
 
-        response.StatusCode.Should().Be(HttpStatusCode.OK);
-        response.Headers.Should().NotContainKey("Access-Control-Allow-Origin");
+        response2.StatusCode.Should().Be(HttpStatusCode.OK);
+        response2.Headers.Should().NotContainKey("Access-Control-Allow-Origin");
     }
 
     [Fact]
@@ -118,7 +117,7 @@ public sealed class CorsPolicyTest
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddRefreshActuator();
         builder.Services.ConfigureActuatorsCorsPolicy(policy => policy.AllowAnyOrigin().SetPreflightMaxAge(TimeSpan.FromSeconds(preflightMaxAge)));
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         CorsOptions corsOptions = app.Services.GetRequiredService<IOptions<CorsOptions>>().Value;
         CorsPolicy? corsPolicy = corsOptions.GetPolicy(ActuatorsCorsPolicyOptions.PolicyName);
@@ -130,10 +129,10 @@ public sealed class CorsPolicyTest
         await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
 
-        var request = new HttpRequestMessage(HttpMethod.Options, new Uri("http://localhost/actuator/refresh"));
+        using var request = new HttpRequestMessage(HttpMethod.Options, new Uri("http://localhost/actuator/refresh"));
         request.Headers.Add("Origin", "http://example.api.com");
         request.Headers.Add("Access-Control-Request-Method", "POST");
-        HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         response.Headers.Should().ContainKey("Access-Control-Allow-Origin").WhoseValue.Should().ContainSingle().And.Contain("*");
@@ -172,13 +171,7 @@ public sealed class CorsPolicyTest
             }
             """);
 
-        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
-        builder.Configuration.AddCloudFoundry();
-        builder.Services.AddInfoActuator();
-        builder.Services.AddCloudFoundryActuator();
-        await using WebApplication app = builder.Build();
-
-        DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().Setup(mock =>
+        using DelegateToMockHttpClientHandler handler = new DelegateToMockHttpClientHandler().Setup(mock =>
         {
             mock.Expect(HttpMethod.Get, "https://api.cloud.com/v2/apps/798c2495-fe75-49b1-88da-b81197f2bf06/permissions")
                 .WithHeaders("Authorization", $"bearer {token}").Respond("application/json", """
@@ -188,6 +181,12 @@ public sealed class CorsPolicyTest
                     }
                     """);
         });
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddCloudFoundry();
+        builder.Services.AddInfoActuator();
+        builder.Services.AddCloudFoundryActuator();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         app.Services.GetRequiredService<HttpClientHandlerFactory>().Using(handler);
 
@@ -201,10 +200,10 @@ public sealed class CorsPolicyTest
         await app.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = app.GetTestClient();
 
-        var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication/info"));
+        using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication/info"));
         request.Headers.Authorization = AuthenticationHeaderValue.Parse($"bearer {token}");
         request.Headers.Add("Origin", "http://example.api.com");
-        HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
 
         handler.Mock.VerifyNoOutstandingExpectation();
 
@@ -220,16 +219,16 @@ public sealed class CorsPolicyTest
 
         WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
         builder.Services.AddCloudFoundryActuator();
-        await using WebApplication app = builder.Build();
+        await using HostWrapper app = HostWrapper.Wrap(builder.Build());
 
         await app.StartAsync(TestContext.Current.CancellationToken);
 
         using HttpClient httpClient = app.GetTestClient();
-        var corsRequest = new HttpRequestMessage(HttpMethod.Options, new Uri("http://localhost/cloudfoundryapplication"));
+        using var corsRequest = new HttpRequestMessage(HttpMethod.Options, new Uri("http://localhost/cloudfoundryapplication"));
         corsRequest.Headers.Add("access-control-request-method", "GET");
         corsRequest.Headers.Add("access-control-request-headers", "authorization");
         corsRequest.Headers.Add("origin", "http://example.api.com");
-        HttpResponseMessage corsResponse = await httpClient.SendAsync(corsRequest, TestContext.Current.CancellationToken);
+        using HttpResponseMessage corsResponse = await httpClient.SendAsync(corsRequest, TestContext.Current.CancellationToken);
 
         corsResponse.StatusCode.Should().Be(HttpStatusCode.NoContent);
         corsResponse.Headers.Should().ContainKey("Access-Control-Allow-Origin");
@@ -242,11 +241,11 @@ public sealed class CorsPolicyTest
         corsResponse.Headers.Should().ContainKey("Access-Control-Allow-Methods");
         corsResponse.Headers.GetValues("Access-Control-Allow-Methods").Should().ContainSingle().And.Contain("GET");
 
-        var actuatorRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
+        using var actuatorRequest = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/cloudfoundryapplication"));
         actuatorRequest.Headers.Add("Origin", "http://example.api.com");
-        HttpResponseMessage response = await httpClient.SendAsync(actuatorRequest, TestContext.Current.CancellationToken);
+        using HttpResponseMessage actuatorResponse = await httpClient.SendAsync(actuatorRequest, TestContext.Current.CancellationToken);
 
         // Returns ServiceUnavailable because UseCloudFoundrySecurity is invoked, but not fully mocked
-        response.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
+        actuatorResponse.StatusCode.Should().Be(HttpStatusCode.ServiceUnavailable);
     }
 }

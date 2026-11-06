@@ -12,8 +12,9 @@ public sealed class ServiceBindingTest
     public void InvalidDirectory_Throws()
     {
         string rootDirectory = GetK8SResourcesDirectory();
-        var fileProvider = new PhysicalFileProvider(rootDirectory);
+        using var fileProvider = new PhysicalFileProvider(rootDirectory);
 
+        // ReSharper disable once AccessToDisposedClosure
         Action action = () => _ = new KubernetesServiceBindingConfigurationProvider.ServiceBinding("invalid", fileProvider);
         action.Should().ThrowExactly<ArgumentException>();
     }
@@ -22,7 +23,7 @@ public sealed class ServiceBindingTest
     public void PopulatesFromFileSystem_Kubernetes()
     {
         string rootDirectory = GetK8SResourcesDirectory();
-        var fileProvider = new PhysicalFileProvider(rootDirectory);
+        using var fileProvider = new PhysicalFileProvider(rootDirectory);
         var binding = new KubernetesServiceBindingConfigurationProvider.ServiceBinding("test-name-1", fileProvider);
 
         binding.Name.Should().Be("test-name-1");
@@ -37,7 +38,7 @@ public sealed class ServiceBindingTest
     public void PopulatesFromFileSystem_WithHiddenFilesAndLinks_Kubernetes()
     {
         string rootDirectory = GetK8SResourcesDirectory();
-        var fileProvider = new PhysicalFileProvider(rootDirectory);
+        using var fileProvider = new PhysicalFileProvider(rootDirectory);
         var binding = new KubernetesServiceBindingConfigurationProvider.ServiceBinding("test-k8s", fileProvider);
 
         binding.Name.Should().Be("test-k8s");

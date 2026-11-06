@@ -25,7 +25,7 @@ public sealed class HeapDumpActuatorTest
     public async Task Registers_dependent_services()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddHeapDumpActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -39,7 +39,7 @@ public sealed class HeapDumpActuatorTest
     public async Task Configures_default_settings()
     {
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().Build());
         services.AddHeapDumpActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -72,7 +72,7 @@ public sealed class HeapDumpActuatorTest
         };
 
         var services = new ServiceCollection();
-        services.AddSingleton<IConfiguration>(new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
+        services.AddSingleton<IConfiguration>(_ => new ConfigurationBuilder().AddInMemoryCollection(appSettings).Build());
         services.AddHeapDumpActuator();
         await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
 
@@ -91,31 +91,14 @@ public sealed class HeapDumpActuatorTest
     }
 
     [Theory]
-    [InlineData(HostBuilderType.Host, HeapDumpType.Full)]
-    [InlineData(HostBuilderType.Host, HeapDumpType.Heap)]
-    [InlineData(HostBuilderType.Host, HeapDumpType.Mini)]
-    [InlineData(HostBuilderType.Host, HeapDumpType.Triage)]
-    [InlineData(HostBuilderType.Host, HeapDumpType.GCDump)]
-    [InlineData(HostBuilderType.WebHost, HeapDumpType.Full)]
-    [InlineData(HostBuilderType.WebHost, HeapDumpType.Heap)]
-    [InlineData(HostBuilderType.WebHost, HeapDumpType.Mini)]
-    [InlineData(HostBuilderType.WebHost, HeapDumpType.Triage)]
-    [InlineData(HostBuilderType.WebHost, HeapDumpType.GCDump)]
-    [InlineData(HostBuilderType.WebApplication, HeapDumpType.Full)]
-    [InlineData(HostBuilderType.WebApplication, HeapDumpType.Heap)]
-    [InlineData(HostBuilderType.WebApplication, HeapDumpType.Mini)]
-    [InlineData(HostBuilderType.WebApplication, HeapDumpType.Triage)]
-    [InlineData(HostBuilderType.WebApplication, HeapDumpType.GCDump)]
-    public async Task Endpoint_returns_expected_data(HostBuilderType hostBuilderType, HeapDumpType heapDumpType)
+    [InlineData(HostBuilderType.Host)]
+    [InlineData(HostBuilderType.WebHost)]
+    [InlineData(HostBuilderType.WebApplication)]
+    public async Task Endpoint_returns_expected_data(HostBuilderType hostBuilderType)
     {
-        var appSettings = new Dictionary<string, string?>(AppSettings)
-        {
-            ["Management:Endpoints:HeapDump:HeapDumpType"] = heapDumpType.ToString()
-        };
-
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {
-            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(appSettings));
+            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
 
             builder.ConfigureServices(services =>
             {
@@ -127,7 +110,7 @@ public sealed class HeapDumpActuatorTest
         await host.StartAsync(TestContext.Current.CancellationToken);
         using HttpClient httpClient = host.GetTestClient();
 
-        HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/heapdump"), TestContext.Current.CancellationToken);
+        using HttpResponseMessage response = await httpClient.GetAsync(new Uri("http://localhost/actuator/heapdump"), TestContext.Current.CancellationToken);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 

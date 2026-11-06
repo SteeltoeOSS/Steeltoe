@@ -24,7 +24,7 @@ public sealed class ConsulClientFactoryTest
             WaitTime = "5s"
         };
 
-        var client = ConsulClientFactory.CreateClient(options) as ConsulClient;
+        using var client = ConsulClientFactory.CreateClient(options) as ConsulClient;
 
         client.Should().NotBeNull();
         client.Config.Should().NotBeNull();

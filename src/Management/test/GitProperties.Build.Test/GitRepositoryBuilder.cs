@@ -84,12 +84,10 @@ internal static class GitRepositoryBuilder
 
         foreach (DirectoryInfo subDirectory in source.GetDirectories())
         {
-            if (excludedDirectoryNames.Contains(subDirectory.Name))
+            if (!excludedDirectoryNames.Contains(subDirectory.Name))
             {
-                continue;
+                CopyDirectoryExcluding(subDirectory, Path.Combine(destination, subDirectory.Name), excludedDirectoryNames);
             }
-
-            CopyDirectoryExcluding(subDirectory, Path.Combine(destination, subDirectory.Name), excludedDirectoryNames);
         }
     }
 }

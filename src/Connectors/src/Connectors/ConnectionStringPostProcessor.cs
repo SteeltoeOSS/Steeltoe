@@ -29,7 +29,7 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
 
     public void PostProcessConfiguration(PostProcessorConfigurationProvider provider, IDictionary<string, string?> configurationData)
     {
-        IConfigurationRoot parentConfiguration = provider.Source.GetParentConfiguration();
+        using ConfigurationRoot parentConfiguration = provider.Source.GetParentConfiguration();
 
         Dictionary<string, BindingInfo> bindingsByName = GetBindingsByName(parentConfiguration);
 
@@ -132,9 +132,25 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
         Dictionary<string, string?> separateSecrets = new(StringComparer.OrdinalIgnoreCase);
         IConnectionStringBuilder connectionStringBuilder = CreateConnectionStringBuilder();
 
-        if (bindingInfo.ClientBindingSection != null)
+        ConfigureFromClientBindingSection(bindingInfo.ClientBindingSection, connectionStringBuilder, separateSecrets);
+        ConfigureFromServerBindingSection(bindingInfo.ServerBindingSection, connectionStringBuilder, separateSecrets);
+
+        string connectionStringKey = ConfigurationPath.Combine(ServiceBindingsConfigurationKey, BindingType, bindingName, ConnectionStringName);
+        configurationData[connectionStringKey] = connectionStringBuilder.ConnectionString;
+
+        foreach ((string secretName, string? secretValue) in separateSecrets)
         {
-            foreach (IConfigurationSection secretSection in bindingInfo.ClientBindingSection.GetChildren())
+            string key = ConfigurationPath.Combine(ServiceBindingsConfigurationKey, BindingType, bindingName, secretName);
+            configurationData[key] = secretValue;
+        }
+    }
+
+    private void ConfigureFromClientBindingSection(IConfigurationSection? clientBindingSection, IConnectionStringBuilder connectionStringBuilder,
+        Dictionary<string, string?> separateSecrets)
+    {
+        if (clientBindingSection != null)
+        {
+            foreach (IConfigurationSection secretSection in clientBindingSection.GetChildren())
             {
                 string secretName = secretSection.Key;
                 string? secretValue = secretSection.Value;
@@ -155,10 +171,14 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
                 }
             }
         }
+    }
 
-        if (bindingInfo.ServerBindingSection != null)
+    private void ConfigureFromServerBindingSection(IConfigurationSection? serverBindingSection, IConnectionStringBuilder connectionStringBuilder,
+        Dictionary<string, string?> separateSecrets)
+    {
+        if (serverBindingSection != null)
         {
-            foreach (IConfigurationSection secretSection in bindingInfo.ServerBindingSection.GetChildren())
+            foreach (IConfigurationSection secretSection in serverBindingSection.GetChildren())
             {
                 string secretName = secretSection.Key;
                 string? secretValue = secretSection.Value;
@@ -172,15 +192,6 @@ internal abstract class ConnectionStringPostProcessor : IConfigurationPostProces
                     separateSecrets[secretName] = secretValue;
                 }
             }
-        }
-
-        string connectionStringKey = ConfigurationPath.Combine(ServiceBindingsConfigurationKey, BindingType, bindingName, ConnectionStringName);
-        configurationData[connectionStringKey] = connectionStringBuilder.ConnectionString;
-
-        foreach ((string secretName, string? secretValue) in separateSecrets)
-        {
-            string key = ConfigurationPath.Combine(ServiceBindingsConfigurationKey, BindingType, bindingName, secretName);
-            configurationData[key] = secretValue;
         }
     }
 

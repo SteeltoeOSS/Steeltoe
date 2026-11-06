@@ -153,16 +153,21 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
                 _settings[KnownKeywords.AuthenticationDatabase] = Uri.UnescapeDataString(uri.AbsolutePath[1..]);
             }
 
-            NameValueCollection queryString = HttpUtility.ParseQueryString(uri.Query);
+            ParseQueryString(uri);
+        }
+    }
 
-            foreach (string remainingKeyword in queryString.AllKeys.Where(key => key != null && !KnownKeywords.Exists(key)).Cast<string>())
+    private void ParseQueryString(Uri uri)
+    {
+        NameValueCollection queryString = HttpUtility.ParseQueryString(uri.Query);
+
+        foreach (string remainingKeyword in queryString.AllKeys.Where(key => key != null && !KnownKeywords.Exists(key)).Cast<string>())
+        {
+            string? value = queryString.Get(remainingKeyword);
+
+            if (value != null)
             {
-                string? value = queryString.Get(remainingKeyword);
-
-                if (value != null)
-                {
-                    _settings[remainingKeyword] = value;
-                }
+                _settings[remainingKeyword] = value;
             }
         }
     }
