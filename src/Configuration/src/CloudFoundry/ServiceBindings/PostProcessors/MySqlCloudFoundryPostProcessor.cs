@@ -16,9 +16,9 @@ internal sealed class MySqlCloudFoundryPostProcessor : CloudFoundryPostProcessor
 
             // Mapping from CloudFoundry service binding credentials to driver-specific connection string parameters.
             // The available credentials are documented at:
-            // - Tanzu Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/tanzu-mysql-tanzu-platform/10-1/mysql-tp/use.html#vcap
-            // - GCP Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/cloud-service-broker-gcp/1-8/csb-gcp/reference-gcp-mysql.html#binding-creds
-            // - AWS Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/cloud-service-broker-aws/1-15/csb-aws/reference-aws-mysql.html#binding-creds
+            // - Tanzu Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/tanzu-mysql-tanzu-platform/11-0/mysql-tp/use.html#vcap
+            // - GCP Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/cloud-service-broker-gcp/1-10/csb-gcp/reference-gcp-mysql.html#binding-creds
+            // - AWS Service Broker: https://techdocs.broadcom.com/us/en/vmware-tanzu/platform/cloud-service-broker-aws/1-17/csb-aws/reference-aws-mysql.html#binding-creds
 
             mapper.MapFromTo("credentials:hostname", "host");
             mapper.MapFromTo("credentials:port", "port");
