@@ -94,7 +94,7 @@ internal sealed class RedisConnectionStringBuilder : IConnectionStringBuilder
                 }
                 else
                 {
-                    if (option.Contains(','))
+                    if (_settings.ContainsKey(KnownKeywords.Host))
                     {
                         // Redis allows multiple servers in the connection string, but we haven't found any service bindings that actually use that.
 #pragma warning disable S3717 // Track use of "NotImplementedException"
