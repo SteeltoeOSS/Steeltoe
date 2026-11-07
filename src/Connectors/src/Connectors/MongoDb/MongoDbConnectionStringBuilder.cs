@@ -15,7 +15,10 @@ namespace Steeltoe.Connectors.MongoDb;
 /// </summary>
 internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
 {
+    private const string DefaultScheme = "mongodb";
+
     private readonly Dictionary<string, string> _settings = new(StringComparer.OrdinalIgnoreCase);
+    private string _scheme = DefaultScheme;
 
     /// <inheritdoc />
     [AllowNull]
@@ -74,7 +77,7 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
 
         var builder = new UriBuilder
         {
-            Scheme = "mongodb",
+            Scheme = _scheme,
             Host = server
         };
 
@@ -113,10 +116,11 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
     private void FromConnectionString(string? connectionString)
     {
         _settings.Clear();
+        _scheme = DefaultScheme;
 
         if (!string.IsNullOrEmpty(connectionString))
         {
-            if (connectionString.Contains(','))
+            if (HasMultipleServers(connectionString))
             {
                 // MongoDB allows multiple servers in the connection string, but we haven't found any service bindings that actually use that.
 #pragma warning disable S3717 // Track use of "NotImplementedException"
@@ -124,10 +128,9 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
 #pragma warning restore S3717 // Track use of "NotImplementedException"
             }
 
-            // MongoDB allows semicolon as separator between query string parameters for backward compatibility.
-            connectionString = connectionString.Replace(';', '&');
+            var uri = new Uri(NormalizeQueryStringSeparators(connectionString));
 
-            var uri = new Uri(connectionString);
+            _scheme = uri.Scheme;
 
             if (!string.IsNullOrEmpty(uri.UserInfo))
             {
@@ -155,6 +158,37 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
 
             ParseQueryString(uri);
         }
+    }
+
+    private static bool HasMultipleServers(string connectionString)
+    {
+        // Commas can also occur in the password and in query string parameters, so only look at the server list. The format is:
+        // scheme://[username:password@]host1[:port1][,...hostN[:portN]][/[database][?options]]
+        int schemeEndIndex = connectionString.IndexOf(Uri.SchemeDelimiter, StringComparison.Ordinal);
+        ReadOnlySpan<char> authority = schemeEndIndex == -1 ? connectionString : connectionString.AsSpan(schemeEndIndex + Uri.SchemeDelimiter.Length);
+
+        int authorityEndIndex = authority.IndexOfAny('/', '?');
+
+        if (authorityEndIndex != -1)
+        {
+            authority = authority[..authorityEndIndex];
+        }
+
+        ReadOnlySpan<char> servers = authority[(authority.LastIndexOf('@') + 1)..];
+        return servers.Contains(',');
+    }
+
+    private static string NormalizeQueryStringSeparators(string connectionString)
+    {
+        int queryStartIndex = connectionString.IndexOf('?');
+
+        if (queryStartIndex == -1)
+        {
+            return connectionString;
+        }
+
+        // MongoDB allows semicolon as separator between query string parameters for backward compatibility.
+        return connectionString[..queryStartIndex] + connectionString[queryStartIndex..].Replace(';', '&');
     }
 
     private void ParseQueryString(Uri uri)
