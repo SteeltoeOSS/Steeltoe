@@ -105,7 +105,7 @@ internal sealed partial class PropertyPlaceholderHelper
                 else
                 {
                     // Proceed with unprocessed value.
-                    startIndex = IndexOf(result, Prefix, endIndex + Prefix.Length);
+                    startIndex = IndexOf(result, Prefix, endIndex + Suffix.Length);
                 }
 
                 visitedPlaceholders.Remove(outerPlaceholder);
@@ -158,7 +158,7 @@ internal sealed partial class PropertyPlaceholderHelper
             else if (SubstringMatch(builder, index, SimplePrefix))
             {
                 withinNestedPlaceholder++;
-                index += Prefix.Length;
+                index += SimplePrefix.Length;
             }
             else
             {
@@ -220,18 +220,13 @@ internal sealed partial class PropertyPlaceholderHelper
         {
             ArgumentNullException.ThrowIfNull(text);
 
-            // Convert array references, for example: foo:bar[1]:baz -> foo:bar:1:baz
-            string normalizedText = text.Replace('[', ':').Replace("]", string.Empty, StringComparison.Ordinal);
-
             // Split into key and optional default value, for example: path:to:key?default -> path:to:key and default
-            string[] parts = normalizedText.Split(Separator, 2);
+            string[] parts = text.Split(Separator, 2);
 
-            if (parts.Length == 2)
-            {
-                return new PlaceholderExpression(parts[0], parts[1]);
-            }
+            // Convert array references in the key, for example: foo:bar[1]:baz -> foo:bar:1:baz
+            string key = parts[0].Replace('[', ':').Replace("]", string.Empty, StringComparison.Ordinal);
 
-            return new PlaceholderExpression(parts[0], null);
+            return new PlaceholderExpression(key, parts.Length == 2 ? parts[1] : null);
         }
 
         public bool Equals(PlaceholderExpression other)

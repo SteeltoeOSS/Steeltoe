@@ -394,4 +394,53 @@ public sealed class PropertyPlaceholderHelperTest
 
         result.Should().Be("line=empty");
     }
+
+    [Theory]
+    [InlineData("${missing}${known}", "${missing}value")]
+    [InlineData("${missing}${missing}${known}", "${missing}${missing}value")]
+    [InlineData("${known}${missing}${known}", "value${missing}value")]
+    public void ResolvePlaceholders_ResolvesPlaceholderDirectlyAfterUnresolvedPlaceholder(string text, string expected)
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["known"] = "value"
+        };
+
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(appSettings);
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
+
+        var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
+
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
+
+        result.Should().Be(expected);
+    }
+
+    [Theory]
+    [InlineData("${missing?{}}", "{}")]
+    [InlineData("${missing?{\"a\":{}}}", "{\"a\":{}}")]
+    [InlineData("${missing?{}},${known}", "{},value")]
+    [InlineData("${missing?[a,b]}", "[a,b]")]
+    [InlineData("${missing?http://[::1]:8080}", "http://[::1]:8080")]
+    [InlineData("${missing[2]?[a]}", "[a]")]
+    [InlineData("${missing?${brackets}}", "[from-config]")]
+    public void ResolvePlaceholders_PreservesBracketsInDefaultValue(string text, string expected)
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["known"] = "value",
+            ["brackets"] = "[from-config]"
+        };
+
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(appSettings);
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
+
+        var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
+
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
+
+        result.Should().Be(expected);
+    }
 }
