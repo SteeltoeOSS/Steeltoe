@@ -3,7 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Diagnostics.CodeAnalysis;
-using System.Net;
 
 namespace Steeltoe.Common.Extensions;
 
@@ -19,8 +18,8 @@ internal static class UriExtensions
 
         if (parts.Length == 2)
         {
-            username = WebUtility.UrlDecode(parts[0]);
-            password = WebUtility.UrlDecode(parts[1]);
+            username = Uri.UnescapeDataString(parts[0]);
+            password = Uri.UnescapeDataString(parts[1]);
             return true;
         }
 

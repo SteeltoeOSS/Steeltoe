@@ -366,7 +366,7 @@ public sealed partial class EurekaClient
             LogAddingCredentials(requestUri);
 
             requestMessage.Headers.Authorization =
-                new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")));
+                new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}")));
         }
         else
         {

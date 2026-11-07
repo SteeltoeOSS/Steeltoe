@@ -52,7 +52,7 @@ internal static class HttpClientExtensions
         ArgumentNullException.ThrowIfNull(accessTokenUri);
 
         using var request = new HttpRequestMessage(HttpMethod.Post, accessTokenUri);
-        request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")));
+        request.Headers.Authorization = new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}")));
 
         request.Content = new FormUrlEncodedContent(new Dictionary<string, string>
         {

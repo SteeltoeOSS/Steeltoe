@@ -683,7 +683,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
             LogAddingCredentials(requestUri);
 
             requestMessage.Headers.Authorization =
-                new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.ASCII.GetBytes($"{username}:{password}")));
+                new AuthenticationHeaderValue("Basic", Convert.ToBase64String(Encoding.UTF8.GetBytes($"{username}:{password}")));
         }
         else
         {
@@ -827,12 +827,12 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
 
         if (!string.IsNullOrEmpty(optionsSnapshot.Username))
         {
-            uriBuilder.UserName = WebUtility.UrlEncode(optionsSnapshot.Username);
+            uriBuilder.UserName = Uri.EscapeDataString(optionsSnapshot.Username);
         }
 
         if (!string.IsNullOrEmpty(optionsSnapshot.Password))
         {
-            uriBuilder.Password = WebUtility.UrlEncode(optionsSnapshot.Password);
+            uriBuilder.Password = Uri.EscapeDataString(optionsSnapshot.Password);
         }
 
         string pathSuffix = $"{WebUtility.UrlEncode(optionsSnapshot.Name)}/{WebUtility.UrlEncode(optionsSnapshot.Environment)}";

@@ -19,4 +19,20 @@ public sealed class UriExtensionsTest
         username.Should().Be("username");
         password.Should().Be("pass::word");
     }
+
+    [Theory]
+    [InlineData("http://user+name:pass+word@host.com", "user+name", "pass+word")]
+    [InlineData("http://user%2Bname:pass%2Bword@host.com", "user+name", "pass+word")]
+    [InlineData("http://user%20name:pass%20word@host.com", "user name", "pass word")]
+    [InlineData("http://user:p%C3%A4ss@host.com", "user", "p\u00E4ss")]
+    public void TryGetUsernamePassword_DecodesAccordingToUriRules(string uriString, string expectedUsername, string expectedPassword)
+    {
+        var uri = new Uri(uriString);
+
+        bool result = uri.TryGetUsernamePassword(out string? username, out string? password);
+
+        result.Should().BeTrue();
+        username.Should().Be(expectedUsername);
+        password.Should().Be(expectedPassword);
+    }
 }
