@@ -66,4 +66,29 @@ public sealed class RedisConnectionStringBuilderTest
         object? value = builder["some"];
         value.Should().Be("other");
     }
+
+    [Theory]
+    [InlineData("redis0:6380,redis1:6380")]
+    [InlineData("redis0,allowAdmin=true,redis1")]
+    public void Throws_on_multiple_servers(string connectionString)
+    {
+        var builder = new RedisConnectionStringBuilder();
+
+        Action action = () => builder.ConnectionString = connectionString;
+
+        action.Should().ThrowExactly<NotImplementedException>();
+    }
+
+    [Fact]
+    public void Can_replace_connection_string_having_server()
+    {
+        var builder = new RedisConnectionStringBuilder
+        {
+            ConnectionString = "redis0:6380"
+        };
+
+        builder.ConnectionString = "redis1:6381";
+
+        builder.ConnectionString.Should().Be("redis1:6381");
+    }
 }
