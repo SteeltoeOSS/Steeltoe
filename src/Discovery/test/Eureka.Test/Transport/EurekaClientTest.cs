@@ -646,6 +646,37 @@ public sealed class EurekaClientTest
         httpClientHandler.Mock.VerifyNoOutstandingExpectation();
     }
 
+    [Theory]
+    [InlineData("http://us+er:pa+ss@foo:123/eureka/", "dXMrZXI6cGErc3M=")]
+    [InlineData("http://user:pa%20ss@foo:123/eureka/", "dXNlcjpwYSBzcw==")]
+    [InlineData("http://user:p%C3%A4ss@foo:123/eureka/", "dXNlcjpww6Rzcw==")]
+    public async Task RegisterAsync_PreservesSpecialCharactersInUsernamePasswordInUri(string serviceUrl, string expectedParameter)
+    {
+        var services = new ServiceCollection();
+        services.DisableHttpClientRotationTimers();
+        services.AddLogging();
+        services.AddOptions<EurekaClientOptions>().Configure(options => options.EurekaServerServiceUrls = serviceUrl);
+        services.AddSingleton<EurekaServiceUriStateManager>();
+        services.AddSingleton<EurekaClient>();
+        services.AddSingleton(TimeProvider.System);
+
+        using var httpClientHandler = new DelegateToMockHttpClientHandler();
+
+        httpClientHandler.Mock.Expect(HttpMethod.Post, "http://foo:123/eureka/apps/FOOBAR").WithHeaders("Authorization", $"Basic {expectedParameter}")
+            .Respond(HttpStatusCode.NoContent);
+
+        services.AddHttpClient("Eureka").ConfigurePrimaryHttpMessageHandler(_ => httpClientHandler);
+
+        await using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+        var client = serviceProvider.GetRequiredService<EurekaClient>();
+
+        var instance = new InstanceInfo("some", "FOOBAR", "localhost", "127.0.0.1", new DataCenterInfo(), TimeProvider.System);
+
+        await client.RegisterAsync(instance, TestContext.Current.CancellationToken);
+
+        httpClientHandler.Mock.VerifyNoOutstandingExpectation();
+    }
+
     [Fact]
     public async Task RegisterAsync_AddsAuthorizationHeaderFromOnlyPasswordInUri()
     {

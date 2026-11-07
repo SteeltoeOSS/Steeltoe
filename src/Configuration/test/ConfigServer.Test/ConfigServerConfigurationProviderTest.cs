@@ -167,6 +167,55 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
+    public async Task GetRequestMessage_PreservesPlusSignInUserNameAndPasswordInURL()
+    {
+        var options = new ConfigServerClientOptions
+        {
+            Uri = "http://us+er:pass+word@localhost:8888/",
+            Name = "foo",
+            Environment = "development"
+        };
+
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
+        provider.Load();
+
+        Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri), null);
+
+        HttpRequestMessage request =
+            await provider.GetConfigServerRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
+
+        request.Headers.Authorization.Should().NotBeNull();
+        request.Headers.Authorization.Parameter.Should().Be(GetEncodedUserPassword("us+er", "pass+word"));
+    }
+
+    [Theory]
+    [InlineData("us er", "pass word")]
+    [InlineData("us+er", "pass+word")]
+    [InlineData("us%20er", "pass%2Bword")]
+    [InlineData("\u00FCser", "p\u00E4ss")]
+    public async Task GetRequestMessage_PreservesSpecialCharactersInUserNameAndPasswordInSettings(string username, string password)
+    {
+        var options = new ConfigServerClientOptions
+        {
+            Name = "foo",
+            Environment = "development",
+            Username = username,
+            Password = password
+        };
+
+        using ConfigServerConfigurationProvider provider = CreateProviderWithoutRemoteLoading(options);
+        provider.Load();
+
+        Uri requestUri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), null);
+
+        HttpRequestMessage request =
+            await provider.GetConfigServerRequestMessageAsync(provider.ClientOptions, requestUri, TestContext.Current.CancellationToken);
+
+        request.Headers.Authorization.Should().NotBeNull();
+        request.Headers.Authorization.Parameter.Should().Be(GetEncodedUserPassword(username, password));
+    }
+
+    [Fact]
     public async Task GetRequestMessage_AddsBasicAuthIfUserNameAndPasswordInSettings()
     {
         var options = new ConfigServerClientOptions
@@ -615,6 +664,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
     private static string GetEncodedUserPassword(string user, string password)
     {
-        return Convert.ToBase64String(Encoding.ASCII.GetBytes($"{user}:{password}"));
+        return Convert.ToBase64String(Encoding.UTF8.GetBytes($"{user}:{password}"));
     }
 }
