@@ -61,4 +61,22 @@ public sealed class HttpClientExtensionsTest
 
         accessToken.Should().Be("secret");
     }
+
+    [Fact]
+    public async Task GetAccessTokenAsync_encodes_non_ascii_credentials_as_UTF8()
+    {
+        using var handler = new DelegateToMockHttpClientHandler();
+
+        handler.Mock.Expect(HttpMethod.Post, "https://auth-server.com/oauth/token").WithHeaders("Authorization", "Basic w7xzZXI6cMOkc3N3b3Jk")
+            .WithFormData("grant_type=client_credentials").Respond("application/json", "{ \"access_token\": \"secret\" }");
+
+        using var httpClient = new HttpClient(handler);
+
+        string accessToken = await httpClient.GetAccessTokenAsync(new Uri("https://auth-server.com/oauth/token"), "\u00FCser", "p\u00E4ssword",
+            TestContext.Current.CancellationToken);
+
+        handler.Mock.VerifyNoOutstandingExpectation();
+
+        accessToken.Should().Be("secret");
+    }
 }

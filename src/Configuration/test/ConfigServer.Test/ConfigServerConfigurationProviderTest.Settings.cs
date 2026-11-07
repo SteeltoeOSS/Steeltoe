@@ -246,6 +246,6 @@ public sealed partial class ConfigServerConfigurationProviderTest
         string uri = provider.BuildConfigServerUri(provider.ClientOptions, new Uri(options.Uri!), options.Label).ToString();
 
         uri.Should().Be(
-            "http://a%22%3A%3F%27*%2Cb%2F%5C%26:%23%26%3A%24%3C%3E%27%2Fso%2C%22me@localhost:8888/my%24<>%3A%2C\"%27Name/%40%2F%26%3F%3A\"%27/^%26%24%40%23*<>%2B");
+            "http://a%22%3A%3F%27%2A%2Cb%2F%5C%26:%23%26%3A%24%3C%3E%27%2Fso%2C%22me@localhost:8888/my%24<>%3A%2C\"%27Name/%40%2F%26%3F%3A\"%27/^%26%24%40%23*<>%2B");
     }
 }
