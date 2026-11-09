@@ -168,7 +168,8 @@ jobs:
       run: cat coveragereport/SummaryGithub.md >> $GITHUB_STEP_SUMMARY
 
     - name: Add coverage comment to PR (linux only)
-      if: ${{ github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest' }}
+      # Skipped for PRs from forks, because GITHUB_TOKEN is read-only there. Coverage is still added to the build summary.
+      if: ${{ github.event_name == 'pull_request' && matrix.os == 'ubuntu-latest' && github.event.pull_request.head.repo.full_name == github.repository }}
       run: gh pr comment $PR_NUMBER --edit-last --create-if-none --body-file coveragereport/Summary.md
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
