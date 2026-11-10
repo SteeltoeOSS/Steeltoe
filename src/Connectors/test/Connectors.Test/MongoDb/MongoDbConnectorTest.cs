@@ -140,11 +140,31 @@ public sealed class MongoDbConnectorTest
     }
 
     [Fact]
+    public async Task Preserves_SRV_scheme_and_comma_separated_options_from_appsettings()
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["Steeltoe:Client:MongoDb:myMongoDbService:ConnectionString"] = "mongodb+srv://user:pass@cluster0.example.net/auth-db?compressors=zstd,snappy"
+        };
+
+        WebApplicationBuilder builder = TestWebApplicationBuilderFactory.Create();
+        builder.Configuration.AddInMemoryCollection(appSettings);
+        builder.AddMongoDb();
+
+        await using WebApplication app = builder.Build();
+        await using AsyncServiceScope scope = app.Services.CreateAsyncScope();
+        var optionsSnapshot = scope.ServiceProvider.GetRequiredService<IOptionsSnapshot<MongoDbOptions>>();
+
+        MongoDbOptions options = optionsSnapshot.Get("myMongoDbService");
+        options.ConnectionString.Should().Be("mongodb+srv://user:pass@cluster0.example.net/auth-db?compressors=zstd,snappy");
+    }
+
+    [Fact]
     public async Task Binds_options_with_CloudFoundry_service_bindings()
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017/auth-db?connectTimeoutMS=5000",
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb+srv://localhost/auth-db?connectTimeoutMS=5000",
             ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:Database"] = "db1"
         };
 
@@ -186,7 +206,7 @@ public sealed class MongoDbConnectorTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["Steeltoe:Client:MongoDb:db:ConnectionString"] = "mongodb://localhost:27017/auth-db?connectTimeoutMS=5000",
+            ["Steeltoe:Client:MongoDb:db:ConnectionString"] = "mongodb+srv://localhost/auth-db?connectTimeoutMS=5000",
             ["Steeltoe:Client:MongoDb:db:Database"] = "db1"
         };
 
