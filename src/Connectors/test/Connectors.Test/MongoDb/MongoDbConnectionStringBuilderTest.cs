@@ -136,6 +136,21 @@ public sealed class MongoDbConnectionStringBuilderTest
         builder.ConnectionString.Should().Be("mongodb+srv://me:secret@cluster0.example.net/?retryWrites=true");
     }
 
+    [Theory]
+    [InlineData("port", "27017", "mongodb://cluster0.example.net:27017/")]
+    [InlineData("server", "other.example.net", "mongodb://other.example.net/")]
+    public void Falls_back_to_default_scheme_when_overriding_server_or_port_of_SRV_connection_string(string keyword, string value, string expected)
+    {
+        var builder = new MongoDbConnectionStringBuilder
+        {
+            ConnectionString = "mongodb+srv://cluster0.example.net",
+            [keyword] = value
+        };
+
+        builder["scheme"].Should().Be("mongodb");
+        builder.ConnectionString.Should().Be(expected);
+    }
+
     [Fact]
     public void Can_set_scheme()
     {

@@ -16,6 +16,7 @@ namespace Steeltoe.Connectors.MongoDb;
 internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
 {
     private const string DefaultScheme = "mongodb";
+    private const string SrvScheme = "mongodb+srv";
 
     private readonly Dictionary<string, string> _settings = new(StringComparer.OrdinalIgnoreCase);
 
@@ -62,6 +63,15 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
                 {
                     // Allow setting unknown keyword. We don't pretend to know all valid query string parameters.
                     _settings[keyword] = stringValue;
+
+                    if ((string.Equals(keyword, KnownKeywords.Server, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(keyword, KnownKeywords.Port, StringComparison.OrdinalIgnoreCase)) &&
+                        string.Equals(_settings.GetValueOrDefault(KnownKeywords.Scheme), SrvScheme, StringComparison.OrdinalIgnoreCase))
+                    {
+                        // A SRV connection string cannot specify a port and its host must be a DNS SRV record. When the server or port is
+                        // overridden (for example by a service binding), the result is a direct connection, so fall back to the default scheme.
+                        _settings[KnownKeywords.Scheme] = DefaultScheme;
+                    }
                 }
             }
         }
