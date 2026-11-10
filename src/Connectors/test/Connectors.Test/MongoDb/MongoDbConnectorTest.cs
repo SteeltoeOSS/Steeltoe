@@ -164,7 +164,7 @@ public sealed class MongoDbConnectorTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb://localhost:27017/auth-db?connectTimeoutMS=5000",
+            ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:ConnectionString"] = "mongodb+srv://localhost/auth-db?connectTimeoutMS=5000",
             ["Steeltoe:Client:MongoDb:myMongoDbServiceOne:Database"] = "db1"
         };
 
@@ -206,7 +206,7 @@ public sealed class MongoDbConnectorTest
 
         var appSettings = new Dictionary<string, string?>
         {
-            ["Steeltoe:Client:MongoDb:db:ConnectionString"] = "mongodb://localhost:27017/auth-db?connectTimeoutMS=5000",
+            ["Steeltoe:Client:MongoDb:db:ConnectionString"] = "mongodb+srv://localhost/auth-db?connectTimeoutMS=5000",
             ["Steeltoe:Client:MongoDb:db:Database"] = "db1"
         };
 
