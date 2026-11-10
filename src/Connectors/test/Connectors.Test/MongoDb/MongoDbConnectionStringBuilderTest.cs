@@ -117,6 +117,7 @@ public sealed class MongoDbConnectionStringBuilderTest
         };
 
         builder.ConnectionString.Should().Be(expected);
+        builder["scheme"].Should().Be("mongodb+srv");
         builder["server"].Should().Be("cluster0.example.net");
 
         new MongoUrl(builder.ConnectionString).Scheme.Should().Be(ConnectionStringScheme.MongoDBPlusSrv);
@@ -136,6 +137,19 @@ public sealed class MongoDbConnectionStringBuilderTest
     }
 
     [Fact]
+    public void Can_set_scheme()
+    {
+        var builder = new MongoDbConnectionStringBuilder
+        {
+            ConnectionString = "mongodb://user:pass@cluster0.example.net/admin?retryWrites=true",
+            ["scheme"] = "mongodb+srv"
+        };
+
+        builder.ConnectionString.Should().Be("mongodb+srv://user:pass@cluster0.example.net/admin?retryWrites=true");
+        builder["scheme"].Should().Be("mongodb+srv");
+    }
+
+    [Fact]
     public void Resets_scheme_when_replacing_connection_string()
     {
         var builder = new MongoDbConnectionStringBuilder
@@ -147,6 +161,7 @@ public sealed class MongoDbConnectionStringBuilderTest
         builder.ConnectionString.Should().Be("mongodb://localhost:123/");
 
         builder.ConnectionString = null;
+        builder["scheme"].Should().BeNull();
         builder["server"] = "localhost";
 
         builder.ConnectionString.Should().Be("mongodb://localhost/");

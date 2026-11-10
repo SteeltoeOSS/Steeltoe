@@ -18,7 +18,6 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
     private const string DefaultScheme = "mongodb";
 
     private readonly Dictionary<string, string> _settings = new(StringComparer.OrdinalIgnoreCase);
-    private string _scheme = DefaultScheme;
 
     /// <inheritdoc />
     [AllowNull]
@@ -77,7 +76,7 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
 
         var builder = new UriBuilder
         {
-            Scheme = _scheme,
+            Scheme = _settings.GetValueOrDefault(KnownKeywords.Scheme, DefaultScheme),
             Host = server
         };
 
@@ -116,7 +115,6 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
     private void FromConnectionString(string? connectionString)
     {
         _settings.Clear();
-        _scheme = DefaultScheme;
 
         if (!string.IsNullOrEmpty(connectionString))
         {
@@ -130,7 +128,7 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
 
             var uri = new Uri(NormalizeQueryStringSeparators(connectionString));
 
-            _scheme = uri.Scheme;
+            _settings[KnownKeywords.Scheme] = uri.Scheme;
 
             if (!string.IsNullOrEmpty(uri.UserInfo))
             {
@@ -209,6 +207,7 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
     private static class KnownKeywords
     {
         public const string Url = "url";
+        public const string Scheme = "scheme";
         public const string Username = "username";
         public const string Password = "password";
         public const string Server = "server";
@@ -218,6 +217,7 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
         private static readonly HashSet<string> All = new(StringComparer.OrdinalIgnoreCase)
         {
             Url,
+            Scheme,
             Username,
             Password,
             Server,
