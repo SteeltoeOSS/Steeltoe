@@ -64,11 +64,14 @@ internal sealed class MongoDbConnectionStringBuilder : IConnectionStringBuilder
                     // Allow setting unknown keyword. We don't pretend to know all valid query string parameters.
                     _settings[keyword] = stringValue;
 
-                    if ((string.Equals(keyword, KnownKeywords.Server, StringComparison.OrdinalIgnoreCase) ||
-                        string.Equals(keyword, KnownKeywords.Port, StringComparison.OrdinalIgnoreCase)) &&
-                        string.Equals(_settings.GetValueOrDefault(KnownKeywords.Scheme), SrvScheme, StringComparison.OrdinalIgnoreCase))
+                    bool isServerOrPort = string.Equals(keyword, KnownKeywords.Server, StringComparison.OrdinalIgnoreCase) ||
+                        string.Equals(keyword, KnownKeywords.Port, StringComparison.OrdinalIgnoreCase);
+
+                    bool hasSrvScheme = string.Equals(_settings.GetValueOrDefault(KnownKeywords.Scheme), SrvScheme, StringComparison.OrdinalIgnoreCase);
+
+                    if (isServerOrPort && hasSrvScheme)
                     {
-                        // A SRV connection string cannot specify a port and its host must be a DNS SRV record. When the server or port is
+                        // An SRV connection string cannot specify a port and its host must be a DNS SRV record. When the server or port is
                         // overridden (for example by a service binding), the result is a direct connection, so fall back to the default scheme.
                         _settings[KnownKeywords.Scheme] = DefaultScheme;
                     }
