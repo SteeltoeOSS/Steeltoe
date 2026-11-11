@@ -5,20 +5,13 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Primitives;
 using Steeltoe.Configuration;
-using LockPrimitive =
-#if NET10_0_OR_GREATER
-    System.Threading.Lock
-#else
-    object
-#endif
-    ;
 
 namespace Steeltoe.Connectors;
 
 internal sealed class ConnectionStringPostProcessorConfigurationProvider : PostProcessorConfigurationProvider
 {
     private readonly IDisposable? _changeToken;
-    private readonly LockPrimitive _parentConfigurationLock = new();
+    private readonly Lock _parentConfigurationLock = new();
     private ConfigurationRoot? _lastParentConfiguration;
     private bool _isDisposed;
 

@@ -18,7 +18,7 @@ using Steeltoe.Connectors.Redis;
 
 namespace Steeltoe.Security.DataProtection.Redis.Test;
 
-public sealed partial class RedisDataProtectionBuilderExtensionsTest
+public sealed class RedisDataProtectionBuilderExtensionsTest
 {
     [Fact]
     public async Task Stores_session_state_in_Redis()
@@ -107,5 +107,51 @@ public sealed partial class RedisDataProtectionBuilderExtensionsTest
 
         database.ReceivedCalls().Where(call => call.GetMethodInfo().Name == nameof(IDatabase.ListRightPush)).Select(call => call.GetArguments()[0]).Should()
             .Contain(key => (RedisKey)key! == "DataProtection-Keys");
+    }
+
+    private static IConnectionMultiplexer GetMockedConnectionMultiplexer(string? connectionString)
+    {
+        Dictionary<string, byte[]> innerStore = [];
+
+        var database = Substitute.For<IDatabase>();
+        database.HashGet(Arg.Any<RedisKey>(), Arg.Any<RedisValue[]>(), Arg.Any<CommandFlags>()).Returns(info => GetRedisValues(info.Arg<RedisKey>()));
+
+        database.HashGetAsync(Arg.Any<RedisKey>(), Arg.Any<RedisValue[]>(), Arg.Any<CommandFlags>())
+            .Returns(info => Task.FromResult(GetRedisValues(info.Arg<RedisKey>())));
+
+        database.HashSetAsync(Arg.Any<RedisKey>(), Arg.Any<HashEntry[]>(), Arg.Any<CommandFlags>()).Returns(info =>
+        {
+            var key = info.Arg<RedisKey>();
+            HashEntry[] hashFields = info.Arg<HashEntry[]>();
+
+            byte[] data = hashFields[2].Value!;
+            innerStore[key!] = data;
+            return Task.CompletedTask;
+        });
+
+        var connectionMultiplexer = Substitute.For<IConnectionMultiplexer>();
+        connectionMultiplexer.Configuration.Returns(connectionString);
+        connectionMultiplexer.GetDatabase(Arg.Any<int>(), Arg.Any<object?>()).Returns(database);
+
+        database.Multiplexer.Returns(connectionMultiplexer);
+
+        return connectionMultiplexer;
+
+        RedisValue[] GetRedisValues(RedisKey key)
+        {
+            return innerStore.TryGetValue(key!, out byte[]? data)
+                ?
+                [
+                    default,
+                    default,
+                    data
+                ]
+                :
+                [
+                    default,
+                    default,
+                    default
+                ];
+        }
     }
 }

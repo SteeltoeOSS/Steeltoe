@@ -3,13 +3,6 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
-using LockPrimitive =
-#if NET10_0_OR_GREATER
-    System.Threading.Lock
-#else
-    object
-#endif
-    ;
 
 namespace Steeltoe.Configuration;
 
@@ -18,7 +11,7 @@ internal abstract class PostProcessorConfigurationSource
     private const string ParentConfigurationBuilderKey = "Steeltoe:PostProcessor:IsParentConfiguration";
 
     private static readonly object NestedConfigurationMarker = new();
-    private static readonly LockPrimitive OwningSourcesLock = new();
+    private static readonly Lock OwningSourcesLock = new();
 
     private readonly List<IConfigurationPostProcessor> _postProcessors = [];
     private IConfigurationBuilder? _capturedConfigurationBuilder;
