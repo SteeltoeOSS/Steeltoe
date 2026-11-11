@@ -21,6 +21,15 @@ internal sealed class MySqlEntityFrameworkCorePackageResolver : PackageResolver
         "MySqlConnector"
     ];
 
+    private static readonly List<string> MicrotingAssemblyNamesWithPreviewWorkaround =
+    [
+        "Microting.EntityFrameworkCore.MySql",
+        "MySqlConnector",
+        // Temporary workaround: The assembly name changed in the stable 10.x version, but the 11.0.0-preview.1 version doesn't contain that change yet.
+        // https://github.com/microting/Pomelo.EntityFrameworkCore.MySql/issues/272#issuecomment-6801878626
+        "Pomelo.EntityFrameworkCore.MySql"
+    ];
+
     private static readonly List<string> PomeloAssemblyNames =
     [
         "Pomelo.EntityFrameworkCore.MySql",
@@ -45,6 +54,9 @@ internal sealed class MySqlEntityFrameworkCorePackageResolver : PackageResolver
     ]);
 
     internal static readonly MySqlEntityFrameworkCorePackageResolver MicrotingOnly = new(MicrotingAssemblyNames, [MicrotingPackageName]);
+
+    internal static readonly MySqlEntityFrameworkCorePackageResolver MicrotingOnlyWithPreviewWorkaround =
+        new(MicrotingAssemblyNamesWithPreviewWorkaround, [MicrotingPackageName]);
 
     internal static readonly MySqlEntityFrameworkCorePackageResolver PomeloOnly = new(PomeloAssemblyNames, [PomeloPackageName]);
 

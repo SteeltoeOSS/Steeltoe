@@ -4,6 +4,7 @@
 
 using FluentAssertions.Extensions;
 using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Fluent;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging.Abstractions;
 using NSubstitute;
@@ -127,9 +128,11 @@ public sealed class CosmosDbHealthContributorTest
         const string serviceName = "Example";
 
         const string connectionString =
-            "AccountEndpoint=https://localhost:8081;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==";
+            "AccountEndpoint=https://localhost:8081/;AccountKey=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==;DisableServerCertificateValidation=True";
 
-        var cosmosClient = new CosmosClient(connectionString);
+        var builder = new CosmosClientBuilder(connectionString);
+        builder.WithConnectionModeGateway();
+        CosmosClient cosmosClient = builder.Build();
 
         await using ServiceProvider serviceProvider = CreateServiceProvider(serviceName, connectionString, cosmosClient);
 
