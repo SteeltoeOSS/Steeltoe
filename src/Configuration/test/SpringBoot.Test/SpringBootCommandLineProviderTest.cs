@@ -15,4 +15,17 @@ public sealed class SpringBootCommandLineProviderTest
 
         value.Should().Be("test");
     }
+
+    [Theory]
+    [InlineData("spring.cloud.stream.bindings[0].destination=test", "spring:cloud:stream:bindings:0:destination")]
+    [InlineData("spring.cloud.stream.bindings[input.events].destination=test", "spring:cloud:stream:bindings:input.events:destination")]
+    [InlineData("spring.logging.level[Steeltoe.Common]=test", "spring:logging:level:Steeltoe.Common")]
+    public void TryGet_KeyWithBrackets(string argument, string expectedKey)
+    {
+        var provider = new SpringBootCommandLineProvider([argument]);
+        provider.Load();
+
+        provider.TryGet(expectedKey, out string? value).Should().BeTrue();
+        value.Should().Be("test");
+    }
 }

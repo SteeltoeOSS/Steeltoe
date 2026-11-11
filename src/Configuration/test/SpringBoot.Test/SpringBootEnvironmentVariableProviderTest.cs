@@ -128,6 +128,40 @@ public sealed class SpringBootEnvironmentVariableProviderTest
     }
 
     [Fact]
+    public void TryGet_KeysWithBrackets()
+    {
+        const string configString = """
+            {
+              "a.b[0].c": "d",
+              "e[f.g].h": "i",
+              "[j.k]": {
+                "l[0]": "m",
+                "n[o.p]": "q"
+              },
+              "logging.level[Steeltoe.Common]": "Debug"
+            }
+            """;
+
+        var provider = new SpringBootEnvironmentVariableProvider(configString);
+        provider.Load();
+
+        provider.TryGet("a:b:0:c", out string? value).Should().BeTrue();
+        value.Should().Be("d");
+
+        provider.TryGet("e:f.g:h", out value).Should().BeTrue();
+        value.Should().Be("i");
+
+        provider.TryGet("j.k:l:0", out value).Should().BeTrue();
+        value.Should().Be("m");
+
+        provider.TryGet("j.k:n:o.p", out value).Should().BeTrue();
+        value.Should().Be("q");
+
+        provider.TryGet("logging:level:Steeltoe.Common", out value).Should().BeTrue();
+        value.Should().Be("Debug");
+    }
+
+    [Fact]
     public void Provider_Throws_For_Malformed()
     {
         var provider = new SpringBootEnvironmentVariableProvider("""{"a":}""");

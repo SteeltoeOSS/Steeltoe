@@ -6,6 +6,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Configuration.Placeholder;
 
@@ -121,14 +122,17 @@ internal sealed partial class PropertyPlaceholderHelper
 
     private static string? ResolveSimpleValue(IConfiguration configuration, PlaceholderExpression expression)
     {
+        // Convert array references in the key, for example: foo:bar[1]:baz -> foo:bar:1:baz
+        string key = expression.Key.Replace('[', ':').Replace("]", string.Empty, StringComparison.Ordinal);
+
         // Now obtain the value for the fully resolved key...
-        string? propertyValue = configuration[expression.Key];
+        string? propertyValue = configuration[key];
 
         // Attempt to resolve as a Spring-compatible placeholder.
         if (propertyValue == null)
         {
-            // Replace Spring delimiters ('.') with dotnet-friendly delimiters (':') so Spring placeholders can also be resolved.
-            string springKey = expression.Key.Replace('.', ':');
+            // Convert Spring keys to dotnet-friendly keys, for example: foo.bar[1].baz -> foo:bar:1:baz and logging.level[Foo.Bar] -> logging:level:Foo.Bar
+            string springKey = ConfigurationKeyConverter.AsDotNetConfigurationKey(expression.Key);
             propertyValue = configuration[springKey];
         }
 
@@ -223,10 +227,7 @@ internal sealed partial class PropertyPlaceholderHelper
             // Split into key and optional default value, for example: path:to:key?default -> path:to:key and default
             string[] parts = text.Split(Separator, 2);
 
-            // Convert array references in the key, for example: foo:bar[1]:baz -> foo:bar:1:baz
-            string key = parts[0].Replace('[', ':').Replace("]", string.Empty, StringComparison.Ordinal);
-
-            return new PlaceholderExpression(key, parts.Length == 2 ? parts[1] : null);
+            return new PlaceholderExpression(parts[0], parts.Length == 2 ? parts[1] : null);
         }
 
         public bool Equals(PlaceholderExpression other)

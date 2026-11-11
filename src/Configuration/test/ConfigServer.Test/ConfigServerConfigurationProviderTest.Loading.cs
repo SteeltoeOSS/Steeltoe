@@ -971,6 +971,47 @@ public sealed partial class ConfigServerConfigurationProviderTest
     }
 
     [Fact]
+    public void Load_TranslatesKeysWithBrackets()
+    {
+        const string responseJson = """
+            {
+              "name": "test-name",
+              "profiles": [
+                "Production"
+              ],
+              "label": "test-label",
+              "version": "test-version",
+              "propertySources": [
+                {
+                  "name": "source",
+                  "source": {
+                    "logging.level[Steeltoe.Common]": "Debug",
+                    "[app.title].text": "Title",
+                    "servers[0].tags[east.zone]": "true"
+                  }
+                }
+              ]
+            }
+            """;
+
+        ConfigServerClientOptions options = GetCommonOptions();
+
+        using var handler = new DelegateToMockHttpClientHandler();
+        handler.Mock.Expect(HttpMethod.Get, $"http://localhost:8888/{options.Name}/{options.Environment}").Respond("application/json", responseJson);
+
+        using var provider = new ConfigServerConfigurationProvider(options, null, null, () => handler, TimeProvider.System, NullLoggerFactory.Instance);
+        provider.Load();
+        handler.Mock.VerifyNoOutstandingExpectation();
+
+        provider.TryGet("logging:level:Steeltoe.Common", out string? value).Should().BeTrue();
+        value.Should().Be("Debug");
+        provider.TryGet("app.title:text", out value).Should().BeTrue();
+        value.Should().Be("Title");
+        provider.TryGet("servers:0:tags:east.zone", out value).Should().BeTrue();
+        value.Should().Be("true");
+    }
+
+    [Fact]
     public void DataDictionary_DoesNotContainRedundantClientSettings()
     {
         const string responseJson = """

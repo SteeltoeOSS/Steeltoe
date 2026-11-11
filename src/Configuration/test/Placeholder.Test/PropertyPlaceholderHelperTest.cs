@@ -396,6 +396,37 @@ public sealed class PropertyPlaceholderHelperTest
     }
 
     [Theory]
+    [InlineData("${root.sub.lines[2]}", "two")]
+    [InlineData("${root.sub[lines][2]}", "two")]
+    [InlineData("${logging.level[Steeltoe.Common]}", "Debug")]
+    [InlineData("${logging.level[Steeltoe.Common]?Information}", "Debug")]
+    [InlineData("${logging.level[Steeltoe.Missing]?Information}", "Information")]
+    [InlineData("${[dotted.name].value}", "dotted")]
+    [InlineData("${Logging:LogLevel:Microsoft.AspNetCore}", "Warning")]
+    public void ResolvePlaceholders_ResolvesSpringPlaceholderWithBrackets(string text, string expected)
+    {
+        var appSettings = new Dictionary<string, string?>
+        {
+            ["root:sub:lines:0"] = "zero",
+            ["root:sub:lines:1"] = "one",
+            ["root:sub:lines:2"] = "two",
+            ["logging:level:Steeltoe.Common"] = "Debug",
+            ["dotted.name:value"] = "dotted",
+            ["Logging:LogLevel:Microsoft.AspNetCore"] = "Warning"
+        };
+
+        var builder = new ConfigurationBuilder();
+        builder.AddInMemoryCollection(appSettings);
+        using ConfigurationRoot configurationRoot = builder.BuildAsRoot();
+
+        var helper = new PropertyPlaceholderHelper(NullLogger<PropertyPlaceholderHelper>.Instance);
+
+        string? result = helper.ResolvePlaceholders(text, configurationRoot);
+
+        result.Should().Be(expected);
+    }
+
+    [Theory]
     [InlineData("${missing}${known}", "${missing}value")]
     [InlineData("${missing}${missing}${known}", "${missing}${missing}value")]
     [InlineData("${known}${missing}${known}", "value${missing}value")]
