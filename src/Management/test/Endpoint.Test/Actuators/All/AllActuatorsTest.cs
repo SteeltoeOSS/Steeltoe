@@ -18,6 +18,7 @@ using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
+using Steeltoe.Management.Endpoint.Actuators.LogFile;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.RouteMappings;
@@ -54,6 +55,7 @@ public sealed class AllActuatorsTest
             typeof(InfoEndpointMiddleware),
             typeof(HealthEndpointMiddleware),
             typeof(LoggersEndpointMiddleware),
+            typeof(LogFileEndpointMiddleware),
             typeof(HttpExchangesEndpointMiddleware),
             typeof(RouteMappingsEndpointMiddleware),
             typeof(RefreshEndpointMiddleware),
@@ -100,7 +102,7 @@ public sealed class AllActuatorsTest
     public async Task Does_not_register_duplicate_services(HostBuilderType hostBuilderType, bool platformIsCloudFoundry)
     {
         using var scope = new EnvironmentVariableScope("VCAP_APPLICATION", platformIsCloudFoundry ? "{}" : null);
-        int actuatorCount = platformIsCloudFoundry ? 13 : 12;
+        int actuatorCount = platformIsCloudFoundry ? 14 : 13;
 
         await using HostWrapper host = hostBuilderType.Build(builder =>
         {
