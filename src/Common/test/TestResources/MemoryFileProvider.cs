@@ -172,7 +172,10 @@ public sealed class MemoryFileProvider : IFileProvider
         public long Length => _fileContents?.Length ?? -1;
         public DateTimeOffset LastModified => default;
 
+#pragma warning disable IDE0028 // Simplify collection initialization
+        // Justification: workaround for bug https://youtrack.jetbrains.com/issue/RSRP-505438/Collection-expression-with-with-expression-requires-language-version-preview
         public Dictionary<string, MemoryFileSystemEntry> Children { get; } = new(StringComparer.OrdinalIgnoreCase);
+#pragma warning restore IDE0028 // Simplify collection initialization
 
         private MemoryFileSystemEntry(string name, byte[]? fileContents)
         {

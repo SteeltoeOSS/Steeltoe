@@ -161,7 +161,8 @@ internal static partial class ProcessRunner
 
             builder.AppendLine("Environment variables:");
 
-            foreach (DictionaryEntry entry in Environment.GetEnvironmentVariables().Cast<DictionaryEntry>().OrderBy(entry => entry.Key.ToString()))
+            foreach (DictionaryEntry entry in Environment.GetEnvironmentVariables().Cast<DictionaryEntry>()
+                .OrderBy(entry => entry.Key.ToString(), StringComparer.Ordinal))
             {
                 string name = entry.Key.ToString()!;
 

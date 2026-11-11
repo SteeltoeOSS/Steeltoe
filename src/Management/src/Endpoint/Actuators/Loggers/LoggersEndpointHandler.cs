@@ -79,7 +79,7 @@ internal sealed partial class LoggersEndpointHandler : ILoggersEndpointHandler
         ICollection<DynamicLoggerState> loggerStates = _dynamicLoggerProvider.GetLogLevels();
         var loggerLevelsPerCategory = new Dictionary<string, LoggerLevels>();
 
-        foreach (DynamicLoggerState loggerState in loggerStates.OrderBy(entry => entry.CategoryName))
+        foreach (DynamicLoggerState loggerState in loggerStates.OrderBy(entry => entry.CategoryName, StringComparer.Ordinal))
         {
             LogAddingLoggerState(loggerState);
 

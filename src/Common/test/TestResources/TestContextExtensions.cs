@@ -8,11 +8,11 @@ namespace Steeltoe.Common.TestResources;
 
 public static class TestContextExtensions
 {
-    // ReSharper disable once ParameterOnlyUsedForPreconditionCheck.Global
     public static bool IsRunningOnBuildServer(this ITestContext testContext)
     {
         ArgumentNullException.ThrowIfNull(testContext);
 
+        _ = testContext;
         return Environment.GetEnvironmentVariable("CI") == "true";
     }
 }
