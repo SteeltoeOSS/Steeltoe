@@ -12,6 +12,7 @@ using Steeltoe.Management.Endpoint.Actuators.HeapDump;
 using Steeltoe.Management.Endpoint.Actuators.HttpExchanges;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
 using Steeltoe.Management.Endpoint.Actuators.Info;
+using Steeltoe.Management.Endpoint.Actuators.LogFile;
 using Steeltoe.Management.Endpoint.Actuators.Loggers;
 using Steeltoe.Management.Endpoint.Actuators.Refresh;
 using Steeltoe.Management.Endpoint.Actuators.Services;
@@ -428,6 +429,63 @@ public sealed partial class RouteMappingsActuatorTest
                               "produces": [
                                 {
                                   "mediaType": "application/vnd.spring-boot.actuator.v3+json",
+                                  "negated": false
+                                }
+                              ],
+                              "headers": [],
+                              "params": []
+                            }
+                          }
+                        }
+                      ]
+                    }
+                  }
+                }
+              }
+            }
+            """);
+    }
+
+    [Theory]
+    [InlineData(HostBuilderType.Host)]
+    [InlineData(HostBuilderType.WebHost)]
+    [InlineData(HostBuilderType.WebApplication)]
+    public async Task Returns_endpoints_for_LogFile_actuator(HostBuilderType hostBuilderType)
+    {
+        Dictionary<string, string?> appSettings = new(AppSettings)
+        {
+            ["Management:Endpoints:LogFile:FilePath"] = "app.log"
+        };
+
+        JsonNode responseNode = await GetRouteMappingsAsync(hostBuilderType, appSettings, services => services.AddLogFileActuator());
+
+        responseNode.ToJsonString().Should().BeJson("""
+            {
+              "contexts": {
+                "application": {
+                  "mappings": {
+                    "dispatcherServlets": {
+                      "dispatcherServlet": [
+                        {
+                          "handler": "/actuator/logfile",
+                          "predicate": "{GET [/actuator/logfile], produces [text/plain]}",
+                          "details": {
+                            "handlerMethod": {
+                              "className": "Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware`2",
+                              "name": "InvokeAsync",
+                              "descriptor": "System.Threading.Tasks.Task InvokeAsync(Microsoft.AspNetCore.Http.HttpContext, Microsoft.AspNetCore.Http.RequestDelegate)"
+                            },
+                            "requestMappingConditions": {
+                              "patterns": [
+                                "/actuator/logfile"
+                              ],
+                              "methods": [
+                                "GET"
+                              ],
+                              "consumes": [],
+                              "produces": [
+                                {
+                                  "mediaType": "text/plain",
                                   "negated": false
                                 }
                               ],

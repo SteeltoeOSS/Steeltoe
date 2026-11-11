@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
+using Steeltoe.Common.TestResources.IO;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
@@ -26,8 +27,10 @@ using Steeltoe.Management.Endpoint.Test.Actuators.ThreadDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public sealed class EndpointAuthorizationTest
+public sealed class EndpointAuthorizationTest : IDisposable
 {
+    private readonly TempFile _logFile = new();
+
     public static TheoryData<RegistrationMode, Type> EndpointTestData
     {
         get
@@ -68,11 +71,17 @@ public sealed class EndpointAuthorizationTest
         await ActAndAssertAsync(hostBuilder, endpointOptionsType, false);
     }
 
-    private static HostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction, RegistrationMode mode)
+    public void Dispose()
+    {
+        _logFile.Dispose();
+    }
+
+    private HostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction, RegistrationMode mode)
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["Management:Endpoints:Actuator:Exposure:Include:0"] = "*"
+            ["Management:Endpoints:Actuator:Exposure:Include:0"] = "*",
+            ["Management:Endpoints:LogFile:FilePath"] = _logFile.FullPath
         };
 
         HostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();

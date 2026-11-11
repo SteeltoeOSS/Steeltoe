@@ -1,1 +1,9 @@
 #nullable enable
+static Steeltoe.Management.Endpoint.Actuators.LogFile.EndpointServiceCollectionExtensions.AddLogFileActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.LogFile.EndpointServiceCollectionExtensions.AddLogFileActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+Steeltoe.Management.Endpoint.Actuators.LogFile.EndpointServiceCollectionExtensions
+Steeltoe.Management.Endpoint.Actuators.LogFile.ILogFileEndpointHandler
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions.FilePath.get -> string?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions.FilePath.set -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions.LogFileEndpointOptions() -> void
