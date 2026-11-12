@@ -38,6 +38,7 @@ jobs:
           8.0.*
           9.0.*
           10.0.*
+          11.0.*
 
     - name: Git checkout
       uses: actions/checkout@v7
@@ -149,7 +150,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: 10.0.*
+        dotnet-version: 11.0.*
 
     - name: Install code signing tool
       run: dotnet tool install --global sign --prerelease
@@ -209,7 +210,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: 10.0.*
+        dotnet-version: 11.0.*
         source-url: ${{ vars.AZURE_ARTIFACTS_FEED_URL }}
       env:
         NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -242,7 +243,7 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: 10.0.*
+        dotnet-version: 11.0.*
 
     - name: Download signed packages
       uses: actions/download-artifact@v8

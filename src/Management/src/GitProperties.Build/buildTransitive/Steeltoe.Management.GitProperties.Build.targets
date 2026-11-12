@@ -23,7 +23,7 @@
     -->
     <GitPropertiesTasksTfm Condition="'$(GitPropertiesTasksTfm)' == ''">netstandard2.0</GitPropertiesTasksTfm>
     <GitPropertiesTasksAssembly>$(MSBuildThisFileDirectory)..\bin\tasks\$(GitPropertiesTasksTfm)\Steeltoe.Management.GitProperties.Build.dll</GitPropertiesTasksAssembly>
-    <GitPropertiesUseTaskHostFactory Condition="'$(GitPropertiesUseTaskHostFactory)' == '' and Exists('$(MSBuildThisFileDirectory)..\SourceCheckout.txt')">true</GitPropertiesUseTaskHostFactory>
+    <GitPropertiesUseTaskHostFactory Condition="'$(GitPropertiesUseTaskHostFactory)' == '' And Exists('$(MSBuildThisFileDirectory)..\SourceCheckout.txt')">true</GitPropertiesUseTaskHostFactory>
     <GitPropertiesUseTaskHostFactory Condition="'$(GitPropertiesUseTaskHostFactory)' == ''">false</GitPropertiesUseTaskHostFactory>
   </PropertyGroup>
 
@@ -67,17 +67,17 @@
       <Output TaskParameter="HasReference" PropertyName="_GitPropertiesShouldGenerate" />
     </DetectConsumingPackageReferenceTask>
 
-    <Message Condition="'$(GenerateGitProperties)' == 'auto' and '$(_GitPropertiesShouldGenerate)' != 'true'"
+    <Message Condition="'$(GenerateGitProperties)' == 'auto' And '$(_GitPropertiesShouldGenerate)' != 'true'"
       Text="git.properties generation skipped: no reference to '$(GitPropertiesConsumingPackageIds)' found in this project's resolved dependency graph. Set GenerateGitProperties=true to generate it anyway." />
 
     <PropertyGroup Condition="'$(_GitPropertiesSuppressGitRepositoryNotFound)' == ''">
       <_GitPropertiesSuppressGitRepositoryNotFound>false</_GitPropertiesSuppressGitRepositoryNotFound>
-      <_GitPropertiesSuppressGitRepositoryNotFound Condition="Exists('$(GitPropertiesFallbackFile)') and '$(_ForceWriteGitPropertiesFallbackFile)' != 'true'">true</_GitPropertiesSuppressGitRepositoryNotFound>
+      <_GitPropertiesSuppressGitRepositoryNotFound Condition="Exists('$(GitPropertiesFallbackFile)') And '$(_ForceWriteGitPropertiesFallbackFile)' != 'true'">true</_GitPropertiesSuppressGitRepositoryNotFound>
     </PropertyGroup>
 
     <FindGitRepositoryRootTask StartDirectory="$(MSBuildProjectDirectory)" EnableWarnings="$(GitPropertiesEnableWarnings)"
       SuppressGitRepositoryNotFound="$(_GitPropertiesSuppressGitRepositoryNotFound)"
-      Condition="'$(GitRepositoryRoot)' == '' and '$(_GitPropertiesShouldGenerate)' == 'true'">
+      Condition="'$(GitRepositoryRoot)' == '' And '$(_GitPropertiesShouldGenerate)' == 'true'">
       <Output TaskParameter="RepositoryRoot" PropertyName="GitRepositoryRoot" />
       <Output TaskParameter="HeadGitDirectory" PropertyName="HeadGitDirectory" />
       <Output TaskParameter="CommonGitDirectory" PropertyName="CommonGitDirectory" />
@@ -90,7 +90,7 @@
       <GitPropertiesCacheFile Condition="'$(GitPropertiesCacheFile)' == ''">$(GitPropertiesCacheDirectory)git.properties.cache</GitPropertiesCacheFile>
     </PropertyGroup>
 
-    <Message Condition="'$(GitRepositoryRoot)' == '' and '$(_GitPropertiesShouldGenerate)' == 'true' and Exists('$(GitPropertiesFallbackFile)')"
+    <Message Condition="'$(GitRepositoryRoot)' == '' And '$(_GitPropertiesShouldGenerate)' == 'true' And Exists('$(GitPropertiesFallbackFile)')"
       Text="git.properties: live generation skipped; using pre-generated fallback file '$(GitPropertiesFallbackFile)' instead." />
 
     <ItemGroup Condition="'$(GitRepositoryRoot)' != ''">
@@ -117,7 +117,7 @@
   </Target>
 
   <Target Name="GenerateGitPropertiesCache" BeforeTargets="BeforeBuild;AssignTargetPaths" DependsOnTargets="ResolveGitPropertiesPaths"
-    Condition="'$(_GitPropertiesShouldGenerate)' == 'true' and '$(TargetFramework)' != '' and '$(DesignTimeBuild)' != 'true'"
+    Condition="'$(_GitPropertiesShouldGenerate)' == 'true' And '$(TargetFramework)' != '' And '$(DesignTimeBuild)' != 'true'"
     Inputs="@(_GitPropertiesCacheInputs)" Outputs="$(GitPropertiesCacheFile)">
     <GenerateGitPropertiesCacheTask Condition="'$(GitRepositoryRoot)' != ''" RepositoryRoot="$(GitRepositoryRoot)" GitExecutable="$(GitExecutable)"
       CacheFile="$(GitPropertiesCacheFile)" CommitIdAbbrevLength="$(GitCommitIdAbbrevLength)" EnableWarnings="$(GitPropertiesEnableWarnings)"
@@ -125,7 +125,7 @@
   </Target>
 
   <Target Name="IncludeGitPropertiesInOutput" BeforeTargets="BeforeBuild;AssignTargetPaths;PrepareForPublish" DependsOnTargets="GenerateGitPropertiesCache"
-    Condition="'$(_GitPropertiesShouldGenerate)' == 'true' and '$(_GitPropertiesIncluded)' != 'true' and (Exists('$(GitPropertiesCacheFile)') or Exists('$(GitPropertiesFallbackFile)'))">
+    Condition="'$(_GitPropertiesShouldGenerate)' == 'true' And '$(_GitPropertiesIncluded)' != 'true' And (Exists('$(GitPropertiesCacheFile)') Or Exists('$(GitPropertiesFallbackFile)'))">
     <!--
       Registers the Content item before AssignTargetPaths converts it into what the copy-to-output/publish targets use. PrepareForPublish is kept as a
       safety net for a no-build publish, which runs AssignTargetPaths before PrepareForPublish rather than after.
@@ -137,7 +137,7 @@
       <FileWrites Include="$(GitPropertiesFile)" />
     </ItemGroup>
 
-    <ItemGroup Condition="!Exists('$(GitPropertiesCacheFile)') and Exists('$(GitPropertiesFallbackFile)')">
+    <ItemGroup Condition="!Exists('$(GitPropertiesCacheFile)') And Exists('$(GitPropertiesFallbackFile)')">
       <!--
         Deliberately not added to FileWrites: this file lives in the project directory, not $(IntermediateOutputPath), so `dotnet clean` never touches it.
         Don't add it "for consistency", that would delete the one durable copy a git-less build depends on.
@@ -151,13 +151,13 @@
   </Target>
 
   <Target Name="ComposeGitProperties" BeforeTargets="CoreCompile;PrepareForPublish" DependsOnTargets="GenerateGitPropertiesCache"
-    Condition="'$(_GitPropertiesShouldGenerate)' == 'true' and Exists('$(GitPropertiesCacheFile)') and '$(DesignTimeBuild)' != 'true' and '$(_GitPropertiesComposed)' != 'true'">
+    Condition="'$(_GitPropertiesShouldGenerate)' == 'true' And Exists('$(GitPropertiesCacheFile)') And '$(DesignTimeBuild)' != 'true' And '$(_GitPropertiesComposed)' != 'true'">
     <!--
       BeforeTargets="CoreCompile", not "BeforeBuild", so $(Version) is final even when a versioning tool (Nerdbank.GitVersioning/GitVersion/MinVer)
       computes it later in the pipeline.
     -->
     <PropertyGroup>
-      <_GitPropertiesFallbackFileTarget Condition="'$(GitPropertiesWriteToProjectDirectory)' == 'true' or '$(_ForceWriteGitPropertiesFallbackFile)' == 'true'">$(GitPropertiesFallbackFile)</_GitPropertiesFallbackFileTarget>
+      <_GitPropertiesFallbackFileTarget Condition="'$(GitPropertiesWriteToProjectDirectory)' == 'true' Or '$(_ForceWriteGitPropertiesFallbackFile)' == 'true'">$(GitPropertiesFallbackFile)</_GitPropertiesFallbackFileTarget>
     </PropertyGroup>
 
     <ComposeGitPropertiesTask RepositoryRoot="$(GitRepositoryRoot)" GitExecutable="$(GitExecutable)" CacheFile="$(GitPropertiesCacheFile)"
@@ -165,7 +165,7 @@
 
     <Message Importance="High" Condition="'$(GitPropertiesReportFileWrites)' == 'true'"
       Text="git.properties: writing to '$([System.IO.Path]::GetFullPath('$(GitPropertiesFile)'))'." />
-    <Message Importance="High" Condition="'$(_GitPropertiesFallbackFileTarget)' != '' and '$(GitPropertiesReportFileWrites)' == 'true'"
+    <Message Importance="High" Condition="'$(_GitPropertiesFallbackFileTarget)' != '' And '$(GitPropertiesReportFileWrites)' == 'true'"
       Text="git.properties: writing fallback copy to '$([System.IO.Path]::GetFullPath('$(_GitPropertiesFallbackFileTarget)'))'." />
 
     <PropertyGroup>

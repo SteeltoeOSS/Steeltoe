@@ -1,7 +1,7 @@
 <Project>
   <!-- Workaround for https://github.com/microsoft/testfx/issues/7045#issuecomment-3611560686 -->
   <Target Name="WorkaroundMacOSDumpIssue" AfterTargets="Build"
-          Condition="$([MSBuild]::IsOSPlatform('OSX')) AND '$(UseAppHost)' != 'false' AND '$(OutputType)' == 'Exe' AND '$(TargetFramework)' != '' AND '$(RunCommand)' != '' AND '$(RunCommand)' != 'dotnet'">
+          Condition="$([MSBuild]::IsOSPlatform('OSX')) And '$(UseAppHost)' != 'false' And '$(OutputType)' == 'Exe' And '$(TargetFramework)' != '' And '$(RunCommand)' != '' And '$(RunCommand)' != 'dotnet'">
     <Exec Command="codesign --sign - --force --entitlements '$(MSBuildThisFileDirectory)macos-dump-entitlements.plist' '$(RunCommand)'" />
   </Target>
 
@@ -40,7 +40,7 @@
   <!--
   Logic for generating and comparing the ConfigurationSchema.json file
   -->
-  <PropertyGroup Condition="'$(IsPackable)' == 'true' AND '$(ConfigurationSchemaGeneratorEnabled)' == 'true'">
+  <PropertyGroup Condition="'$(IsPackable)' == 'true' And '$(ConfigurationSchemaGeneratorEnabled)' == 'true'">
     <TargetsTriggeredByCompilation Condition="'$(DesignTimeBuild)' != 'true'">$(TargetsTriggeredByCompilation);GenerateConfigurationSchema</TargetsTriggeredByCompilation>
 
     <ConfigurationSchemaGeneratorProjectPath>$(MSBuildThisFileDirectory)src\Tools\src\ConfigurationSchemaGenerator\ConfigurationSchemaGenerator.csproj</ConfigurationSchemaGeneratorProjectPath>
@@ -48,7 +48,7 @@
     <GeneratedConfigurationSchemaOutputPath>$(IntermediateOutputPath)ConfigurationSchema.json</GeneratedConfigurationSchemaOutputPath>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(IsPackable)' == 'true' AND '$(ConfigurationSchemaGeneratorEnabled)' == 'true'">
+  <ItemGroup Condition="'$(IsPackable)' == 'true' And '$(ConfigurationSchemaGeneratorEnabled)' == 'true'">
     <!-- ensure the config generator is built -->
     <ProjectReference Include="$(ConfigurationSchemaGeneratorProjectPath)"
                       Private="false"
@@ -113,8 +113,8 @@
   </Target>
 
   <Target Name="CopyNewConfigurationSchema"
-          Condition="('$(ConfigurationSchemaExists)' != 'true' OR '$(UpdateConfigurationSchema)' == 'true')
-                     AND Exists('$(GeneratedConfigurationSchemaOutputPath)')">
+          Condition="('$(ConfigurationSchemaExists)' != 'true' Or '$(UpdateConfigurationSchema)' == 'true')
+                     And Exists('$(GeneratedConfigurationSchemaOutputPath)')">
 
     <Copy SourceFiles="$(GeneratedConfigurationSchemaOutputPath)"
           DestinationFiles="$(ConfigurationSchemaPath)" />
@@ -122,7 +122,7 @@
   </Target>
 
   <Target Name="CompareConfigurationSchema"
-          Condition="Exists('$(ConfigurationSchemaPath)') AND Exists('$(GeneratedConfigurationSchemaOutputPath)')">
+          Condition="Exists('$(ConfigurationSchemaPath)') And Exists('$(GeneratedConfigurationSchemaOutputPath)')">
 
     <PropertyGroup>
       <CurrentConfigurationSchemaFileContent>$([System.IO.File]::ReadAllText('$(ConfigurationSchemaPath)'))</CurrentConfigurationSchemaFileContent>

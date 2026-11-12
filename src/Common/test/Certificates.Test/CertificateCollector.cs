@@ -13,7 +13,10 @@ namespace Steeltoe.Common.Certificates.Test;
 /// </summary>
 internal sealed class CertificateCollector : IDisposable
 {
+#pragma warning disable IDE0028 // Simplify collection initialization
+    // Justification: workaround for bug https://youtrack.jetbrains.com/issue/RSRP-505438/Collection-expression-with-with-expression-requires-language-version-preview
     private readonly HashSet<X509Certificate2> _certificatesToDispose = new(ReferenceEqualityComparer.Instance);
+#pragma warning restore IDE0028 // Simplify collection initialization
     private IOptionsMonitor<CertificateOptions>? _optionsMonitor;
     private string? _certificateName;
     private IDisposable? _changeListener;

@@ -203,7 +203,7 @@ public sealed class ApplicationInfoCollection : IReadOnlyCollection<ApplicationI
 
         var hashcodeBuilder = new StringBuilder();
 
-        foreach (KeyValuePair<string, int> pair in statusMap.OrderBy(pair => pair.Key))
+        foreach (KeyValuePair<string, int> pair in statusMap.OrderBy(pair => pair.Key, StringComparer.Ordinal))
         {
             hashcodeBuilder.Append($"{pair.Key}_{pair.Value}_");
         }

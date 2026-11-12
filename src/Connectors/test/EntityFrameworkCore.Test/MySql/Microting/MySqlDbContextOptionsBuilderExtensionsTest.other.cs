@@ -16,6 +16,13 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.Test.MySql.Microting;
 
 public sealed class MySqlDbContextOptionsBuilderExtensionsTest
 {
+    private static readonly MySqlEntityFrameworkCorePackageResolver MicrotingOnlyPackageResolver =
+#if NET11_0_OR_GREATER
+        MySqlEntityFrameworkCorePackageResolver.MicrotingOnlyWithPreviewWorkaround;
+#else
+        MySqlEntityFrameworkCorePackageResolver.MicrotingOnly;
+#endif
+
     [Fact]
     public async Task Registers_connection_string_for_default_service_binding()
     {
@@ -30,7 +37,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         builder.Services.Configure<MySqlOptions>(options => options.ConnectionString += ";Use Compression=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
-            MySqlEntityFrameworkCorePackageResolver.MicrotingOnly, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
+            MicrotingOnlyPackageResolver, serverVersion: MySqlServerVersion.LatestSupportedServerVersion));
 
         await using WebApplication app = builder.Build();
 
@@ -56,7 +63,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         builder.Services.Configure<MySqlOptions>("myMySqlService", options => options.ConnectionString += ";Use Compression=false");
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
-            MySqlEntityFrameworkCorePackageResolver.MicrotingOnly, "myMySqlService", MySqlServerVersion.LatestSupportedServerVersion));
+            MicrotingOnlyPackageResolver, "myMySqlService", MySqlServerVersion.LatestSupportedServerVersion));
 
         await using WebApplication app = builder.Build();
 
@@ -75,7 +82,7 @@ public sealed class MySqlDbContextOptionsBuilderExtensionsTest
         builder.AddMySql(MySqlPackageResolver.MySqlConnectorOnly, null, null, null);
 
         builder.Services.AddDbContext<GoodDbContext>((serviceProvider, options) => SteeltoeExtensions.UseMySql(options, serviceProvider,
-            MySqlEntityFrameworkCorePackageResolver.MicrotingOnly));
+            MicrotingOnlyPackageResolver));
 
         await using WebApplication app = builder.Build();
         await using AsyncServiceScope scope = app.Services.CreateAsyncScope();

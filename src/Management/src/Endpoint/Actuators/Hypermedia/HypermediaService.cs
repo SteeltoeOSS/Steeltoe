@@ -88,7 +88,7 @@ internal sealed partial class HypermediaService
         Link? selfLink = null;
 
         foreach (EndpointOptions endpointOptions in _endpointOptionsMonitorProviders.Select(provider => provider.Get())
-            .Where(options => options.Id != null && options.IsEnabled(managementOptions)).OrderBy(options => options.Id))
+            .Where(options => options.Id != null && options.IsEnabled(managementOptions)).OrderBy(options => options.Id, StringComparer.Ordinal))
         {
             if (skipExposureCheck || endpointOptions.IsExposed(managementOptions))
             {

@@ -17,6 +17,7 @@
     <MySqlConnectorVersion>2.6.*</MySqlConnectorVersion>
     <MySqlDataVersion>26.7.*</MySqlDataVersion>
     <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
+    <NpgsqlTestVersion>10.0.*</NpgsqlTestVersion>
     <NSubstituteVersion>6.2.*</NSubstituteVersion>
     <PublicApiAnalyzersVersion>5.6.*</PublicApiAnalyzersVersion>
     <RabbitClientTestVersion>7.2.*</RabbitClientTestVersion>
@@ -43,6 +44,10 @@
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
     <EntityFrameworkCoreTestVersion>10.0.*</EntityFrameworkCoreTestVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net11.0'">
+    <EntityFrameworkCoreTestVersion>11.0.*-*</EntityFrameworkCoreTestVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -78,7 +83,7 @@
     <MatchTargetFrameworkVersion>
       <!--
         Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
-        For example, v8 targets only .NET 8; v9 targets only .NET 9; v10 targets only .NET 10.
+        For example, v8 targets only .NET 8; v9 targets only .NET 9; v10 targets only .NET 10; v11 targets only .NET 11.
         Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
       -->
       8.0.*
@@ -89,7 +94,7 @@
     <MatchTargetFrameworkVersion>
       <!--
         Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
-        For example, v8 targets only .NET 8; v9 targets only .NET 9; v10 targets only .NET 10.
+        For example, v8 targets only .NET 8; v9 targets only .NET 9; v10 targets only .NET 10; v11 targets only .NET 11.
         Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
       -->
       9.0.*
@@ -100,10 +105,21 @@
     <MatchTargetFrameworkVersion>
       <!--
         Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
-        For example, v8 targets only .NET 8; v9 targets only .NET 9; v10 targets only .NET 10.
+        For example, v8 targets only .NET 8; v9 targets only .NET 9; v10 targets only .NET 10; v11 targets only .NET 11.
         Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
       -->
       10.0.*
+    </MatchTargetFrameworkVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net11.0'">
+    <MatchTargetFrameworkVersion>
+      <!--
+        Package versions of this category are bound to the target framework, so they cannot be updated to the latest version.
+        For example, v8 targets only .NET 8; v9 targets only .NET 9; v10 targets only .NET 10; v11 targets only .NET 11.
+        Caution: some packages additionally target netstandard, but result in compile-time/runtime errors or reduced API surface.
+      -->
+      11.0.*
     </MatchTargetFrameworkVersion>
   </PropertyGroup>
 </Project>
