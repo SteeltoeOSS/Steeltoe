@@ -9,10 +9,7 @@ using Aspire;
 
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
 [assembly: InternalsVisibleTo("Steeltoe.Common.Hosting.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Common.Logging")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.CloudFoundry")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer")]
-[assembly: InternalsVisibleTo("Steeltoe.Configuration.Encryption")]
-[assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Endpoint.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Management.Prometheus.Test")]

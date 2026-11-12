@@ -10,6 +10,10 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="dotnet-gcdump" Version="$(DotnetGCDumpVersion)" IncludeAssets="None" ExcludeAssets="All" PrivateAssets="None"
       GeneratePathProperty="true">
       <!--
@@ -26,7 +30,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Hosting\Steeltoe.Common.Hosting.csproj" />
     <ProjectReference Include="..\..\..\Common\src\Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
     <ProjectReference Include="..\..\..\Logging\src\DynamicConsole\Steeltoe.Logging.DynamicConsole.csproj" />

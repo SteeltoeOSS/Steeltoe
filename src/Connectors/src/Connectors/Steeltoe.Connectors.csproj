@@ -15,6 +15,5 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Configuration\src\CloudFoundry\Steeltoe.Configuration.CloudFoundry.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\Kubernetes.ServiceBindings\Steeltoe.Configuration.Kubernetes.ServiceBindings.csproj" />
-    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
   </ItemGroup>
 </Project>

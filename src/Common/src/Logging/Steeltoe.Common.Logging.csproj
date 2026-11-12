@@ -9,6 +9,10 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <ProjectReference Include="..\Hosting\Steeltoe.Common.Hosting.csproj" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="$(FoundationalVersion)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Steeltoe.Common.csproj" />
   </ItemGroup>
 </Project>

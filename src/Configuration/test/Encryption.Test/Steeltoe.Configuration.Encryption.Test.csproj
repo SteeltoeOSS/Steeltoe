@@ -12,7 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
     <ProjectReference Include="..\..\src\Encryption\Steeltoe.Configuration.Encryption.csproj" />
     <ProjectReference Include="..\..\src\Placeholder\Steeltoe.Configuration.Placeholder.csproj" />
   </ItemGroup>

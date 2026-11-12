@@ -29,7 +29,6 @@ using Steeltoe.Connectors.SqlServer;
 [assembly: LoggingCategories("Steeltoe", "Steeltoe.Connectors")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
-[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.EntityFrameworkCore")]
 [assembly: InternalsVisibleTo("Steeltoe.Connectors.EntityFrameworkCore.Test")]

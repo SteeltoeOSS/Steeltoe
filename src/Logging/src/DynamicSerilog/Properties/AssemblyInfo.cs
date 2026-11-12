@@ -9,5 +9,4 @@ using Steeltoe.Logging.DynamicSerilog;
 [assembly: ConfigurationSchema("Serilog", typeof(SerilogOptions))]
 [assembly: LoggingCategories("Steeltoe", "Steeltoe.Logging", "Steeltoe.Logging.DynamicSerilog")]
 
-[assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration")]
 [assembly: InternalsVisibleTo("Steeltoe.Logging.DynamicSerilog.Test")]

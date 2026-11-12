@@ -10,10 +10,10 @@
 
   <ItemGroup>
     <PackageReference Include="BouncyCastle.NetCore" Version="$(BouncyCastleVersion)" />
+    <PackageReference Include="Microsoft.AspNetCore.Cryptography.KeyDerivation" Version="$(MatchTargetFrameworkVersion)" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Hosting\Steeltoe.Common.Hosting.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
   </ItemGroup>
 </Project>
