@@ -4,13 +4,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Text;
-using LockPrimitive =
-#if NET10_0_OR_GREATER
-    System.Threading.Lock
-#else
-    object
-#endif
-    ;
 
 namespace Steeltoe.Management.Endpoint;
 
@@ -26,7 +19,7 @@ namespace Steeltoe.Management.Endpoint;
 [ExcludeFromCodeCoverage(Justification = "This is only basic plumbing to satisfy downstream APIs.")]
 internal sealed class ConcurrentTextWriter : TextWriter
 {
-    private readonly LockPrimitive _gate = new();
+    private readonly Lock _gate = new();
     private readonly StringBuilder _buffer = new();
 
     public override Encoding Encoding => Encoding.Unicode;

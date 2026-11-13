@@ -9,13 +9,6 @@ using Microsoft.Extensions.Primitives;
 using Microsoft.Extensions.Time.Testing;
 using RichardSzalay.MockHttp;
 using Steeltoe.Common.TestResources;
-using LockPrimitive =
-#if NET9_0_OR_GREATER
-    System.Threading.Lock
-#else
-    object
-#endif
-    ;
 
 namespace Steeltoe.Configuration.ConfigServer.Test;
 
@@ -180,7 +173,7 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
     private sealed class ConcurrencyTracker
     {
-        private readonly LockPrimitive _lock = new();
+        private readonly Lock _lock = new();
         private int _current;
         private int _maximum;
 

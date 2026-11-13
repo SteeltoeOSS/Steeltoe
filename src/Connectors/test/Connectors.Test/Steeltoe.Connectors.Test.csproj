@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net11.0;net10.0;net9.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net11.0;net10.0</TargetFrameworks>
   </PropertyGroup>
 
   <Import Project="..\..\..\..\shared.props" />
@@ -16,14 +16,12 @@
     <PackageReference Include="Npgsql" Version="$(NpgsqlTestVersion)" />
     <PackageReference Include="RabbitMQ.Client" Version="$(RabbitClientTestVersion)" />
     <PackageReference Include="System.Data.SqlClient" Version="$(SystemSqlClientVersion)" />
-    <PackageReference Include="System.Text.Json" Version="$(FoundationalVersion)" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\Configuration\src\ConfigServer\Steeltoe.Configuration.ConfigServer.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\Encryption\Steeltoe.Configuration.Encryption.csproj" />
     <ProjectReference Include="..\..\..\Configuration\src\Placeholder\Steeltoe.Configuration.Placeholder.csproj" />
-    <ProjectReference Include="..\..\..\Discovery\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
     <ProjectReference Include="..\..\src\Connectors\Steeltoe.Connectors.csproj" />
   </ItemGroup>
 </Project>

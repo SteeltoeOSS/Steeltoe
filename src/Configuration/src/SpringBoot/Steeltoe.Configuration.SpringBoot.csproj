@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>net10.0;net8.0</TargetFrameworks>
+    <TargetFrameworks>net10.0</TargetFrameworks>
     <Description>Configuration provider for reading Spring Boot-style configuration.</Description>
     <PackageTags>configuration;ConfigurationProvider;Spring;Boot</PackageTags>
     <IsPackable>true</IsPackable>
@@ -14,7 +14,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Common\src\Common\Steeltoe.Common.csproj" />
     <ProjectReference Include="..\Abstractions\Steeltoe.Configuration.Abstractions.csproj" />
   </ItemGroup>
 </Project>

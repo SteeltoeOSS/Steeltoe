@@ -4,13 +4,6 @@
 
 using System.Security.Cryptography;
 using System.Text;
-using LockPrimitive =
-#if NET10_0_OR_GREATER
-    System.Threading.Lock
-#else
-    object
-#endif
-    ;
 
 namespace Steeltoe.Configuration;
 
@@ -20,7 +13,7 @@ namespace Steeltoe.Configuration;
 /// </summary>
 internal sealed class TempFileRegistry : IDisposable
 {
-    private readonly LockPrimitive _lock = new();
+    private readonly Lock _lock = new();
     private readonly Dictionary<string, string> _pathsByContentHash = [];
 
     /// <summary>

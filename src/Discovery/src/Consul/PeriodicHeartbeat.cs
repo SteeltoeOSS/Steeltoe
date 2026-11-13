@@ -8,13 +8,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Discovery.Consul.Configuration;
-using LockPrimitive =
-#if NET10_0_OR_GREATER
-    System.Threading.Lock
-#else
-    object
-#endif
-    ;
+using Lock = System.Threading.Lock;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Steeltoe.Discovery.Consul;
@@ -28,7 +22,7 @@ namespace Steeltoe.Discovery.Consul;
 /// </remarks>
 internal sealed partial class PeriodicHeartbeat : IAsyncDisposable
 {
-    private readonly LockPrimitive _lock = new();
+    private readonly Lock _lock = new();
     private readonly CancellationTokenSource _cancellationTokenSource = new();
     private readonly IConsulClient _client;
     private readonly TimeProvider _timeProvider;

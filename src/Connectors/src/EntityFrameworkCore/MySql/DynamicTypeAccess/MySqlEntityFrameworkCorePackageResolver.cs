@@ -12,7 +12,6 @@ namespace Steeltoe.Connectors.EntityFrameworkCore.MySql.DynamicTypeAccess;
 internal sealed class MySqlEntityFrameworkCorePackageResolver : PackageResolver
 {
     private const string MicrotingPackageName = "Microting.EntityFrameworkCore.MySql";
-    private const string PomeloPackageName = "Pomelo.EntityFrameworkCore.MySql";
     private const string OraclePackageName = "MySql.EntityFrameworkCore";
 
     private static readonly List<string> MicrotingAssemblyNames =
@@ -27,13 +26,8 @@ internal sealed class MySqlEntityFrameworkCorePackageResolver : PackageResolver
         "MySqlConnector",
         // Temporary workaround: The assembly name changed in the stable 10.x version, but the 11.0.0-preview.1 version doesn't contain that change yet.
         // https://github.com/microting/Pomelo.EntityFrameworkCore.MySql/issues/272#issuecomment-6801878626
+        // https://github.com/SteeltoeOSS/Steeltoe/issues/1779
         "Pomelo.EntityFrameworkCore.MySql"
-    ];
-
-    private static readonly List<string> PomeloAssemblyNames =
-    [
-        "Pomelo.EntityFrameworkCore.MySql",
-        "MySqlConnector"
     ];
 
     private static readonly List<string> OracleAssemblyNames =
@@ -45,11 +39,9 @@ internal sealed class MySqlEntityFrameworkCorePackageResolver : PackageResolver
     public static readonly MySqlEntityFrameworkCorePackageResolver Default = new(((string[])
     [
         .. MicrotingAssemblyNames,
-        .. PomeloAssemblyNames,
         .. OracleAssemblyNames
     ]).Distinct().ToArray().AsReadOnly(), [
         MicrotingPackageName,
-        PomeloPackageName,
         OraclePackageName
     ]);
 
@@ -57,8 +49,6 @@ internal sealed class MySqlEntityFrameworkCorePackageResolver : PackageResolver
 
     internal static readonly MySqlEntityFrameworkCorePackageResolver MicrotingOnlyWithPreviewWorkaround =
         new(MicrotingAssemblyNamesWithPreviewWorkaround, [MicrotingPackageName]);
-
-    internal static readonly MySqlEntityFrameworkCorePackageResolver PomeloOnly = new(PomeloAssemblyNames, [PomeloPackageName]);
 
     internal static readonly MySqlEntityFrameworkCorePackageResolver OracleOnly = new(OracleAssemblyNames, [OraclePackageName]);
 

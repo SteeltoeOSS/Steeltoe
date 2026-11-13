@@ -10,6 +10,4 @@ using Steeltoe.Configuration.Encryption.Cryptography;
 [assembly: LoggingCategories("Steeltoe", "Steeltoe.Configuration", "Steeltoe.Configuration.Encryption")]
 
 [assembly: InternalsVisibleTo("Steeltoe.Bootstrap.AutoConfiguration.Test")]
-[assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer")]
-[assembly: InternalsVisibleTo("Steeltoe.Configuration.ConfigServer.Test")]
 [assembly: InternalsVisibleTo("Steeltoe.Configuration.Encryption.Test")]

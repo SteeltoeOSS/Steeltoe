@@ -21,13 +21,6 @@ using Steeltoe.Common.Discovery;
 using Steeltoe.Common.Extensions;
 using Steeltoe.Common.Http;
 using Steeltoe.Common.Http.HttpClientPooling;
-using LockPrimitive =
-#if NET10_0_OR_GREATER
-    System.Threading.Lock
-#else
-    object
-#endif
-    ;
 
 namespace Steeltoe.Configuration.ConfigServer;
 
@@ -47,7 +40,7 @@ internal sealed partial class ConfigServerConfigurationProvider : ConfigurationP
     private readonly bool _disposeHttpClientHandler;
     private readonly ConfigureConfigServerClientOptions _configurer;
     private readonly ConfigServerClientOptions _defaultOptions;
-    private readonly LockPrimitive _stateLock = new();
+    private readonly Lock _stateLock = new();
     private readonly WorkGate _configurationReloadGate = new();
     private readonly WorkGate _vaultRenewGate = new();
     private readonly ConfigServerDiscoveryService _configServerDiscoveryService;

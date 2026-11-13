@@ -47,6 +47,6 @@ public static class CloudFoundryServiceCollectionExtensions
 
     private static bool IsRegistered(IServiceCollection services)
     {
-        return services.Any(descriptor => descriptor.SafeGetImplementationType() == typeof(ConfigureCloudFoundryApplicationOptions));
+        return services.Any(descriptor => descriptor.ImplementationType == typeof(ConfigureCloudFoundryApplicationOptions));
     }
 }
