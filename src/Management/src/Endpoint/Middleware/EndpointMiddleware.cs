@@ -24,6 +24,9 @@ public abstract partial class EndpointMiddleware<TRequest, TResponse> : IEndpoin
 
     private protected virtual string ContentType => "application/vnd.spring-boot.actuator.v3+json";
 
+    // The content types this endpoint can produce, in order of preference. The first entry is used when the request has no Accept header.
+    private protected virtual IReadOnlyList<string> ProducedContentTypes => [ContentType];
+
     protected EndpointMiddleware(IEndpointHandler<TRequest, TResponse> endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor,
         ILoggerFactory loggerFactory)
     {
@@ -67,11 +70,11 @@ public abstract partial class EndpointMiddleware<TRequest, TResponse> : IEndpoin
                     context.Response.StatusCode = (int)HttpStatusCode.UnsupportedMediaType;
                     await context.Response.WriteAsync($"Only the '{ContentType}' content type is supported.", context.RequestAborted);
                 }
-                else if (!IsCompatibleAcceptHeader(context.Request))
+                else if (GetResponseContentType(context.Request) == null)
                 {
                     LogUnsupportedAcceptHeader(context.Request.Headers.Accept);
                     context.Response.StatusCode = (int)HttpStatusCode.NotAcceptable;
-                    await context.Response.WriteAsync($"Only the '{ContentType}' content type is supported.", context.RequestAborted);
+                    await context.Response.WriteAsync(GetNotAcceptableMessage(), context.RequestAborted);
                 }
                 else
                 {
@@ -113,24 +116,49 @@ public abstract partial class EndpointMiddleware<TRequest, TResponse> : IEndpoin
         return MediaTypeHeaderValue.TryParse(httpRequest.ContentType, out MediaTypeHeaderValue? headerValue) && headerValue.MatchesMediaType(ContentType);
     }
 
-    private bool IsCompatibleAcceptHeader(HttpRequest httpRequest)
+    // Returns the content type to respond with, or null when the Accept header is incompatible with all content types this endpoint can produce.
+    private protected string? GetResponseContentType(HttpRequest httpRequest)
     {
+        IReadOnlyList<string> producedContentTypes = ProducedContentTypes;
         string[] acceptHeaderValues = httpRequest.Headers.GetCommaSeparatedValues("Accept");
 
         if (acceptHeaderValues.Length == 0)
         {
-            return true;
+            return producedContentTypes[0];
         }
+
+        List<MediaTypeHeaderValue> acceptedMediaTypes = [];
 
         foreach (string acceptHeaderValue in acceptHeaderValues)
         {
-            if (MediaTypeHeaderValue.TryParse(acceptHeaderValue, out MediaTypeHeaderValue? headerValue) && headerValue.MatchesMediaType(ContentType))
+            if (MediaTypeHeaderValue.TryParse(acceptHeaderValue, out MediaTypeHeaderValue? headerValue))
             {
-                return true;
+                acceptedMediaTypes.Add(headerValue);
             }
         }
 
-        return false;
+        // OrderByDescending performs a stable sort, so the order from the Accept header is preserved for media types with the same quality.
+        foreach (MediaTypeHeaderValue acceptedMediaType in acceptedMediaTypes.OrderByDescending(mediaType => mediaType.Quality ?? 1))
+        {
+            foreach (string producedContentType in producedContentTypes)
+            {
+                if (acceptedMediaType.MatchesMediaType(producedContentType))
+                {
+                    return producedContentType;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private string GetNotAcceptableMessage()
+    {
+        IReadOnlyList<string> producedContentTypes = ProducedContentTypes;
+
+        return producedContentTypes.Count == 1
+            ? $"Only the '{producedContentTypes[0]}' content type is supported."
+            : $"Only the {string.Join(", ", producedContentTypes.Select(contentType => $"'{contentType}'"))} content types are supported.";
     }
 
     protected virtual Task<TRequest?> ParseRequestAsync(HttpContext httpContext, CancellationToken cancellationToken)

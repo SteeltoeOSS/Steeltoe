@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Net;
+using System.Net.Http.Headers;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -137,5 +138,110 @@ public sealed class ThreadDumpActuatorTest
               ]
             }
             """);
+    }
+
+    [Theory]
+    [InlineData(HostBuilderType.Host)]
+    [InlineData(HostBuilderType.WebHost)]
+    [InlineData(HostBuilderType.WebApplication)]
+    public async Task Endpoint_returns_expected_plain_text(HostBuilderType hostBuilderType)
+    {
+        await using HostWrapper host = hostBuilderType.Build(builder =>
+        {
+            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
+
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IThreadDumper, FakeThreadDumper>();
+                services.AddThreadDumpActuator();
+            });
+        });
+
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using HttpClient httpClient = host.GetTestClient();
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/threaddump"));
+        request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("text/plain"));
+        using HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+
+        response.Content.Headers.ContentType.Should().NotBeNull();
+        response.Content.Headers.ContentType.ToString().Should().Be("text/plain; charset=utf-8");
+
+        string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+
+        responseBody.Should().Be("""
+            "Thread-00018" #18
+               Thread State: WAITING
+              at FakeNamespace.FakeClass.FakeMethod(C:\Source\Code\FakeClass.cs:8)
+
+              Locked ownable synchronizers:
+              - None
+
+
+            """.ReplaceLineEndings("\n"));
+    }
+
+    [Theory]
+    [InlineData("*/*", "application/vnd.spring-boot.actuator.v3+json")]
+    [InlineData("text/*", "text/plain")]
+    [InlineData("TEXT/PLAIN", "text/plain")]
+    [InlineData("text/plain; charset=utf-8", "text/plain")]
+    [InlineData("application/json, text/plain", "application/vnd.spring-boot.actuator.v3+json")]
+    [InlineData("text/plain, application/json", "text/plain")]
+    [InlineData("text/plain; q=0.5, application/json", "application/vnd.spring-boot.actuator.v3+json")]
+    [InlineData("application/json; q=0.5, text/plain", "text/plain")]
+    [InlineData("text/html, text/plain; q=0.9, */*; q=0.8", "text/plain")]
+    public async Task Endpoint_negotiates_response_content_type(string acceptHeader, string expectedContentType)
+    {
+        await using HostWrapper host = HostBuilderType.WebApplication.Build(builder =>
+        {
+            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
+
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IThreadDumper, FakeThreadDumper>();
+                services.AddThreadDumpActuator();
+            });
+        });
+
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using HttpClient httpClient = host.GetTestClient();
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/threaddump"));
+        request.Headers.TryAddWithoutValidation("Accept", acceptHeader).Should().BeTrue();
+        using HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Content.Headers.ContentType.Should().NotBeNull();
+        response.Content.Headers.ContentType.MediaType.Should().Be(expectedContentType);
+    }
+
+    [Fact]
+    public async Task Endpoint_rejects_incompatible_accept_header()
+    {
+        await using HostWrapper host = HostBuilderType.WebApplication.Build(builder =>
+        {
+            builder.ConfigureAppConfiguration(configurationBuilder => configurationBuilder.AddInMemoryCollection(AppSettings));
+
+            builder.ConfigureServices(services =>
+            {
+                services.AddSingleton<IThreadDumper, FakeThreadDumper>();
+                services.AddThreadDumpActuator();
+            });
+        });
+
+        await host.StartAsync(TestContext.Current.CancellationToken);
+        using HttpClient httpClient = host.GetTestClient();
+
+        using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/threaddump"));
+        request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("text/html"));
+        using HttpResponseMessage response = await httpClient.SendAsync(request, TestContext.Current.CancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NotAcceptable);
+
+        string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
+        responseBody.Should().Be("Only the 'application/vnd.spring-boot.actuator.v3+json', 'text/plain' content types are supported.");
     }
 }

@@ -703,7 +703,7 @@ public sealed partial class RouteMappingsActuatorTest
                       "dispatcherServlet": [
                         {
                           "handler": "/actuator/threaddump",
-                          "predicate": "{GET [/actuator/threaddump], produces [application/vnd.spring-boot.actuator.v3+json]}",
+                          "predicate": "{GET [/actuator/threaddump], produces [application/vnd.spring-boot.actuator.v3+json || text/plain]}",
                           "details": {
                             "handlerMethod": {
                               "className": "Steeltoe.Management.Endpoint.Middleware.EndpointMiddleware`2",
@@ -721,6 +721,10 @@ public sealed partial class RouteMappingsActuatorTest
                               "produces": [
                                 {
                                   "mediaType": "application/vnd.spring-boot.actuator.v3+json",
+                                  "negated": false
+                                },
+                                {
+                                  "mediaType": "text/plain",
                                   "negated": false
                                 }
                               ],
