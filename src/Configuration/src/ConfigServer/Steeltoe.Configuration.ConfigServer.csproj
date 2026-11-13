@@ -9,10 +9,6 @@
   <Import Project="..\..\..\..\shared.props" />
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\..\Common\src\Http\Steeltoe.Common.Http.csproj" />
     <ProjectReference Include="..\..\..\Discovery\src\Configuration\Steeltoe.Discovery.Configuration.csproj" PrivateAssets="All" />
     <ProjectReference Include="..\..\..\Discovery\src\Consul\Steeltoe.Discovery.Consul.csproj" PrivateAssets="All" />

@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="System.Text.Json" Version="$(SystemTextJsonVersion)" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\..\src\Configuration\Steeltoe.Discovery.Configuration.csproj" />
     <ProjectReference Include="..\..\src\Consul\Steeltoe.Discovery.Consul.csproj" />
     <ProjectReference Include="..\..\src\Eureka\Steeltoe.Discovery.Eureka.csproj" />
