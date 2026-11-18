@@ -36,8 +36,8 @@ internal sealed partial class LogFileEndpointHandler : ILogFileEndpointHandler
             return Task.FromResult<string?>(null);
         }
 
-        // Like log4net and NLog, resolve a relative path from the application directory, because the current directory isn't stable.
-        string fullPath = Path.GetFullPath(filePath, AppContext.BaseDirectory);
+        // Like Spring Boot and Serilog, resolve a relative path from the current directory, so the same path works for the logging provider and this endpoint.
+        string fullPath = Path.GetFullPath(filePath);
         return Task.FromResult<string?>(fullPath);
     }
 

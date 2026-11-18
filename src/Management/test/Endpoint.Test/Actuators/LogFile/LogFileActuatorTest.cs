@@ -325,10 +325,10 @@ public sealed class LogFileActuatorTest
     }
 
     [Fact]
-    public async Task Endpoint_resolves_relative_path_from_application_directory()
+    public async Task Endpoint_resolves_relative_path_from_current_directory()
     {
         string fileName = $"{Guid.NewGuid()}.log";
-        string fullPath = Path.Combine(AppContext.BaseDirectory, fileName);
+        string fullPath = Path.Combine(Directory.GetCurrentDirectory(), fileName);
 
         try
         {
