@@ -66,7 +66,7 @@ public sealed class PrometheusExtensionsTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        responseText.Should().Contain("# EOF");
+        responseText.Should().Contain("# TYPE target_info gauge");
     }
 
     [Fact]
@@ -86,7 +86,7 @@ public sealed class PrometheusExtensionsTest
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
         string responseText = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        responseText.Should().Contain("# EOF");
+        responseText.Should().Contain("# TYPE target_info gauge");
     }
 
     [Theory]
