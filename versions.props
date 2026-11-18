@@ -8,14 +8,14 @@
     <AspNetCoreHealthChecksVersion>9.0.*</AspNetCoreHealthChecksVersion>
     <CoverletVersion>10.1.*</CoverletVersion>
     <FluentAssertionsVersion>7.2.*</FluentAssertionsVersion>
-    <MicrosoftAzureCosmosVersion>3.62.*</MicrosoftAzureCosmosVersion>
-    <MicrosoftBuildUtilitiesCoreVersion>18.9.*</MicrosoftBuildUtilitiesCoreVersion>
-    <MicrosoftCodeAnalysisVersion>5.9.*</MicrosoftCodeAnalysisVersion>
-    <MicrosoftSqlClientVersion>7.0.*</MicrosoftSqlClientVersion>
+    <MicrosoftAzureCosmosVersion>3.64.*</MicrosoftAzureCosmosVersion>
+    <MicrosoftBuildUtilitiesCoreVersion>18.12.*</MicrosoftBuildUtilitiesCoreVersion>
+    <MicrosoftCodeAnalysisVersion>5.12.*</MicrosoftCodeAnalysisVersion>
+    <MicrosoftSqlClientVersion>7.1.*</MicrosoftSqlClientVersion>
     <MockHttpVersion>7.1.*</MockHttpVersion>
-    <MongoDbDriverVersion>3.11.*</MongoDbDriverVersion>
-    <MySqlConnectorVersion>2.6.*</MySqlConnectorVersion>
-    <MySqlDataVersion>26.7.*</MySqlDataVersion>
+    <MongoDbDriverVersion>3.14.*</MongoDbDriverVersion>
+    <MySqlConnectorVersion>3.0.*</MySqlConnectorVersion>
+    <MySqlDataVersion>26.10.*</MySqlDataVersion>
     <NewtonsoftJsonVersion>13.0.*</NewtonsoftJsonVersion>
     <NpgsqlTestVersion>10.0.*</NpgsqlTestVersion>
     <NSubstituteVersion>6.2.*</NSubstituteVersion>
@@ -25,11 +25,10 @@
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
     <SonarAnalyzerVersion>10.33.0.1635</SonarAnalyzerVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
-    <SystemCommandLineVersion>2.0.*</SystemCommandLineVersion>
-    <SystemIdentityModelVersion>8.22.*</SystemIdentityModelVersion>
+    <SystemCommandLineVersion>3.0.*</SystemCommandLineVersion>
+    <SystemIdentityModelVersion>8.23.*</SystemIdentityModelVersion>
     <SystemSqlClientVersion>4.9.*</SystemSqlClientVersion>
-    <TestSdkVersion>18.9.*</TestSdkVersion>
-    <TimeProviderTestingVersion>10.9.*</TimeProviderTestingVersion>
+    <TestSdkVersion>18.12.*</TestSdkVersion>
     <XunitVersion>3.2.*</XunitVersion>
     <XunitVisualStudioVersion>4.0.*</XunitVisualStudioVersion>
   </PropertyGroup>
@@ -50,17 +49,13 @@
         Package versions of this category are always safe to update to the latest version, because they multi-target all frameworks.
         For example, v10 explicitly targets .NET 10; v11 explicitly targets .NET 10 and 11.
       -->
-      10.0.*
+      11.0.*
     </FoundationalVersion>
     <MicrosoftDiagnosticsNETCoreClientVersion>0.2.750501</MicrosoftDiagnosticsNETCoreClientVersion>
     <MicrosoftDiagnosticsTracingTraceEventVersion>4.0.0</MicrosoftDiagnosticsTracingTraceEventVersion>
-    <OpenTelemetryExporterPrometheusVersion>1.15.*-*</OpenTelemetryExporterPrometheusVersion>
-    <OpenTelemetryVersion>1.15.*</OpenTelemetryVersion>
-    <SerilogExtensionsLoggingVersion>10.0.*</SerilogExtensionsLoggingVersion>
-    <SerilogSettingsConfigurationVersion>10.0.*</SerilogSettingsConfigurationVersion>
+    <OpenTelemetryExporterPrometheusVersion>1.21.*-*</OpenTelemetryExporterPrometheusVersion>
+    <OpenTelemetryVersion>1.21.*</OpenTelemetryVersion>
     <SerilogSinksConsoleVersion>6.1.*</SerilogSinksConsoleVersion>
-    <SerilogVersion>9.0.*</SerilogVersion>
-    <SystemTextJsonVersion>11.0.*</SystemTextJsonVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">
