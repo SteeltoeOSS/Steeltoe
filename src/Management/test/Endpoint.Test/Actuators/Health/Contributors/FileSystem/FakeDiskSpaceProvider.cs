@@ -25,7 +25,11 @@ internal sealed class FakeDiskSpaceProvider : IDiskSpaceProvider
         _drives = [.. drives];
         _networkShares = [.. networkShares];
 
-        _existingPaths = new HashSet<string>(existingPaths, isRunningOnWindows ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal);
+        _existingPaths =
+        [
+            with(isRunningOnWindows ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal),
+            .. existingPaths
+        ];
 
         foreach (FakeDriveInfoWrapper drive in drives)
         {

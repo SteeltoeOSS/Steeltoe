@@ -14,15 +14,13 @@ internal static class GitRepositoryBuilder
         gpgsign = false   # Avoid an interactive prompt on a machine that has commit signing configured globally.
         """;
 
-#pragma warning disable IDE0028 // Simplify collection initialization
-    // Justification: workaround for bug https://youtrack.jetbrains.com/issue/RSRP-505438/Collection-expression-with-with-expression-requires-language-version-preview
-    private static readonly HashSet<string> DirectoryNamesExcludedInPush = new(StringComparer.OrdinalIgnoreCase)
-#pragma warning restore IDE0028 // Simplify collection initialization
-    {
+    private static readonly HashSet<string> DirectoryNamesExcludedInPush =
+    [
+        with(StringComparer.OrdinalIgnoreCase),
         ".git",
         "bin",
         "obj"
-    };
+    ];
 
     public static async Task InitializeEmptyAsync(string destination)
     {
