@@ -1,9 +1,30 @@
 #nullable enable
-static Steeltoe.Management.Endpoint.Actuators.LogFile.EndpointServiceCollectionExtensions.AddLogFileActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
-static Steeltoe.Management.Endpoint.Actuators.LogFile.EndpointServiceCollectionExtensions.AddLogFileActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
 Steeltoe.Management.Endpoint.Actuators.LogFile.EndpointServiceCollectionExtensions
 Steeltoe.Management.Endpoint.Actuators.LogFile.ILogFileEndpointHandler
 Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions
 Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions.FilePath.get -> string?
 Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions.FilePath.set -> void
 Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions.LogFileEndpointOptions() -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest.HasMultipleRanges.get -> bool
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest.HasMultipleRanges.init -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest.LogFileRequest() -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest.RangeEnd.get -> long?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest.RangeEnd.init -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest.RangeStart.get -> long?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest.RangeStart.init -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResult
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResult.Content.get -> System.IO.Stream?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResult.Dispose() -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResult.Length.get -> long
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResult.Offset.get -> long
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResult.Status.get -> Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResultStatus
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResult.TotalLength.get -> long
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResultStatus
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResultStatus.Complete = 1 -> Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResultStatus
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResultStatus.NotFound = 0 -> Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResultStatus
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResultStatus.Partial = 2 -> Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResultStatus
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResultStatus.RangeNotSatisfiable = 3 -> Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResultStatus
+override Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest.ToString() -> string!
+static Steeltoe.Management.Endpoint.Actuators.LogFile.EndpointServiceCollectionExtensions.AddLogFileActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.LogFile.EndpointServiceCollectionExtensions.AddLogFileActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!

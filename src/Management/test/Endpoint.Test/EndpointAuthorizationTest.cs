@@ -11,15 +11,16 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Steeltoe.Common.TestResources;
-using Steeltoe.Common.TestResources.IO;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Actuators.LogFile;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
@@ -27,9 +28,9 @@ using Steeltoe.Management.Endpoint.Test.Actuators.ThreadDump;
 
 namespace Steeltoe.Management.Endpoint.Test;
 
-public sealed class EndpointAuthorizationTest : IDisposable
+public sealed class EndpointAuthorizationTest
 {
-    private readonly TempFile _logFile = new();
+    private static readonly string LogFilePath = Path.Combine(AppContext.BaseDirectory, "app.log");
 
     public static TheoryData<RegistrationMode, Type> EndpointTestData
     {
@@ -71,17 +72,12 @@ public sealed class EndpointAuthorizationTest : IDisposable
         await ActAndAssertAsync(hostBuilder, endpointOptionsType, false);
     }
 
-    public void Dispose()
-    {
-        _logFile.Dispose();
-    }
-
-    private HostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction, RegistrationMode mode)
+    private static HostBuilder GetHostBuilder(Action<AuthorizationPolicyBuilder> policyAction, RegistrationMode mode)
     {
         var appSettings = new Dictionary<string, string?>
         {
             ["Management:Endpoints:Actuator:Exposure:Include:0"] = "*",
-            ["Management:Endpoints:LogFile:FilePath"] = _logFile.FullPath
+            ["Management:Endpoints:LogFile:FilePath"] = LogFilePath
         };
 
         HostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
@@ -91,6 +87,10 @@ public sealed class EndpointAuthorizationTest : IDisposable
         {
             services.AddSingleton<IHeapDumper, FakeHeapDumper>();
             services.AddSingleton<IThreadDumper, FakeThreadDumper>();
+
+            var logFileProvider = new MemoryFileProvider();
+            logFileProvider.IncludeFile(LogFilePath, "log entry");
+            services.AddKeyedSingleton<IFileProvider>(LogFileEndpointHandler.FileProviderServiceKey, logFileProvider);
 
             if (mode == RegistrationMode.Services)
             {
