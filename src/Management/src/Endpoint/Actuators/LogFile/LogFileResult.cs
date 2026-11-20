@@ -29,7 +29,7 @@ public sealed class LogFileResult : IDisposable
     /// <summary>
     /// Gets the length of the log file, in bytes, at the time it was opened.
     /// </summary>
-    public long TotalLength { get; }
+    public long TotalSize { get; }
 
     /// <summary>
     /// Gets the stream to read the bytes from, positioned at <see cref="Offset" />. This is <c>null</c> unless <see cref="Status" /> is
@@ -37,18 +37,18 @@ public sealed class LogFileResult : IDisposable
     /// </summary>
     public Stream? Content { get; }
 
-    internal LogFileResult(LogFileResultStatus status, long offset, long length, long totalLength, Stream? content)
+    internal LogFileResult(LogFileResultStatus status, long offset, long length, long totalSize, Stream? content)
     {
         Status = status;
         Offset = offset;
         Length = length;
-        TotalLength = totalLength;
+        TotalSize = totalSize;
         Content = content;
     }
 
-    internal static LogFileResult CreateNotSatisfiable(long totalLength)
+    internal static LogFileResult CreateNotSatisfiable(long totalSize)
     {
-        return new LogFileResult(LogFileResultStatus.RangeNotSatisfiable, 0, 0, totalLength, null);
+        return new LogFileResult(LogFileResultStatus.RangeNotSatisfiable, 0, 0, totalSize, null);
     }
 
     public void Dispose()

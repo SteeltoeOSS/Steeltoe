@@ -30,7 +30,7 @@ public sealed class LogFileEndpointHandlerTest
         result.Status.Should().Be(LogFileResultStatus.Complete);
         result.Offset.Should().Be(0);
         result.Length.Should().Be(Encoding.UTF8.GetByteCount("Hello, wörld! 👋\n"));
-        result.TotalLength.Should().Be(result.Length);
+        result.TotalSize.Should().Be(result.Length);
 
         string content = await ReadContentAsync(result);
         content.Should().Be("Hello, wörld! 👋\n");
@@ -74,7 +74,7 @@ public sealed class LogFileEndpointHandlerTest
         result.Status.Should().Be(LogFileResultStatus.Partial);
         result.Offset.Should().Be(expectedOffset);
         result.Length.Should().Be(expectedContent.Length);
-        result.TotalLength.Should().Be(10);
+        result.TotalSize.Should().Be(10);
 
         string content = await ReadContentAsync(result);
         content.Should().Be(expectedContent);
@@ -103,7 +103,7 @@ public sealed class LogFileEndpointHandlerTest
         using LogFileResult result = await handler.InvokeAsync(request, TestContext.Current.CancellationToken);
 
         result.Status.Should().Be(LogFileResultStatus.RangeNotSatisfiable);
-        result.TotalLength.Should().Be(10);
+        result.TotalSize.Should().Be(10);
         result.Content.Should().BeNull();
     }
 
@@ -126,7 +126,7 @@ public sealed class LogFileEndpointHandlerTest
         using LogFileResult result = await handler.InvokeAsync(request, TestContext.Current.CancellationToken);
 
         result.Status.Should().Be(expectedStatus);
-        result.TotalLength.Should().Be(0);
+        result.TotalSize.Should().Be(0);
         result.Length.Should().Be(0);
     }
 
@@ -146,7 +146,7 @@ public sealed class LogFileEndpointHandlerTest
         {
             result.Status.Should().Be(LogFileResultStatus.Partial);
             result.Offset.Should().Be(0);
-            result.TotalLength.Should().Be(14);
+            result.TotalSize.Should().Be(14);
             (await ReadContentAsync(result)).Should().Be("line 1\nline 2\n");
         }
 
@@ -159,7 +159,7 @@ public sealed class LogFileEndpointHandlerTest
         {
             result.Status.Should().Be(LogFileResultStatus.Partial);
             result.Offset.Should().Be(13);
-            result.TotalLength.Should().Be(21);
+            result.TotalSize.Should().Be(21);
             (await ReadContentAsync(result)).Should().Be("\nline 3\n");
         }
 
@@ -171,7 +171,7 @@ public sealed class LogFileEndpointHandlerTest
         }, TestContext.Current.CancellationToken))
         {
             result.Status.Should().Be(LogFileResultStatus.RangeNotSatisfiable);
-            result.TotalLength.Should().Be(4);
+            result.TotalSize.Should().Be(4);
         }
     }
 
@@ -312,7 +312,7 @@ public sealed class LogFileEndpointHandlerTest
 
         result.Status.Should().Be(LogFileResultStatus.Partial);
         result.Offset.Should().Be(4);
-        result.TotalLength.Should().Be(6);
+        result.TotalSize.Should().Be(6);
         (await ReadContentAsync(result)).Should().Be("ef");
     }
 

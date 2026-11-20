@@ -9,7 +9,9 @@ namespace Steeltoe.Management.Endpoint.Actuators.LogFile;
 public sealed class LogFileEndpointOptions : EndpointOptions
 {
     /// <summary>
-    /// Gets or sets the path to the log file on disk. When not set, this endpoint is turned off, unless it is explicitly enabled.
+    /// Gets or sets the path to the log file on disk. A relative path is resolved from the base directory of the application, not the current directory.
+    /// The file name (but not the directory) can contain the wildcards * and ?, in which case the matching file with the most recent last modified time is
+    /// returned. When not set, this endpoint is turned off, unless it is explicitly enabled.
     /// </summary>
     /// <remarks>
     /// <para>

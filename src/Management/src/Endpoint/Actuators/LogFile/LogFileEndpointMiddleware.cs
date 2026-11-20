@@ -76,7 +76,7 @@ internal sealed class LogFileEndpointMiddleware(
                 {
                     httpContext.Response.Headers.AcceptRanges = BytesUnit;
                     httpContext.Response.StatusCode = StatusCodes.Status416RangeNotSatisfiable;
-                    httpContext.Response.GetTypedHeaders().ContentRange = new ContentRangeHeaderValue(result.TotalLength);
+                    httpContext.Response.GetTypedHeaders().ContentRange = new ContentRangeHeaderValue(result.TotalSize);
                     break;
                 }
                 default:
@@ -99,7 +99,7 @@ internal sealed class LogFileEndpointMiddleware(
             httpContext.Response.StatusCode = StatusCodes.Status206PartialContent;
 
             httpContext.Response.GetTypedHeaders().ContentRange =
-                new ContentRangeHeaderValue(result.Offset, result.Offset + result.Length - 1, result.TotalLength);
+                new ContentRangeHeaderValue(result.Offset, result.Offset + result.Length - 1, result.TotalSize);
         }
         else
         {

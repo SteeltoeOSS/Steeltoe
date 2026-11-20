@@ -115,29 +115,29 @@ internal sealed partial class LogFileEndpointHandler : ILogFileEndpointHandler
     private LogFileResult CreateResult(Stream stream, LogFileRequest request, string filePath)
     {
         // The logger may append to the file while it is being sent. Only the bytes that exist now are sent, so the response matches its headers.
-        long totalLength = stream.Length;
+        long totalSize = stream.Length;
 
         if (!request.HasRange)
         {
-            LogReturning(totalLength, 0, filePath);
-            return new LogFileResult(LogFileResultStatus.Complete, 0, totalLength, totalLength, stream);
+            LogReturning(totalSize, 0, filePath);
+            return new LogFileResult(LogFileResultStatus.Complete, 0, totalSize, totalSize, stream);
         }
 
-        if (!TryGetByteRange(request, totalLength, out long start, out long end))
+        if (!TryGetByteRange(request, totalSize, out long start, out long end))
         {
-            LogRangeNotSatisfiable(request, filePath, totalLength);
+            LogRangeNotSatisfiable(request, filePath, totalSize);
             stream.Dispose();
-            return LogFileResult.CreateNotSatisfiable(totalLength);
+            return LogFileResult.CreateNotSatisfiable(totalSize);
         }
 
         long length = end - start + 1;
         LogReturning(length, start, filePath);
 
         stream.Seek(start, SeekOrigin.Begin);
-        return new LogFileResult(LogFileResultStatus.Partial, start, length, totalLength, stream);
+        return new LogFileResult(LogFileResultStatus.Partial, start, length, totalSize, stream);
     }
 
-    private static bool TryGetByteRange(LogFileRequest request, long totalLength, out long start, out long end)
+    private static bool TryGetByteRange(LogFileRequest request, long totalSize, out long start, out long end)
     {
         start = 0;
         end = 0;
@@ -153,23 +153,23 @@ internal sealed partial class LogFileEndpointHandler : ILogFileEndpointHandler
             // Suffix range, such as "bytes=-500", which requests the last 500 bytes.
             long suffixLength = request.RangeEnd.GetValueOrDefault();
 
-            if (suffixLength <= 0 || totalLength == 0)
+            if (suffixLength <= 0 || totalSize == 0)
             {
                 return false;
             }
 
-            start = Math.Max(totalLength - suffixLength, 0);
-            end = totalLength - 1;
+            start = Math.Max(totalSize - suffixLength, 0);
+            end = totalSize - 1;
             return true;
         }
 
-        if (request.RangeStart < 0 || request.RangeStart >= totalLength || request.RangeEnd < request.RangeStart)
+        if (request.RangeStart < 0 || request.RangeStart >= totalSize || request.RangeEnd < request.RangeStart)
         {
             return false;
         }
 
         start = request.RangeStart.Value;
-        end = request.RangeEnd == null ? totalLength - 1 : Math.Min(request.RangeEnd.Value, totalLength - 1);
+        end = request.RangeEnd == null ? totalSize - 1 : Math.Min(request.RangeEnd.Value, totalSize - 1);
         return true;
     }
 
