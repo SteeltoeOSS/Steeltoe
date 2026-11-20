@@ -3,22 +3,31 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
-using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 
 namespace Steeltoe.Common.Configuration;
 
-internal static partial class ConfigurationKeyConverter
+/// <summary>
+/// Converts Spring-style configuration keys to .NET configuration keys.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Key segments are separated by a dot, a colon or a double underscore. A dot or square bracket can be escaped with a backslash.
+/// </para>
+/// <para>
+/// Like in Spring, a segment can be surrounded by square brackets to indicate an array index or a dictionary key. The text between the brackets is used
+/// as-is, so it may contain dots. For example: <c>a[0].b</c> converts to <c>a:0:b</c>, <c>a[b.c]</c> converts to <c>a:b.c</c> and <c>[a.b].c</c>
+/// converts to <c>a.b:c</c>.
+/// </para>
+/// </remarks>
+internal static class ConfigurationKeyConverter
 {
-    private const string DotDelimiterString = ".";
     private const char DotDelimiterChar = '.';
+    private const char ColonDelimiterChar = ':';
     private const char UnderscoreDelimiterChar = '_';
     private const char EscapeChar = '\\';
-    private const string EscapeString = "\\";
-    private const int RegexMatchTimeoutInMilliseconds = 1_000;
-
-    [GeneratedRegex(@"\[(?<digits>\d+)\]", RegexOptions.CultureInvariant | RegexOptions.ExplicitCapture, RegexMatchTimeoutInMilliseconds)]
-    private static partial Regex ArrayRegex();
+    private const char OpenBracketChar = '[';
+    private const char CloseBracketChar = ']';
 
     public static string AsDotNetConfigurationKey(string key)
     {
@@ -27,63 +36,125 @@ internal static partial class ConfigurationKeyConverter
             return key;
         }
 
-        IEnumerable<string> split = UniversalHierarchySplit(key);
-        var sb = new StringBuilder();
-
-        foreach (string keyPart in split.Select(ConvertArrayKey))
-        {
-            sb.Append(keyPart);
-            sb.Append(ConfigurationPath.KeyDelimiter);
-        }
-
-        return sb.ToString(0, sb.Length - 1);
+        List<string> segments = SplitIntoSegments(key);
+        return string.Join(ConfigurationPath.KeyDelimiter, segments);
     }
 
-    private static List<string> UniversalHierarchySplit(string source)
+    private static List<string> SplitIntoSegments(string source)
     {
-        List<string> result = [];
+        List<string> segments = [];
+        var segmentBuilder = new StringBuilder();
 
-        int segmentStart = 0;
+        // Indicates whether the segment being built must be added at the end, even when empty (for example, after a trailing delimiter).
+        bool isSegmentPending = true;
 
-        for (int i = 0; i < source.Length; i++)
+        for (int index = 0; index < source.Length; index++)
         {
-            bool readEscapeChar = false;
+            char ch = source[index];
 
-            if (source[i] == EscapeChar)
+            if (ch == EscapeChar && index < source.Length - 1)
             {
-                readEscapeChar = true;
-                i++;
+                index++;
+                AppendEscaped(segmentBuilder, source[index]);
+                isSegmentPending = true;
             }
-
-            if (!readEscapeChar && source[i] == DotDelimiterChar)
+            else if (IsDelimiterAt(source, index, out int delimiterLength))
             {
-                result.Add(UnEscapeString(source[segmentStart..i]));
-                segmentStart = i + 1;
+                // A closing bracket already ended the previous segment, so a delimiter directly after it is optional, for example: a[0].b or a[0]b.
+                if (isSegmentPending)
+                {
+                    AddSegment(segments, segmentBuilder);
+                }
+
+                index += delimiterLength - 1;
+                isSegmentPending = true;
             }
-
-            if (!readEscapeChar && source[i] == UnderscoreDelimiterChar && i < source.Length - 1 && source[i + 1] == UnderscoreDelimiterChar)
+            else if (ch == OpenBracketChar && TryFindClosingBracket(source, index, out int closeIndex))
             {
-                result.Add(UnEscapeString(source[segmentStart..i]));
-                segmentStart = i + 2;
+                // A bracket starts a new segment, so it must not produce an empty segment, for example: [a.b], a[0] or a.[b].
+                if (segmentBuilder.Length > 0)
+                {
+                    AddSegment(segments, segmentBuilder);
+                }
+
+                segments.Add(source[(index + 1)..closeIndex]);
+                index = closeIndex;
+                isSegmentPending = false;
             }
-
-            if (i == source.Length - 1)
+            else
             {
-                result.Add(UnEscapeString(source[segmentStart..]));
+                segmentBuilder.Append(ch);
+                isSegmentPending = true;
             }
         }
 
-        return result;
-
-        static string UnEscapeString(string src)
+        if (isSegmentPending)
         {
-            return src.Replace(EscapeString + DotDelimiterString, DotDelimiterString, StringComparison.Ordinal)
-                .Replace(EscapeString + EscapeString, EscapeString, StringComparison.Ordinal);
+            AddSegment(segments, segmentBuilder);
         }
+
+        return segments;
     }
 
-    private static string ConvertArrayKey(string key)
+    private static void AppendEscaped(StringBuilder segmentBuilder, char escapedChar)
     {
-        return ArrayRegex().Replace(key, ":${digits}");
+        // Only characters with a special meaning can be escaped. For all others, the escape character is preserved.
+        if (escapedChar is not (DotDelimiterChar or EscapeChar or OpenBracketChar or CloseBracketChar))
+        {
+            segmentBuilder.Append(EscapeChar);
+        }
+
+        segmentBuilder.Append(escapedChar);
+    }
+
+    private static bool IsDelimiterAt(string source, int index, out int delimiterLength)
+    {
+        if (source[index] is DotDelimiterChar or ColonDelimiterChar)
+        {
+            delimiterLength = 1;
+            return true;
+        }
+
+        if (source[index] == UnderscoreDelimiterChar && index < source.Length - 1 && source[index + 1] == UnderscoreDelimiterChar)
+        {
+            delimiterLength = 2;
+            return true;
+        }
+
+        delimiterLength = 0;
+        return false;
+    }
+
+    private static void AddSegment(List<string> segments, StringBuilder segmentBuilder)
+    {
+        segments.Add(segmentBuilder.ToString());
+        segmentBuilder.Clear();
+    }
+
+    private static bool TryFindClosingBracket(string source, int openIndex, out int closeIndex)
+    {
+        // Brackets can be nested, for example: a[b[0]] converts to a:b[0]. Empty or unbalanced brackets are preserved as literal text.
+        int depth = 0;
+
+        for (int index = openIndex; index < source.Length; index++)
+        {
+            if (source[index] == OpenBracketChar)
+            {
+                depth++;
+            }
+            else if (source[index] == CloseBracketChar)
+            {
+                depth--;
+
+                if (depth == 0)
+                {
+                    closeIndex = index;
+                    return closeIndex > openIndex + 1;
+                }
+            }
+        }
+
+        closeIndex = -1;
+        return false;
     }
 }

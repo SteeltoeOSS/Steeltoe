@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration.Json;
+using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Configuration.SpringBoot;
 
@@ -61,7 +62,7 @@ internal sealed class SpringBootEnvironmentVariableProvider : JsonStreamConfigur
             {
                 string? value = Data[key];
 
-                string newKey = key.Contains('.') ? key.Replace('.', ':') : key;
+                string newKey = ConfigurationKeyConverter.AsDotNetConfigurationKey(key);
                 data[newKey] = value;
             }
         }
