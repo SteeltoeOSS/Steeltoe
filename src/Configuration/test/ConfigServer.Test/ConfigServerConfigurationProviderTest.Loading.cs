@@ -1187,13 +1187,10 @@ public sealed partial class ConfigServerConfigurationProviderTest
 
     internal sealed class TestOptions
     {
-#pragma warning disable S3459 // Unassigned members should be removed
-#pragma warning disable S1144 // Unused private types or members should be removed
         // ReSharper disable PropertyCanBeMadeInitOnly.Global
         public string? Name { get; set; }
+
         public string? Version { get; set; }
         // ReSharper restore PropertyCanBeMadeInitOnly.Global
-#pragma warning restore S1144 // Unused private types or members should be removed
-#pragma warning restore S3459 // Unassigned members should be removed
     }
 }

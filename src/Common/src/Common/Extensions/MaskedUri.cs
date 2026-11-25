@@ -75,9 +75,7 @@ internal readonly record struct MaskedUri
         if (hasUserInfo)
         {
             builder.UserName = "****";
-#pragma warning disable S2068 // Hard-coded credentials are security-sensitive
             builder.Password = "****";
-#pragma warning restore S2068 // Hard-coded credentials are security-sensitive
         }
 
         if (maskedQueryString != null)
