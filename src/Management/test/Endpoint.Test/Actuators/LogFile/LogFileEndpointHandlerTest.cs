@@ -389,7 +389,7 @@ public sealed class LogFileEndpointHandlerTest
     {
         result.Content.Should().NotBeNull();
 
-        var buffer = new byte[result.Length];
+        byte[] buffer = new byte[result.Length];
         await result.Content.ReadExactlyAsync(buffer, TestContext.Current.CancellationToken);
         return Encoding.UTF8.GetString(buffer);
     }

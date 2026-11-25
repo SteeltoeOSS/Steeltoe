@@ -15,7 +15,11 @@ internal sealed partial class LogFileEndpointHandler : ILogFileEndpointHandler
 {
     internal const string FileProviderServiceKey = "Steeltoe.Management.Endpoint.LogFile";
 
-    private static readonly char[] WildcardCharacters = ['*', '?'];
+    private static readonly char[] WildcardCharacters =
+    [
+        '*',
+        '?'
+    ];
 
     private readonly IOptionsMonitor<LogFileEndpointOptions> _optionsMonitor;
     private readonly IFileProvider _fileProvider;

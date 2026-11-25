@@ -12,9 +12,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using Steeltoe.Common.TestResources;
 using Serilog;
 using Serilog.Core;
+using Steeltoe.Common.TestResources;
 using Steeltoe.Common.TestResources.IO;
 using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.Hypermedia;
@@ -313,6 +313,7 @@ public sealed class LogFileActuatorTest
 
         await using HostWrapper host = await StartHostAsync(appSettings, CreateFileProvider(LogFileContent),
             configureServices: services => services.AddHypermediaActuator());
+
         using HttpClient httpClient = host.GetTestClient();
 
         using HttpResponseMessage logFileResponse = await SendRequestAsync(httpClient, null);
@@ -375,7 +376,7 @@ public sealed class LogFileActuatorTest
         // On Windows, this throws an IOException when the file was opened without FileShare.Delete.
         File.Delete(logFile.FullPath);
 
-        var buffer = new byte[LogFileContent.Length];
+        byte[] buffer = new byte[LogFileContent.Length];
         await stream.ReadExactlyAsync(buffer, TestContext.Current.CancellationToken);
         Encoding.UTF8.GetString(buffer).Should().Be(LogFileContent);
     }

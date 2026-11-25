@@ -9,6 +9,8 @@ namespace Steeltoe.Management.Endpoint.Actuators.LogFile;
 /// </summary>
 public sealed class LogFileRequest
 {
+    internal bool HasRange => HasMultipleRanges || RangeStart != null || RangeEnd != null;
+
     /// <summary>
     /// Gets the offset of the first byte to return, or <c>null</c> if the request is for the last <see cref="RangeEnd" /> bytes of the file, or for the
     /// entire file.
@@ -16,8 +18,8 @@ public sealed class LogFileRequest
     public long? RangeStart { get; init; }
 
     /// <summary>
-    /// Gets the offset of the last byte to return (inclusive), or <c>null</c> to return everything from <see cref="RangeStart" /> to the end of the file. When
-    /// <see cref="RangeStart" /> is <c>null</c>, this is the number of bytes to return from the end of the file.
+    /// Gets the offset of the last byte to return (inclusive), or <c>null</c> to return everything from <see cref="RangeStart" /> to the end of the file.
+    /// When <see cref="RangeStart" /> is <c>null</c>, this is the number of bytes to return from the end of the file.
     /// </summary>
     public long? RangeEnd { get; init; }
 
@@ -25,8 +27,6 @@ public sealed class LogFileRequest
     /// Gets a value indicating whether multiple ranges were requested, which is not supported.
     /// </summary>
     public bool HasMultipleRanges { get; init; }
-
-    internal bool HasRange => HasMultipleRanges || RangeStart != null || RangeEnd != null;
 
     public override string ToString()
     {
