@@ -9,9 +9,6 @@ using Microsoft.Extensions.Logging;
 using Steeltoe.Common;
 using Steeltoe.Discovery.Eureka.AppInfo;
 
-// Workaround for Sonar bug, which incorrectly flags boolean expression as redundant.
-#pragma warning disable S2589 // Boolean expressions should not be gratuitous
-
 namespace Steeltoe.Discovery.Eureka.Configuration;
 
 public sealed partial class EurekaInstanceOptions

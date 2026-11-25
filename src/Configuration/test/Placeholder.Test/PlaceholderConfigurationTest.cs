@@ -135,9 +135,7 @@ public sealed class PlaceholderConfigurationTest : IDisposable
         testSourceA.LastProvider.DisposeCount.Should().Be(1);
         testSourceB.LastProvider.DisposeCount.Should().Be(1);
 
-#pragma warning disable S3966 // Objects should not be disposed more than once
         configurationRoot.Dispose();
-#pragma warning restore S3966 // Objects should not be disposed more than once
 
         testSourceA.LastProvider.DisposeCount.Should().Be(1);
         testSourceB.LastProvider.DisposeCount.Should().Be(1);

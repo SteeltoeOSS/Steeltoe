@@ -70,9 +70,9 @@ public sealed class ComposeGitPropertiesTask : Task
 
             // Local time, not UTC, to match the ISO-8601-with-offset style git itself uses for git.commit.time. This is "when this build ran, in the
             // machine's own local time", not a value that needs to compare against the commit's own timestamp.
-#pragma warning disable S6354
+#pragma warning disable S6354 // Use a testable date/time provider
             string buildTime = DateTimeOffset.Now.ToString("yyyy-MM-ddTHH:mm:sszzz", CultureInfo.InvariantCulture);
-#pragma warning restore S6354
+#pragma warning restore S6354 // Use a testable date/time provider
             lines.Add($"git.build.time={buildTime}");
 
             if (this.LogOnFailure($"failed to write {OutputFile}", () => AtomicFile.Write(OutputFile, lines)))
