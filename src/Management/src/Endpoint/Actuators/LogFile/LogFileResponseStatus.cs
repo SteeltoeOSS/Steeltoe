@@ -4,7 +4,7 @@
 
 namespace Steeltoe.Management.Endpoint.Actuators.LogFile;
 
-public enum LogFileResultStatus
+public enum LogFileResponseStatus
 {
     /// <summary>
     /// The log file does not exist, or no log file is configured.

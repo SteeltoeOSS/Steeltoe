@@ -39,8 +39,10 @@ internal sealed partial class LogFileEndpointHandler : ILogFileEndpointHandler
         _logger = loggerFactory.CreateLogger<LogFileEndpointHandler>();
     }
 
-    public Task<LogFileResult> InvokeAsync(LogFileRequest? request, CancellationToken cancellationToken)
+    public Task<LogFileResponse> InvokeAsync(LogFileRequest request, CancellationToken cancellationToken)
     {
+        ArgumentNullException.ThrowIfNull(request);
+
         LogResolvingFilePath();
 
         string? filePath = _optionsMonitor.CurrentValue.FilePath;
@@ -48,7 +50,7 @@ internal sealed partial class LogFileEndpointHandler : ILogFileEndpointHandler
         if (string.IsNullOrWhiteSpace(filePath))
         {
             LogFilePathNotConfigured();
-            return Task.FromResult(LogFileResult.NotFound);
+            return Task.FromResult(LogFileResponse.NotFound);
         }
 
         // Resolve a relative path from the base directory, which unlike the current directory doesn't depend on how the app was started.
@@ -60,7 +62,7 @@ internal sealed partial class LogFileEndpointHandler : ILogFileEndpointHandler
         {
             // Some logging frameworks don't create the file until the first entry is written, so this is expected.
             LogFileNotFound(fullPath);
-            return Task.FromResult(LogFileResult.NotFound);
+            return Task.FromResult(LogFileResponse.NotFound);
         }
 
         Stream stream;
@@ -69,16 +71,16 @@ internal sealed partial class LogFileEndpointHandler : ILogFileEndpointHandler
         {
             stream = file.CreateReadStream();
         }
-        catch (Exception exception) when (exception is FileNotFoundException or DirectoryNotFoundException)
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
-            // The logger may have rolled over or deleted the file in the meantime.
-            LogFileNotFound(file.PhysicalPath ?? fullPath);
-            return Task.FromResult(LogFileResult.NotFound);
+            // The logger may have rolled over or deleted the file in the meantime, or the file may not be accessible.
+            LogFileNotReadable(file.PhysicalPath ?? fullPath, exception);
+            return Task.FromResult(LogFileResponse.NotFound);
         }
 
         try
         {
-            return Task.FromResult(CreateResult(stream, request ?? new LogFileRequest(), file.PhysicalPath ?? fullPath));
+            return Task.FromResult(CreateResponse(stream, request, file.PhysicalPath ?? fullPath));
         }
         catch
         {
@@ -112,69 +114,36 @@ internal sealed partial class LogFileEndpointHandler : ILogFileEndpointHandler
         bool ignoreCase = OperatingSystem.IsWindows() || OperatingSystem.IsMacOS();
 
         // Serilog inserts a sequence number into the name of each file it rolls to, so when timestamps are equal, the highest name is the newest.
+        StringComparer nameComparer = ignoreCase ? StringComparer.OrdinalIgnoreCase : StringComparer.Ordinal;
+
         return directoryContents.Where(file => !file.IsDirectory && FileSystemName.MatchesSimpleExpression(fileName, file.Name, ignoreCase))
-            .OrderByDescending(file => file.LastModified).ThenByDescending(file => file.Name, StringComparer.Ordinal).FirstOrDefault();
+            .OrderByDescending(file => file.LastModified).ThenByDescending(file => file.Name, nameComparer).FirstOrDefault();
     }
 
-    private LogFileResult CreateResult(Stream stream, LogFileRequest request, string filePath)
+    private LogFileResponse CreateResponse(Stream stream, LogFileRequest request, string filePath)
     {
         // The logger may append to the file while it is being sent. Only the bytes that exist now are sent, so the response matches its headers.
-        long totalSize = stream.Length;
+        var totalSize = (ulong)stream.Length;
 
-        if (!request.HasRange)
+        if (request.Ranges.Count == 0)
         {
             LogReturning(totalSize, 0, filePath);
-            return new LogFileResult(LogFileResultStatus.Complete, 0, totalSize, totalSize, stream);
+            return new LogFileResponse(LogFileResponseStatus.Complete, 0, totalSize, totalSize, stream);
         }
 
-        if (!TryGetByteRange(request, totalSize, out long start, out long end))
+        // Multipart responses are not supported. Rejecting the request is cheaper than sending the entire file, which can be large.
+        if (request.Ranges.Count > 1 || !request.Ranges[0].TryGetByteRange(totalSize, out ulong start, out ulong end))
         {
             LogRangeNotSatisfiable(request, filePath, totalSize);
             stream.Dispose();
-            return LogFileResult.CreateNotSatisfiable(totalSize);
+            return LogFileResponse.CreateNotSatisfiable(totalSize);
         }
 
-        long length = end - start + 1;
+        ulong length = end - start + 1;
         LogReturning(length, start, filePath);
 
-        stream.Seek(start, SeekOrigin.Begin);
-        return new LogFileResult(LogFileResultStatus.Partial, start, length, totalSize, stream);
-    }
-
-    private static bool TryGetByteRange(LogFileRequest request, long totalSize, out long start, out long end)
-    {
-        start = 0;
-        end = 0;
-
-        if (request.HasMultipleRanges)
-        {
-            // Multipart responses are not supported. Rejecting the request is cheaper than sending the entire file, which can be large.
-            return false;
-        }
-
-        if (request.RangeStart == null)
-        {
-            // Suffix range, such as "bytes=-500", which requests the last 500 bytes.
-            long suffixLength = request.RangeEnd.GetValueOrDefault();
-
-            if (suffixLength <= 0 || totalSize == 0)
-            {
-                return false;
-            }
-
-            start = Math.Max(totalSize - suffixLength, 0);
-            end = totalSize - 1;
-            return true;
-        }
-
-        if (request.RangeStart < 0 || request.RangeStart >= totalSize || request.RangeEnd < request.RangeStart)
-        {
-            return false;
-        }
-
-        start = request.RangeStart.Value;
-        end = request.RangeEnd == null ? totalSize - 1 : Math.Min(request.RangeEnd.Value, totalSize - 1);
-        return true;
+        stream.Seek((long)start, SeekOrigin.Begin);
+        return new LogFileResponse(LogFileResponseStatus.Partial, start, length, totalSize, stream);
     }
 
     [LoggerMessage(Level = LogLevel.Trace, Message = "Resolving the path to the log file.")]
@@ -187,9 +156,12 @@ internal sealed partial class LogFileEndpointHandler : ILogFileEndpointHandler
     [LoggerMessage(Level = LogLevel.Debug, Message = "Log file '{FilePath}' does not exist.")]
     private partial void LogFileNotFound(string filePath);
 
+    [LoggerMessage(Level = LogLevel.Debug, Message = "Log file '{FilePath}' could not be opened.")]
+    private partial void LogFileNotReadable(string filePath, Exception exception);
+
     [LoggerMessage(Level = LogLevel.Debug, Message = "Range '{Range}' is not satisfiable for log file '{FilePath}' with length {FileLength}.")]
-    private partial void LogRangeNotSatisfiable(LogFileRequest range, string filePath, long fileLength);
+    private partial void LogRangeNotSatisfiable(LogFileRequest range, string filePath, ulong fileLength);
 
     [LoggerMessage(Level = LogLevel.Debug, Message = "Returning {Length} bytes at offset {Offset} from log file '{FilePath}'.")]
-    private partial void LogReturning(long length, long offset, string filePath);
+    private partial void LogReturning(ulong length, ulong offset, string filePath);
 }

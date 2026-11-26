@@ -23,6 +23,7 @@
     <RabbitClientTestVersion>7.2.*</RabbitClientTestVersion>
     <SerilogEnrichersThreadVersion>4.0.*</SerilogEnrichersThreadVersion>
     <SerilogExceptionsVersion>8.4.*</SerilogExceptionsVersion>
+    <SerilogSinksFileVersion>7.0.*</SerilogSinksFileVersion>
     <SonarAnalyzerVersion>10.37.0.15768</SonarAnalyzerVersion>
     <StyleCopVersion>1.2.0-beta.556</StyleCopVersion>
     <SystemCommandLineVersion>3.0.*</SystemCommandLineVersion>
@@ -56,7 +57,6 @@
     <OpenTelemetryExporterPrometheusVersion>1.21.*-*</OpenTelemetryExporterPrometheusVersion>
     <OpenTelemetryVersion>1.21.*</OpenTelemetryVersion>
     <SerilogSinksConsoleVersion>6.1.*</SerilogSinksConsoleVersion>
-    <SerilogSinksFileVersion>7.0.*</SerilogSinksFileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(TargetFramework)' == 'net10.0'">

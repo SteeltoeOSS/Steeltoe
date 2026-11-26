@@ -15,10 +15,12 @@ namespace Steeltoe.Management.Endpoint.Actuators.LogFile;
 
 internal sealed class LogFileEndpointMiddleware(
     ILogFileEndpointHandler endpointHandler, IOptionsMonitor<ManagementOptions> managementOptionsMonitor, ILoggerFactory loggerFactory)
-    : EndpointMiddleware<LogFileRequest, LogFileResult>(endpointHandler, managementOptionsMonitor, loggerFactory)
+    : EndpointMiddleware<LogFileRequest, LogFileResponse>(endpointHandler, managementOptionsMonitor, loggerFactory)
 {
-    private const string BytesUnit = "bytes";
     private const int BufferSize = 64 * 1024;
+
+    private static readonly StringSegment BytesUnit = "bytes";
+    private static readonly StringValues BytesUnitValues = BytesUnit.Value;
 
     // The encoding of the log file depends on the logging framework, so no charset is specified.
     private protected override string ContentType => "text/plain";
@@ -35,29 +37,21 @@ internal sealed class LogFileEndpointMiddleware(
             return Task.FromResult<LogFileRequest?>(new LogFileRequest());
         }
 
-        if (rangeHeader.Ranges.Count != 1)
-        {
-            return Task.FromResult<LogFileRequest?>(new LogFileRequest
-            {
-                HasMultipleRanges = true
-            });
-        }
-
-        RangeItemHeaderValue rangeItem = rangeHeader.Ranges.Single();
-
         return Task.FromResult<LogFileRequest?>(new LogFileRequest
         {
-            RangeStart = rangeItem.From,
-            RangeEnd = rangeItem.To
+            Ranges = rangeHeader.Ranges.Select(range => new LogRange((ulong?)range.From, (ulong?)range.To)).ToList()
         });
     }
 
-    protected override async Task<LogFileResult> InvokeEndpointHandlerAsync(LogFileRequest? request, CancellationToken cancellationToken)
+    protected override async Task<LogFileResponse> InvokeEndpointHandlerAsync(LogFileRequest? request, CancellationToken cancellationToken)
     {
-        return await EndpointHandler.InvokeAsync(request ?? new LogFileRequest(), cancellationToken);
+        // ParseRequestAsync never returns null, so this indicates a bug.
+        ArgumentNullException.ThrowIfNull(request);
+
+        return await EndpointHandler.InvokeAsync(request, cancellationToken);
     }
 
-    protected override async Task WriteResponseAsync(LogFileResult result, HttpContext httpContext, CancellationToken cancellationToken)
+    protected override async Task WriteResponseAsync(LogFileResponse result, HttpContext httpContext, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(result);
         ArgumentNullException.ThrowIfNull(httpContext);
@@ -66,17 +60,17 @@ internal sealed class LogFileEndpointMiddleware(
         {
             switch (result.Status)
             {
-                case LogFileResultStatus.Complete:
-                case LogFileResultStatus.Partial:
+                case LogFileResponseStatus.Complete:
+                case LogFileResponseStatus.Partial:
                 {
                     await WriteContentAsync(result, httpContext, cancellationToken);
                     break;
                 }
-                case LogFileResultStatus.RangeNotSatisfiable:
+                case LogFileResponseStatus.RangeNotSatisfiable:
                 {
-                    httpContext.Response.Headers.AcceptRanges = BytesUnit;
+                    httpContext.Response.Headers.AcceptRanges = BytesUnitValues;
                     httpContext.Response.StatusCode = StatusCodes.Status416RangeNotSatisfiable;
-                    httpContext.Response.GetTypedHeaders().ContentRange = new ContentRangeHeaderValue(result.TotalSize);
+                    httpContext.Response.GetTypedHeaders().ContentRange = new ContentRangeHeaderValue((long)result.TotalSize);
                     break;
                 }
                 default:
@@ -88,18 +82,18 @@ internal sealed class LogFileEndpointMiddleware(
         }
     }
 
-    private async Task WriteContentAsync(LogFileResult result, HttpContext httpContext, CancellationToken cancellationToken)
+    private async Task WriteContentAsync(LogFileResponse result, HttpContext httpContext, CancellationToken cancellationToken)
     {
-        httpContext.Response.Headers.AcceptRanges = BytesUnit;
+        httpContext.Response.Headers.AcceptRanges = BytesUnitValues;
         httpContext.Response.ContentType = ContentType;
-        httpContext.Response.ContentLength = result.Length;
+        httpContext.Response.ContentLength = (long)result.Length;
 
-        if (result.Status == LogFileResultStatus.Partial)
+        if (result.Status == LogFileResponseStatus.Partial)
         {
             httpContext.Response.StatusCode = StatusCodes.Status206PartialContent;
 
             httpContext.Response.GetTypedHeaders().ContentRange =
-                new ContentRangeHeaderValue(result.Offset, result.Offset + result.Length - 1, result.TotalSize);
+                new ContentRangeHeaderValue((long)result.Offset, (long)(result.Offset + result.Length - 1), (long)result.TotalSize);
         }
         else
         {
@@ -109,17 +103,18 @@ internal sealed class LogFileEndpointMiddleware(
         await CopyBytesAsync(result.Content!, httpContext.Response.Body, result.Length, cancellationToken);
     }
 
-    private static async Task CopyBytesAsync(Stream source, Stream destination, long count, CancellationToken cancellationToken)
+    private static async Task CopyBytesAsync(Stream source, Stream destination, ulong count, CancellationToken cancellationToken)
     {
         byte[] buffer = ArrayPool<byte>.Shared.Rent(BufferSize);
 
         try
         {
-            long remaining = count;
+            ulong remaining = count;
 
             while (remaining > 0)
             {
-                int bytesRead = await source.ReadAsync(buffer.AsMemory(0, (int)Math.Min(buffer.Length, remaining)), cancellationToken);
+                int bytesToRead = (int)Math.Min((ulong)buffer.Length, remaining);
+                int bytesRead = await source.ReadAsync(buffer.AsMemory(0, bytesToRead), cancellationToken);
 
                 if (bytesRead == 0)
                 {
@@ -128,7 +123,7 @@ internal sealed class LogFileEndpointMiddleware(
                 }
 
                 await destination.WriteAsync(buffer.AsMemory(0, bytesRead), cancellationToken);
-                remaining -= bytesRead;
+                remaining -= (ulong)bytesRead;
             }
         }
         finally

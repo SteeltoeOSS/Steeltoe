@@ -12,6 +12,8 @@ internal sealed class ConfigureLogFileEndpointOptions(IConfiguration configurati
 {
     public override void Configure(LogFileEndpointOptions options)
     {
+        ArgumentNullException.ThrowIfNull(options);
+
         base.Configure(options);
 
         if (string.IsNullOrWhiteSpace(options.FilePath))

@@ -42,7 +42,7 @@ public static class EndpointServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(services);
 
         services.AddCoreActuatorServices<LogFileEndpointOptions, ConfigureLogFileEndpointOptions, LogFileEndpointMiddleware, ILogFileEndpointHandler,
-            LogFileEndpointHandler, LogFileRequest, LogFileResult>(configureMiddleware);
+            LogFileEndpointHandler, LogFileRequest, LogFileResponse>(configureMiddleware);
 
         services.TryAddKeyedSingleton<IFileProvider, PhysicalLogFileProvider>(LogFileEndpointHandler.FileProviderServiceKey);
 

@@ -6,6 +6,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Text.Json.Nodes;
+using FluentAssertions.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -164,7 +165,7 @@ public sealed class LogFileActuatorTest
         await using HostWrapper host = await StartHostAsync(GetAppSettings(LogFilePath), CreateFileProvider(LogFileContent));
         using HttpClient httpClient = host.GetTestClient();
 
-        using HttpResponseMessage response = await SendRequestAsync(httpClient, rangeHeader);
+        using HttpResponseMessage response = await SendGetRequestAsync(httpClient, rangeHeader);
 
         response.StatusCode.Should().Be(HttpStatusCode.PartialContent);
         response.Headers.AcceptRanges.Should().ContainSingle().Which.Should().Be("bytes");
@@ -188,7 +189,7 @@ public sealed class LogFileActuatorTest
         await using HostWrapper host = await StartHostAsync(GetAppSettings(LogFilePath), CreateFileProvider(fileContent));
         using HttpClient httpClient = host.GetTestClient();
 
-        using HttpResponseMessage response = await SendRequestAsync(httpClient, rangeHeader);
+        using HttpResponseMessage response = await SendGetRequestAsync(httpClient, rangeHeader);
 
         response.StatusCode.Should().Be(HttpStatusCode.RequestedRangeNotSatisfiable);
         response.Content.Headers.ContentRange.Should().NotBeNull();
@@ -204,7 +205,7 @@ public sealed class LogFileActuatorTest
         await using HostWrapper host = await StartHostAsync(GetAppSettings(LogFilePath), CreateFileProvider(string.Empty));
         using HttpClient httpClient = host.GetTestClient();
 
-        using HttpResponseMessage response = await SendRequestAsync(httpClient, null);
+        using HttpResponseMessage response = await SendGetRequestAsync(httpClient, null);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentLength.Should().Be(0);
@@ -222,7 +223,7 @@ public sealed class LogFileActuatorTest
         await using HostWrapper host = await StartHostAsync(GetAppSettings(LogFilePath), CreateFileProvider(LogFileContent));
         using HttpClient httpClient = host.GetTestClient();
 
-        using HttpResponseMessage response = await SendRequestAsync(httpClient, rangeHeader);
+        using HttpResponseMessage response = await SendGetRequestAsync(httpClient, rangeHeader);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
         response.Content.Headers.ContentRange.Should().BeNull();
@@ -235,13 +236,13 @@ public sealed class LogFileActuatorTest
     public async Task Endpoint_returns_newest_file_matching_wildcard()
     {
         var fileProvider = new MemoryFileProvider();
-        fileProvider.IncludeFile(LogFilePath, "old", new DateTimeOffset(2026, 1, 1, 12, 0, 0, TimeSpan.Zero));
-        fileProvider.IncludeFile(Path.Combine(LogDirectory, "app_001.log"), "new", new DateTimeOffset(2026, 1, 1, 13, 0, 0, TimeSpan.Zero));
+        fileProvider.IncludeFile(LogFilePath, "old", 1.January(2026).At(12, 0).AsUtc());
+        fileProvider.IncludeFile(Path.Combine(LogDirectory, "app_001.log"), "new", 1.January(2026).At(13, 0).AsUtc());
 
         await using HostWrapper host = await StartHostAsync(GetAppSettings(Path.Combine(LogDirectory, "app*.log")), fileProvider);
         using HttpClient httpClient = host.GetTestClient();
 
-        using HttpResponseMessage response = await SendRequestAsync(httpClient, null);
+        using HttpResponseMessage response = await SendGetRequestAsync(httpClient, null);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -257,7 +258,7 @@ public sealed class LogFileActuatorTest
         await using HostWrapper host = await StartHostAsync(GetAppSettings(LogFilePath), new MemoryFileProvider(), loggerProvider);
         using HttpClient httpClient = host.GetTestClient();
 
-        using HttpResponseMessage response = await SendRequestAsync(httpClient, null);
+        using HttpResponseMessage response = await SendGetRequestAsync(httpClient, null);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         loggerProvider.GetAll().Should().BeEmpty();
@@ -277,7 +278,7 @@ public sealed class LogFileActuatorTest
         await using HostWrapper host = await StartHostAsync(appSettings, new MemoryFileProvider(), loggerProvider);
         using HttpClient httpClient = host.GetTestClient();
 
-        using HttpResponseMessage response = await SendRequestAsync(httpClient, null);
+        using HttpResponseMessage response = await SendGetRequestAsync(httpClient, null);
 
         response.StatusCode.Should().Be(HttpStatusCode.NotFound);
 
@@ -316,7 +317,7 @@ public sealed class LogFileActuatorTest
 
         using HttpClient httpClient = host.GetTestClient();
 
-        using HttpResponseMessage logFileResponse = await SendRequestAsync(httpClient, null);
+        using HttpResponseMessage logFileResponse = await SendGetRequestAsync(httpClient, null);
         logFileResponse.StatusCode.Should().Be(isFilePathConfigured ? HttpStatusCode.OK : HttpStatusCode.NotFound);
 
         using HttpResponseMessage linksResponse = await httpClient.GetAsync(new Uri("http://localhost/actuator"), TestContext.Current.CancellationToken);
@@ -344,7 +345,7 @@ public sealed class LogFileActuatorTest
         await using HostWrapper host = await StartHostAsync(GetAppSettings(logFile.FullPath));
         using HttpClient httpClient = host.GetTestClient();
 
-        using (HttpResponseMessage response = await SendRequestAsync(httpClient, null))
+        using (HttpResponseMessage response = await SendGetRequestAsync(httpClient, null))
         {
             response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -355,7 +356,7 @@ public sealed class LogFileActuatorTest
         await writer.WriteAsync("second entry\n");
         await writer.FlushAsync(TestContext.Current.CancellationToken);
 
-        using (HttpResponseMessage response = await SendRequestAsync(httpClient, "bytes=12-"))
+        using (HttpResponseMessage response = await SendGetRequestAsync(httpClient, "bytes=12-"))
         {
             response.StatusCode.Should().Be(HttpStatusCode.PartialContent);
 
@@ -392,20 +393,22 @@ public sealed class LogFileActuatorTest
         string[] files = Directory.GetFiles(sandbox.FullPath, "app*.log");
         files.Length.Should().BeGreaterThan(1);
 
-        string newestFileName = files.Select(path => new FileInfo(path)).OrderByDescending(file => file.LastWriteTimeUtc).ThenByDescending(file => file.Name)
-            .First().Name;
+        string newestFileName = files.Select(path => new FileInfo(path)).OrderByDescending(file => file.LastWriteTimeUtc)
+            .ThenByDescending(file => file.Name, StringComparer.Ordinal).First().Name;
 
         newestFileName.Should().NotBe("app.log");
 
         await using HostWrapper host = await StartHostAsync(GetAppSettings(Path.Combine(sandbox.FullPath, "app*.log")));
         using HttpClient httpClient = host.GetTestClient();
 
-        using HttpResponseMessage response = await SendRequestAsync(httpClient, null);
+        using HttpResponseMessage response = await SendGetRequestAsync(httpClient, null);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
+        string newestFileContent = await File.ReadAllTextAsync(Path.Combine(sandbox.FullPath, newestFileName), TestContext.Current.CancellationToken);
+
         string responseBody = await response.Content.ReadAsStringAsync(TestContext.Current.CancellationToken);
-        responseBody.Should().Be(await File.ReadAllTextAsync(Path.Combine(sandbox.FullPath, newestFileName), TestContext.Current.CancellationToken));
+        responseBody.Should().Be(newestFileContent);
         responseBody.Should().Contain("Entry 19");
     }
 
@@ -420,7 +423,7 @@ public sealed class LogFileActuatorTest
         await using HostWrapper host = await StartHostAsync(GetAppSettings(logFilePath));
         using HttpClient httpClient = host.GetTestClient();
 
-        using HttpResponseMessage response = await SendRequestAsync(httpClient, null);
+        using HttpResponseMessage response = await SendGetRequestAsync(httpClient, null);
 
         response.StatusCode.Should().Be(HttpStatusCode.OK);
 
@@ -481,7 +484,7 @@ public sealed class LogFileActuatorTest
         return host;
     }
 
-    private static async Task<HttpResponseMessage> SendRequestAsync(HttpClient httpClient, string? rangeHeader)
+    private static async Task<HttpResponseMessage> SendGetRequestAsync(HttpClient httpClient, string? rangeHeader)
     {
         using var request = new HttpRequestMessage(HttpMethod.Get, new Uri("http://localhost/actuator/logfile"));
         request.Headers.Accept.Add(MediaTypeWithQualityHeaderValue.Parse("text/plain"));

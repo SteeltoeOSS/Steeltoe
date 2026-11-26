@@ -52,7 +52,7 @@ public sealed class LogFileEndpointOptions : EndpointOptions
     /// <c>
     /// /var/log/app.log
     /// </c>
-    /// would stop receiving new entries after the first roll over. The same applies when
+    /// would stop receiving new entries after the first roll-over. The same applies when
     /// <c>
     /// rollingInterval
     /// </c>

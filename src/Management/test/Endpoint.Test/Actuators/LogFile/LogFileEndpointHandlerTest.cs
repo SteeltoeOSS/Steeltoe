@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using System.Text;
+using FluentAssertions.Extensions;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Steeltoe.Common.TestResources;
@@ -16,7 +17,7 @@ public sealed class LogFileEndpointHandlerTest
 
     private static readonly string LogDirectory = Path.Combine(AppContext.BaseDirectory, "logs");
     private static readonly string LogFilePath = Path.Combine(LogDirectory, "app.log");
-    private static readonly DateTimeOffset BaseTime = new(2026, 1, 1, 12, 0, 0, TimeSpan.Zero);
+    private static readonly DateTimeOffset BaseTime = 1.January(2026).At(12, 0).AsUtc();
 
     [Fact]
     public async Task Returns_entire_file_when_no_range_is_requested()
@@ -25,11 +26,11 @@ public sealed class LogFileEndpointHandlerTest
         fileProvider.IncludeFile(LogFilePath, "Hello, wörld! 👋\n");
         LogFileEndpointHandler handler = CreateHandler(LogFilePath, fileProvider);
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
 
-        result.Status.Should().Be(LogFileResultStatus.Complete);
+        result.Status.Should().Be(LogFileResponseStatus.Complete);
         result.Offset.Should().Be(0);
-        result.Length.Should().Be(Encoding.UTF8.GetByteCount("Hello, wörld! 👋\n"));
+        result.Length.Should().Be((ulong)Encoding.UTF8.GetByteCount("Hello, wörld! 👋\n"));
         result.TotalSize.Should().Be(result.Length);
 
         string content = await ReadContentAsync(result);
@@ -37,27 +38,26 @@ public sealed class LogFileEndpointHandlerTest
     }
 
     [Fact]
-    public async Task Treats_missing_request_as_entire_file()
+    public async Task Throws_for_missing_request()
     {
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeFile(LogFilePath, LogFileContent);
         LogFileEndpointHandler handler = CreateHandler(LogFilePath, fileProvider);
 
-        using LogFileResult result = await handler.InvokeAsync(null, TestContext.Current.CancellationToken);
+        Func<Task> action = async () => await handler.InvokeAsync(null!, TestContext.Current.CancellationToken);
 
-        result.Status.Should().Be(LogFileResultStatus.Complete);
-        (await ReadContentAsync(result)).Should().Be(LogFileContent);
+        await action.Should().ThrowExactlyAsync<ArgumentNullException>();
     }
 
     [Theory]
-    [InlineData(0L, 3L, "0123", 0L)]
-    [InlineData(6L, null, "6789", 6L)]
-    [InlineData(null, 4L, "6789", 6L)]
-    [InlineData(8L, 100L, "89", 8L)]
-    [InlineData(null, 100L, "0123456789", 0L)]
-    [InlineData(9L, 9L, "9", 9L)]
-    [InlineData(0L, 9L, "0123456789", 0L)]
-    public async Task Returns_requested_byte_range(long? rangeStart, long? rangeEnd, string expectedContent, long expectedOffset)
+    [InlineData(0UL, 3UL, "0123", 0UL)]
+    [InlineData(6UL, null, "6789", 6UL)]
+    [InlineData(null, 4UL, "6789", 6UL)]
+    [InlineData(8UL, 100UL, "89", 8UL)]
+    [InlineData(null, 100UL, "0123456789", 0UL)]
+    [InlineData(9UL, 9UL, "9", 9UL)]
+    [InlineData(0UL, 9UL, "0123456789", 0UL)]
+    public async Task Returns_requested_byte_range(ulong? rangeStart, ulong? rangeEnd, string expectedContent, ulong expectedOffset)
     {
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeFile(LogFilePath, LogFileContent);
@@ -65,15 +65,14 @@ public sealed class LogFileEndpointHandlerTest
 
         var request = new LogFileRequest
         {
-            RangeStart = rangeStart,
-            RangeEnd = rangeEnd
+            Ranges = [new LogRange(rangeStart, rangeEnd)]
         };
 
-        using LogFileResult result = await handler.InvokeAsync(request, TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(request, TestContext.Current.CancellationToken);
 
-        result.Status.Should().Be(LogFileResultStatus.Partial);
+        result.Status.Should().Be(LogFileResponseStatus.Partial);
         result.Offset.Should().Be(expectedOffset);
-        result.Length.Should().Be(expectedContent.Length);
+        result.Length.Should().Be((ulong)expectedContent.Length);
         result.TotalSize.Should().Be(10);
 
         string content = await ReadContentAsync(result);
@@ -81,13 +80,11 @@ public sealed class LogFileEndpointHandlerTest
     }
 
     [Theory]
-    [InlineData(10L, null, false)]
-    [InlineData(100L, 200L, false)]
-    [InlineData(null, 0L, false)]
-    [InlineData(null, null, true)]
-    [InlineData(-1L, null, false)]
-    [InlineData(5L, 2L, false)]
-    public async Task Rejects_unsatisfiable_byte_range(long? rangeStart, long? rangeEnd, bool hasMultipleRanges)
+    [InlineData(10UL, null)]
+    [InlineData(100UL, 200UL)]
+    [InlineData(null, 0UL)]
+    [InlineData(5UL, 2UL)]
+    public async Task Rejects_unsatisfiable_byte_range(ulong? rangeStart, ulong? rangeEnd)
     {
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeFile(LogFilePath, LogFileContent);
@@ -95,23 +92,40 @@ public sealed class LogFileEndpointHandlerTest
 
         var request = new LogFileRequest
         {
-            RangeStart = rangeStart,
-            RangeEnd = rangeEnd,
-            HasMultipleRanges = hasMultipleRanges
+            Ranges = [new LogRange(rangeStart, rangeEnd)]
         };
 
-        using LogFileResult result = await handler.InvokeAsync(request, TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(request, TestContext.Current.CancellationToken);
 
-        result.Status.Should().Be(LogFileResultStatus.RangeNotSatisfiable);
+        result.Status.Should().Be(LogFileResponseStatus.RangeNotSatisfiable);
+        result.TotalSize.Should().Be(10);
+        result.Content.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task Rejects_multiple_byte_ranges()
+    {
+        var fileProvider = new MemoryFileProvider();
+        fileProvider.IncludeFile(LogFilePath, LogFileContent);
+        LogFileEndpointHandler handler = CreateHandler(LogFilePath, fileProvider);
+
+        var request = new LogFileRequest
+        {
+            Ranges = [new LogRange(0, 1), new LogRange(4, 5)]
+        };
+
+        using LogFileResponse result = await handler.InvokeAsync(request, TestContext.Current.CancellationToken);
+
+        result.Status.Should().Be(LogFileResponseStatus.RangeNotSatisfiable);
         result.TotalSize.Should().Be(10);
         result.Content.Should().BeNull();
     }
 
     [Theory]
-    [InlineData(null, null, LogFileResultStatus.Complete)]
-    [InlineData(0L, null, LogFileResultStatus.RangeNotSatisfiable)]
-    [InlineData(null, 300L, LogFileResultStatus.RangeNotSatisfiable)]
-    public async Task Handles_empty_file(long? rangeStart, long? rangeEnd, LogFileResultStatus expectedStatus)
+    [InlineData(null, null, LogFileResponseStatus.Complete)]
+    [InlineData(0UL, null, LogFileResponseStatus.RangeNotSatisfiable)]
+    [InlineData(null, 300UL, LogFileResponseStatus.RangeNotSatisfiable)]
+    public async Task Handles_empty_file(ulong? rangeStart, ulong? rangeEnd, LogFileResponseStatus expectedStatus)
     {
         var fileProvider = new MemoryFileProvider();
         fileProvider.IncludeFile(LogFilePath, string.Empty);
@@ -119,11 +133,10 @@ public sealed class LogFileEndpointHandlerTest
 
         var request = new LogFileRequest
         {
-            RangeStart = rangeStart,
-            RangeEnd = rangeEnd
+            Ranges = rangeStart == null && rangeEnd == null ? [] : [new LogRange(rangeStart, rangeEnd)]
         };
 
-        using LogFileResult result = await handler.InvokeAsync(request, TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(request, TestContext.Current.CancellationToken);
 
         result.Status.Should().Be(expectedStatus);
         result.TotalSize.Should().Be(0);
@@ -139,12 +152,12 @@ public sealed class LogFileEndpointHandlerTest
 
         // Spring Boot Admin first requests the tail of the file. It then polls from the last byte of the last complete line it has seen, and starts
         // over when it receives a range that is not satisfiable with a different total length, which indicates that the file was rolled over.
-        using (LogFileResult result = await handler.InvokeAsync(new LogFileRequest
+        using (LogFileResponse result = await handler.InvokeAsync(new LogFileRequest
         {
-            RangeEnd = 307_200
+            Ranges = [new LogRange(null, 307_200)]
         }, TestContext.Current.CancellationToken))
         {
-            result.Status.Should().Be(LogFileResultStatus.Partial);
+            result.Status.Should().Be(LogFileResponseStatus.Partial);
             result.Offset.Should().Be(0);
             result.TotalSize.Should().Be(14);
             (await ReadContentAsync(result)).Should().Be("line 1\nline 2\n");
@@ -152,12 +165,12 @@ public sealed class LogFileEndpointHandlerTest
 
         fileProvider.ReplaceFile(LogFilePath, "line 1\nline 2\nline 3\n");
 
-        using (LogFileResult result = await handler.InvokeAsync(new LogFileRequest
+        using (LogFileResponse result = await handler.InvokeAsync(new LogFileRequest
         {
-            RangeStart = 13
+            Ranges = [new LogRange(13, null)]
         }, TestContext.Current.CancellationToken))
         {
-            result.Status.Should().Be(LogFileResultStatus.Partial);
+            result.Status.Should().Be(LogFileResponseStatus.Partial);
             result.Offset.Should().Be(13);
             result.TotalSize.Should().Be(21);
             (await ReadContentAsync(result)).Should().Be("\nline 3\n");
@@ -165,12 +178,12 @@ public sealed class LogFileEndpointHandlerTest
 
         fileProvider.ReplaceFile(LogFilePath, "new\n");
 
-        using (LogFileResult result = await handler.InvokeAsync(new LogFileRequest
+        using (LogFileResponse result = await handler.InvokeAsync(new LogFileRequest
         {
-            RangeStart = 20
+            Ranges = [new LogRange(20, null)]
         }, TestContext.Current.CancellationToken))
         {
-            result.Status.Should().Be(LogFileResultStatus.RangeNotSatisfiable);
+            result.Status.Should().Be(LogFileResponseStatus.RangeNotSatisfiable);
             result.TotalSize.Should().Be(4);
         }
     }
@@ -182,9 +195,9 @@ public sealed class LogFileEndpointHandlerTest
         fileProvider.IncludeFile(Path.Combine(AppContext.BaseDirectory, "logs", "app.log"), LogFileContent);
         LogFileEndpointHandler handler = CreateHandler(Path.Combine("logs", "app.log"), fileProvider);
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
 
-        result.Status.Should().Be(LogFileResultStatus.Complete);
+        result.Status.Should().Be(LogFileResponseStatus.Complete);
         (await ReadContentAsync(result)).Should().Be(LogFileContent);
     }
 
@@ -195,9 +208,9 @@ public sealed class LogFileEndpointHandlerTest
         using var loggerFactory = new LoggerFactory([loggerProvider]);
         LogFileEndpointHandler handler = CreateHandler(LogFilePath, new MemoryFileProvider(), loggerFactory);
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
 
-        result.Status.Should().Be(LogFileResultStatus.NotFound);
+        result.Status.Should().Be(LogFileResponseStatus.NotFound);
         loggerProvider.GetAll().Should().BeEmpty();
     }
 
@@ -208,9 +221,9 @@ public sealed class LogFileEndpointHandlerTest
         fileProvider.IncludeDirectory(LogFilePath);
         LogFileEndpointHandler handler = CreateHandler(LogFilePath, fileProvider);
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
 
-        result.Status.Should().Be(LogFileResultStatus.NotFound);
+        result.Status.Should().Be(LogFileResponseStatus.NotFound);
     }
 
     [Theory]
@@ -223,9 +236,9 @@ public sealed class LogFileEndpointHandlerTest
         using var loggerFactory = new LoggerFactory([loggerProvider]);
         LogFileEndpointHandler handler = CreateHandler(filePath, new MemoryFileProvider(), loggerFactory);
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
 
-        result.Status.Should().Be(LogFileResultStatus.NotFound);
+        result.Status.Should().Be(LogFileResponseStatus.NotFound);
 
         loggerProvider.GetAll().Should().ContainSingle().Which.Should().Be(
             $"WARN {typeof(LogFileEndpointHandler)}: The log file actuator is enabled, but no log file is configured. " +
@@ -240,7 +253,7 @@ public sealed class LogFileEndpointHandlerTest
         fileProvider.IncludeFile(Path.Combine(LogDirectory, "app_001.log"), "second", BaseTime.AddHours(1));
         LogFileEndpointHandler handler = CreateHandler(LogFilePath, fileProvider);
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
 
         (await ReadContentAsync(result)).Should().Be("first");
     }
@@ -258,9 +271,9 @@ public sealed class LogFileEndpointHandlerTest
         fileProvider.IncludeFile(Path.Combine(LogDirectory, "app_003.txt"), "unrelated", BaseTime.AddHours(3));
         LogFileEndpointHandler handler = CreateHandler(Path.Combine(LogDirectory, pattern), fileProvider);
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
 
-        result.Status.Should().Be(LogFileResultStatus.Complete);
+        result.Status.Should().Be(LogFileResponseStatus.Complete);
         (await ReadContentAsync(result)).Should().Be("newest");
     }
 
@@ -272,7 +285,7 @@ public sealed class LogFileEndpointHandlerTest
         fileProvider.IncludeFile(Path.Combine(LogDirectory, "app_002.log"), "second", BaseTime);
         LogFileEndpointHandler handler = CreateHandler(Path.Combine(LogDirectory, "app_*.log"), fileProvider);
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
 
         (await ReadContentAsync(result)).Should().Be("second");
     }
@@ -284,14 +297,14 @@ public sealed class LogFileEndpointHandlerTest
         fileProvider.IncludeFile(Path.Combine(LogDirectory, "app.log"), "first", BaseTime);
         LogFileEndpointHandler handler = CreateHandler(Path.Combine(LogDirectory, "app*.log"), fileProvider);
 
-        using (LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken))
+        using (LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken))
         {
             (await ReadContentAsync(result)).Should().Be("first");
         }
 
         fileProvider.IncludeFile(Path.Combine(LogDirectory, "app_001.log"), "second", BaseTime.AddMinutes(1));
 
-        using (LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken))
+        using (LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken))
         {
             (await ReadContentAsync(result)).Should().Be("second");
         }
@@ -305,12 +318,12 @@ public sealed class LogFileEndpointHandlerTest
         fileProvider.IncludeFile(Path.Combine(LogDirectory, "app_001.log"), "abcdef", BaseTime.AddMinutes(1));
         LogFileEndpointHandler handler = CreateHandler(Path.Combine(LogDirectory, "app*.log"), fileProvider);
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest
         {
-            RangeEnd = 2
+            Ranges = [new LogRange(null, 2)]
         }, TestContext.Current.CancellationToken);
 
-        result.Status.Should().Be(LogFileResultStatus.Partial);
+        result.Status.Should().Be(LogFileResponseStatus.Partial);
         result.Offset.Should().Be(4);
         result.TotalSize.Should().Be(6);
         (await ReadContentAsync(result)).Should().Be("ef");
@@ -324,7 +337,7 @@ public sealed class LogFileEndpointHandlerTest
         fileProvider.IncludeFile(Path.Combine(LogDirectory, "app.log"), "file", BaseTime);
         LogFileEndpointHandler handler = CreateHandler(Path.Combine(LogDirectory, "app*.log"), fileProvider);
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
 
         (await ReadContentAsync(result)).Should().Be("file");
     }
@@ -336,7 +349,7 @@ public sealed class LogFileEndpointHandlerTest
         fileProvider.IncludeFile(Path.Combine(AppContext.BaseDirectory, "logs", "app_001.log"), "found", BaseTime);
         LogFileEndpointHandler handler = CreateHandler(Path.Combine("logs", "app*.log"), fileProvider);
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
 
         (await ReadContentAsync(result)).Should().Be("found");
     }
@@ -348,9 +361,9 @@ public sealed class LogFileEndpointHandlerTest
         fileProvider.IncludeFile(Path.Combine(LogDirectory, "other.txt"), "other", BaseTime);
         LogFileEndpointHandler handler = CreateHandler(Path.Combine(LogDirectory, "app*.log"), fileProvider);
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
 
-        result.Status.Should().Be(LogFileResultStatus.NotFound);
+        result.Status.Should().Be(LogFileResponseStatus.NotFound);
     }
 
     [Fact]
@@ -358,9 +371,9 @@ public sealed class LogFileEndpointHandlerTest
     {
         LogFileEndpointHandler handler = CreateHandler(Path.Combine(LogDirectory, "app*.log"), new MemoryFileProvider());
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
 
-        result.Status.Should().Be(LogFileResultStatus.NotFound);
+        result.Status.Should().Be(LogFileResponseStatus.NotFound);
     }
 
     [Fact]
@@ -370,9 +383,9 @@ public sealed class LogFileEndpointHandlerTest
         fileProvider.IncludeFile(Path.Combine(LogDirectory, "app.log"), "file", BaseTime);
         LogFileEndpointHandler handler = CreateHandler(Path.Combine(AppContext.BaseDirectory, "lo*", "app.log"), fileProvider);
 
-        using LogFileResult result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
+        using LogFileResponse result = await handler.InvokeAsync(new LogFileRequest(), TestContext.Current.CancellationToken);
 
-        result.Status.Should().Be(LogFileResultStatus.NotFound);
+        result.Status.Should().Be(LogFileResponseStatus.NotFound);
     }
 
     private static LogFileEndpointHandler CreateHandler(string? filePath, MemoryFileProvider fileProvider, ILoggerFactory? loggerFactory = null)
@@ -385,7 +398,7 @@ public sealed class LogFileEndpointHandlerTest
         return new LogFileEndpointHandler(TestOptionsMonitor.Create(options), fileProvider, loggerFactory ?? NullLoggerFactory.Instance);
     }
 
-    private static async Task<string> ReadContentAsync(LogFileResult result)
+    private static async Task<string> ReadContentAsync(LogFileResponse result)
     {
         result.Content.Should().NotBeNull();
 
