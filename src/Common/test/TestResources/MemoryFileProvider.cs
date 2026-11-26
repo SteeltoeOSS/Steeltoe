@@ -31,14 +31,24 @@ public sealed class MemoryFileProvider : IFileProvider
 
     public void IncludeFile(string path, string contents)
     {
+        IncludeFile(path, contents, default);
+    }
+
+    public void IncludeFile(string path, string contents, DateTimeOffset lastModified)
+    {
         ArgumentException.ThrowIfNullOrEmpty(path);
         ArgumentNullException.ThrowIfNull(contents);
 
         byte[] bytes = Encoding.UTF8.GetBytes(contents);
-        IncludeFile(path, bytes);
+        IncludeFile(path, bytes, lastModified);
     }
 
     public void IncludeFile(string path, byte[] contents)
+    {
+        IncludeFile(path, contents, default);
+    }
+
+    public void IncludeFile(string path, byte[] contents, DateTimeOffset lastModified)
     {
         ArgumentException.ThrowIfNullOrEmpty(path);
         ArgumentNullException.ThrowIfNull(contents);
@@ -48,7 +58,7 @@ public sealed class MemoryFileProvider : IFileProvider
         string fileName = pathSegments[^1];
 
         MemoryFileSystemEntry parentDirectory = GetOrCreateDirectories(parentDirectories);
-        var file = MemoryFileSystemEntry.CreateFile(fileName, contents);
+        var file = MemoryFileSystemEntry.CreateFile(fileName, contents, lastModified);
         parentDirectory.Children.Add(file.Name, file);
     }
 
@@ -170,23 +180,24 @@ public sealed class MemoryFileProvider : IFileProvider
         public string Name { get; }
         public string PhysicalPath => null!;
         public long Length => _fileContents?.Length ?? -1;
-        public DateTimeOffset LastModified => default;
+        public DateTimeOffset LastModified { get; }
         public Dictionary<string, MemoryFileSystemEntry> Children { get; } = [with(StringComparer.OrdinalIgnoreCase)];
 
-        private MemoryFileSystemEntry(string name, byte[]? fileContents)
+        private MemoryFileSystemEntry(string name, byte[]? fileContents, DateTimeOffset lastModified)
         {
             Name = name;
             _fileContents = fileContents;
+            LastModified = lastModified;
         }
 
-        public static MemoryFileSystemEntry CreateFile(string name, byte[] contents)
+        public static MemoryFileSystemEntry CreateFile(string name, byte[] contents, DateTimeOffset lastModified)
         {
-            return new MemoryFileSystemEntry(name, contents);
+            return new MemoryFileSystemEntry(name, contents, lastModified);
         }
 
         public static MemoryFileSystemEntry CreateDirectory(string name)
         {
-            return new MemoryFileSystemEntry(name, null);
+            return new MemoryFileSystemEntry(name, null, default);
         }
 
         public Stream CreateReadStream()

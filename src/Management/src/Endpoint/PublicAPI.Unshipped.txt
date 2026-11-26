@@ -1,1 +1,42 @@
 #nullable enable
+Steeltoe.Management.Endpoint.Actuators.LogFile.EndpointServiceCollectionExtensions
+Steeltoe.Management.Endpoint.Actuators.LogFile.ILogFileEndpointHandler
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions.FilePath.get -> string?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions.FilePath.set -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileEndpointOptions.LogFileEndpointOptions() -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest.LogFileRequest() -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest.Ranges.get -> System.Collections.Generic.IList<Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange!>!
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest.Ranges.init -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponse
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponse.Content.get -> System.IO.Stream?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponse.Dispose() -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponse.Length.get -> ulong
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponse.LogFileResponse(Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponseStatus status, ulong offset, ulong length, ulong totalSize, System.IO.Stream? content) -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponse.Offset.get -> ulong
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponse.Status.get -> Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponseStatus
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponse.TotalSize.get -> ulong
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponseStatus
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponseStatus.Complete = 1 -> Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponseStatus
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponseStatus.NotFound = 0 -> Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponseStatus
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponseStatus.Partial = 2 -> Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponseStatus
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponseStatus.RangeNotSatisfiable = 3 -> Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileResponseStatus
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.<Clone>$() -> Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange!
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.Deconstruct(out ulong? Start, out ulong? End) -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.End.get -> ulong?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.End.init -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.Equals(Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange? other) -> bool
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.LogRange(ulong? Start, ulong? End) -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.Start.get -> ulong?
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.Start.init -> void
+Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.TryGetByteRange(ulong totalSize, out ulong start, out ulong end) -> bool
+override Steeltoe.Management.Endpoint.Actuators.LogFile.LogFileRequest.ToString() -> string!
+override Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.Equals(object? obj) -> bool
+override Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.GetHashCode() -> int
+override Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.ToString() -> string!
+static Steeltoe.Management.Endpoint.Actuators.LogFile.EndpointServiceCollectionExtensions.AddLogFileActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services, bool configureMiddleware) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.LogFile.EndpointServiceCollectionExtensions.AddLogFileActuator(this Microsoft.Extensions.DependencyInjection.IServiceCollection! services) -> Microsoft.Extensions.DependencyInjection.IServiceCollection!
+static Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.operator !=(Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange? left, Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange? right) -> bool
+static Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange.operator ==(Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange? left, Steeltoe.Management.Endpoint.Actuators.LogFile.LogRange? right) -> bool

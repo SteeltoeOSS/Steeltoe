@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
@@ -19,6 +20,7 @@ using Steeltoe.Management.Configuration;
 using Steeltoe.Management.Endpoint.Actuators.All;
 using Steeltoe.Management.Endpoint.Actuators.CloudFoundry;
 using Steeltoe.Management.Endpoint.Actuators.HeapDump;
+using Steeltoe.Management.Endpoint.Actuators.LogFile;
 using Steeltoe.Management.Endpoint.Actuators.ThreadDump;
 using Steeltoe.Management.Endpoint.Configuration;
 using Steeltoe.Management.Endpoint.Test.Actuators.HeapDump;
@@ -28,6 +30,8 @@ namespace Steeltoe.Management.Endpoint.Test;
 
 public sealed class EndpointAuthorizationTest
 {
+    private static readonly string LogFilePath = Path.Combine(AppContext.BaseDirectory, "app.log");
+
     public static TheoryData<RegistrationMode, Type> EndpointTestData
     {
         get
@@ -72,7 +76,8 @@ public sealed class EndpointAuthorizationTest
     {
         var appSettings = new Dictionary<string, string?>
         {
-            ["Management:Endpoints:Actuator:Exposure:Include:0"] = "*"
+            ["Management:Endpoints:Actuator:Exposure:Include:0"] = "*",
+            ["Management:Endpoints:LogFile:FilePath"] = LogFilePath
         };
 
         HostBuilder hostBuilder = TestHostBuilderFactory.CreateWeb();
@@ -82,6 +87,10 @@ public sealed class EndpointAuthorizationTest
         {
             services.AddSingleton<IHeapDumper, FakeHeapDumper>();
             services.AddSingleton<IThreadDumper, FakeThreadDumper>();
+
+            var logFileProvider = new MemoryFileProvider();
+            logFileProvider.IncludeFile(LogFilePath, "log entry");
+            services.AddKeyedSingleton<IFileProvider>(LogFileEndpointHandler.FileProviderServiceKey, logFileProvider);
 
             if (mode == RegistrationMode.Services)
             {
