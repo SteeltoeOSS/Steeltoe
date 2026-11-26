@@ -3,6 +3,7 @@
 // See the LICENSE file in the project root for more information.
 
 using Microsoft.Extensions.Configuration;
+using Steeltoe.Common.Configuration;
 
 namespace Steeltoe.Configuration.SpringBoot;
 
@@ -35,8 +36,7 @@ internal sealed class SpringBootCommandLineProvider : ConfigurationProvider
             {
                 if (key.StartsWith(KeyPrefix, StringComparison.OrdinalIgnoreCase))
                 {
-                    // Convert array references, for example: foo:bar[1]:baz -> foo:bar:1:baz
-                    string newKey = key.Replace('.', ':').Replace('[', ':').Replace("]", string.Empty, StringComparison.Ordinal);
+                    string newKey = ConfigurationKeyConverter.AsDotNetConfigurationKey(key);
                     data[newKey] = value;
                 }
             }
